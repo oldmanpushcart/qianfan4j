@@ -19,6 +19,11 @@ public record ChatModel(String name, String remote) implements Model {
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions"
     );
 
+    public static final ChatModel ERNIE_SPEED = new ChatModel(
+            "ernie-speed",
+            "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/ernie_speed"
+    );
+
     public static final ChatModel ERNIEBOT_TURBO = new ChatModel(
             "ernie-bot-turbo",
             "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/eb-instant"

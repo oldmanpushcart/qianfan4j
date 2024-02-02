@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.chat.codec.ChatResponseJsonDeserializer;
 import io.github.ompc.erniebot4j.executor.HttpContentType;
+import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.util.FeatureDetection;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
 import org.slf4j.Logger;
@@ -32,9 +33,9 @@ class ChatResponseBodyHandler implements HttpResponse.BodyHandler<ChatResponse> 
 
 
     private final Consumer<ChatResponse> consumer;
-    private final ChatModel model;
+    private final Model model;
 
-    public ChatResponseBodyHandler(ChatModel model, Consumer<ChatResponse> consumer) {
+    public ChatResponseBodyHandler(Model model, Consumer<ChatResponse> consumer) {
         this.model = model;
         this.consumer = consumer;
     }
@@ -74,14 +75,14 @@ class ChatResponseBodyHandler implements HttpResponse.BodyHandler<ChatResponse> 
 
     private static class BlockBodySubscriber implements HttpResponse.BodySubscriber<ChatResponse> {
 
-        private final ChatModel model;
+        private final Model model;
         private final Charset charset;
         private final Consumer<ChatResponse> consumer;
         private final CompletableFuture<ChatResponse> future = new CompletableFuture<>();
         private final ByteArrayOutputStream output = new ByteArrayOutputStream();
         private final byte[] bytes = new byte[10240];
 
-        private BlockBodySubscriber(ChatModel model, Charset charset, Consumer<ChatResponse> consumer) {
+        private BlockBodySubscriber(Model model, Charset charset, Consumer<ChatResponse> consumer) {
             this.model = model;
             this.charset = charset;
             this.consumer = consumer;
@@ -140,10 +141,10 @@ class ChatResponseBodyHandler implements HttpResponse.BodyHandler<ChatResponse> 
         private final byte[] bytes = new byte[10240];
         private final AtomicReference<Flow.Subscription> subscriptionRef = new AtomicReference<>();
         private final FeatureDetection detection = new FeatureDetection(new byte[]{'\n', '\n'});
-        private final ChatModel model;
+        private final Model model;
         private final Consumer<ChatResponse> consumer;
 
-        private StreamBodySubscriber(ChatModel model, Charset charset, Consumer<ChatResponse> consumer) {
+        private StreamBodySubscriber(Model model, Charset charset, Consumer<ChatResponse> consumer) {
             this.model = model;
             this.charset = charset;
             this.consumer = consumer;
