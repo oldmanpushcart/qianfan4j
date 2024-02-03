@@ -37,10 +37,7 @@ public interface ChatOptions {
         }});
     }});
 
-    Option.Opt<ChatResponse.Format, String> OUTPUT_FORMAT = new Option.StdOpt<>("response_format", String.class, v -> switch (v) {
-        case TEXT -> "text";
-        case JSON -> "json_object";
-    });
+    Option.Opt<ChatResponse.Format, ChatResponse.Format> OUTPUT_FORMAT = new Option.SimpleOpt<>("response_format", ChatResponse.Format.class);
 
     Option.Opt<Integer, Integer> MAX_OUTPUT_TOKENS = new Option.StdOpt<>("max_output_tokens", Integer.class,
             v -> check(v, v >= 1 && v <= 2048, "MAX_OUTPUT_TOKENS must be in range [1, 2048]")

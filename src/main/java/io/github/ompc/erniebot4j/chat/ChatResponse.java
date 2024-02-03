@@ -1,6 +1,7 @@
 package io.github.ompc.erniebot4j.chat;
 
 import io.github.ompc.erniebot4j.executor.Response;
+import io.github.ompc.erniebot4j.util.Textualizable;
 
 import java.util.List;
 
@@ -19,9 +20,20 @@ public record ChatResponse(
         return null != call;
     }
 
-    public enum Format {
-        JSON,
-        TEXT
+    public enum Format implements Textualizable {
+        JSON("json"),
+        TEXT("json_object");
+
+        private final String text;
+
+        Format(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String getText() {
+            return text;
+        }
     }
 
     /**
