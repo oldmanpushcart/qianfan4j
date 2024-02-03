@@ -63,7 +63,7 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
                     // 将json转为Response
                     .convertor(json -> {
 
-                        logger.debug("erniebot://chat/{}/http <= {}", request.model().name(), json);
+                        logger.debug("{}/{}/http <= {}", this, request.model().name(), json);
 
                         // 转为Node处理
                         final var node = JacksonUtils.toResponseNode(mapper, json);
