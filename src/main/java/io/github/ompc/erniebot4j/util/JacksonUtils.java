@@ -5,9 +5,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
+import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Usage;
+import io.github.ompc.erniebot4j.executor.mapper.SentenceJsonDeserializer;
+import io.github.ompc.erniebot4j.executor.mapper.TextualizableJsonSerializer;
+import io.github.ompc.erniebot4j.executor.mapper.UsageJsonDeserializer;
 
 import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
@@ -19,10 +25,19 @@ public class JacksonUtils {
 
     private static final ObjectMapper _mapper = new ObjectMapper()
             .setPropertyNamingStrategy(new PropertyNamingStrategies.SnakeCaseStrategy())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .registerModule(new SimpleModule() {{
+                addSerializer(Textualizable.class, new TextualizableJsonSerializer());
+                addDeserializer(Usage.class, new UsageJsonDeserializer());
+                addDeserializer(Sentence.class, new SentenceJsonDeserializer());
+            }});
 
     public static ObjectMapper mapper() {
         return _mapper.copy();
+    }
+
+    public static int getIntDefault(JsonNode node, String name, int def) {
+        return node.has(name) ? node.get(name).asInt() : def;
     }
 
     public static JsonNode toNode(ObjectMapper mapper, String json) {

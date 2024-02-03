@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.executor.http;
+package io.github.ompc.erniebot4j.executor.mapper;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

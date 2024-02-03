@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
-import io.github.ompc.erniebot4j.executor.http.TextualizableJsonSerializer;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
 import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
-import io.github.ompc.erniebot4j.util.Textualizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,6 @@ public class GenImageExecutor implements HttpExecutor<GenImageRequest, GenImageR
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
-                addSerializer(Textualizable.class, new TextualizableJsonSerializer());
                 addSerializer(GenImageRequest.class, new GenImageRequestJsonSerializer());
                 addDeserializer(GenImageResponse.class, new GenImageResponseJsonDeserializer());
             }});

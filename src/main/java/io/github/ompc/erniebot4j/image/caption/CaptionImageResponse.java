@@ -1,25 +1,35 @@
 package io.github.ompc.erniebot4j.image.caption;
 
 import io.github.ompc.erniebot4j.executor.Response;
+import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Usage;
 
-public class CaptionImageResponse implements Response {
+public record CaptionImageResponse(
+        String id,
+        String type,
+        long timestamp,
+        Usage usage,
+        Sentence sentence
+) implements Response {
     @Override
     public String id() {
-        return null;
+        return id;
     }
 
     @Override
     public String type() {
-        return null;
+        return type;
     }
 
     @Override
     public long timestamp() {
-        return 0;
+        return timestamp;
     }
 
     @Override
     public Usage usage() {
-        return null;
+        return usage;
     }
+
+
 }

@@ -5,11 +5,12 @@ import io.github.ompc.erniebot4j.image.generation.GenImageModel;
 import io.github.ompc.erniebot4j.image.generation.GenImageOptions;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
 import io.github.ompc.erniebot4j.test.LoadingProperties;
-import io.github.ompc.erniebot4j.test.image.ImageDisplay;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -37,20 +38,25 @@ public class GenImageTestCase implements LoadingProperties {
                 .prompt("猫")
                 .negative("白色")
                 .build()
-                .option(GenImageOptions.NUMBERS, 1)
+                .option(GenImageOptions.NUMBERS, 4)
                 .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024);
 
         final var response = client.image().generation(request)
                 .async()
                 .join();
 
-        for (final var image : response.images()) {
-            final var file = new File("gen-image-" + response.id() + ".png");
+        BufferedImage[] images = response.images();
+        Assert.assertEquals(4, images.length);
+
+        final var imagesDir = new File("gen-images");
+
+        for (int index = 0; index < images.length; index++) {
+            final var image = images[index];
+            final var file = new File(imagesDir, "gen-image-%s-%03d.png".formatted(response.id(), index));
+            Assert.assertTrue(file.mkdirs());
             ImageIO.write(image, "png", file);
             System.out.println(file);
         }
-
-
 
     }
 

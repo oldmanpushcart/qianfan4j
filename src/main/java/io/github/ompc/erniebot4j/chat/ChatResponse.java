@@ -1,6 +1,8 @@
 package io.github.ompc.erniebot4j.chat;
 
 import io.github.ompc.erniebot4j.executor.Response;
+import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Usage;
 import io.github.ompc.erniebot4j.util.Textualizable;
 
 import java.util.List;
@@ -9,10 +11,10 @@ public record ChatResponse(
         String id,
         String type,
         long timestamp,
+        Usage usage,
         Sentence sentence,
         FunctionCall call,
-        Search search,
-        Response.Usage usage
+        Search search
 
 ) implements Response {
 
@@ -34,21 +36,6 @@ public record ChatResponse(
         public String getText() {
             return text;
         }
-    }
-
-    /**
-     * 句子
-     *
-     * @param index   编号
-     * @param isLast  是否最后一句
-     * @param content 内容
-     */
-    public record Sentence(int index, boolean isLast, String content) {
-
-        public static Sentence last(String content) {
-            return new Sentence(0, true, content);
-        }
-
     }
 
     /**

@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.ompc.erniebot4j.embedding.Embedding;
 import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
-import io.github.ompc.erniebot4j.executor.Response;
+import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Usage;
 import io.github.ompc.erniebot4j.util.CheckUtils;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class EmbeddingResponseJsonDeserializer extends JsonDeserializer<Embeddin
                 node.get("id").asText(),
                 node.get("object").asText(),
                 deserializeTimestamp(node),
-                deserializeUsage(node),
+                deserializeUsage(node, context),
                 deserializeEmbeddings(node)
         );
     }
@@ -55,16 +56,10 @@ public class EmbeddingResponseJsonDeserializer extends JsonDeserializer<Embeddin
         );
     }
 
-    private Response.Usage deserializeUsage(JsonNode node) {
-        if (!node.has("usage")) {
-            return new Response.Usage();
-        }
-        final var usageNode = node.get("usage");
-        return new Response.Usage(
-                usageNode.get("prompt_tokens").asInt(),
-                0,
-                usageNode.get("total_tokens").asInt()
-        );
+    private Usage deserializeUsage(JsonNode node, DeserializationContext context) throws IOException {
+        return node.has("usage")
+                ? context.readValue(node.get("usage").traverse(), Usage.class)
+                : new Usage();
     }
 
 }

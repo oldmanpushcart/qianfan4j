@@ -16,19 +16,39 @@ import static java.util.Objects.requireNonNullElseGet;
 
 public final class ChatRequest implements Request {
     private final ChatModel model;
+    private final Option options;
+    private final Duration timeout;
+    private final String user;
     private final List<Message> messages;
     private final ChatFunctionKit kit;
-    private final Option options;
-    private final String user;
-    private final Duration timeout;
 
     private ChatRequest(Builder builder) {
         this.model = requireNonNull(builder.model);
         this.messages = requireNonNullElseGet(builder.messages, ArrayList::new);
         this.kit = requireNonNullElseGet(builder.kit, ChatFunctionKit::new);
         this.options = requireNonNullElseGet(builder.options, Option::new);
-        this.user = builder.user;
         this.timeout = builder.timeout;
+        this.user = builder.user;
+    }
+
+    @Override
+    public Model model() {
+        return model;
+    }
+
+    @Override
+    public String user() {
+        return user;
+    }
+
+    @Override
+    public Option options() {
+        return options;
+    }
+
+    @Override
+    public Duration timeout() {
+        return timeout;
     }
 
     public List<Message> messages() {
@@ -52,26 +72,6 @@ public final class ChatRequest implements Request {
     public ChatRequest function(ChatFunction<?, ?> function) {
         kit.load(function);
         return this;
-    }
-
-    @Override
-    public Model model() {
-        return model;
-    }
-
-    @Override
-    public String user() {
-        return user;
-    }
-
-    @Override
-    public Option options() {
-        return options;
-    }
-
-    @Override
-    public Duration timeout() {
-        return timeout;
     }
 
     public static class Builder {

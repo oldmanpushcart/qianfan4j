@@ -8,6 +8,7 @@ import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
 import io.github.ompc.erniebot4j.embedding.http.EmbeddingExecutor;
 import io.github.ompc.erniebot4j.image.caption.CaptionImageRequest;
 import io.github.ompc.erniebot4j.image.caption.CaptionImageResponse;
+import io.github.ompc.erniebot4j.image.caption.http.CaptionImageExecutor;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
 import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
 import io.github.ompc.erniebot4j.image.generation.http.GenImageExecutor;
@@ -52,7 +53,8 @@ public class ErnieBotClient {
 
             @Override
             public Op<CaptionImageResponse> caption(CaptionImageRequest request) {
-                return null;
+                return consumer -> new CaptionImageExecutor(refresher, executor)
+                        .execute(http, request, consumer);
             }
 
         };

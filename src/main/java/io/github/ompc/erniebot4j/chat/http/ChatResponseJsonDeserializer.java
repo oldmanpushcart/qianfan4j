@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.ompc.erniebot4j.chat.ChatResponse;
 import io.github.ompc.erniebot4j.chat.ChatResponse.Search;
-import io.github.ompc.erniebot4j.chat.ChatResponse.Sentence;
-import io.github.ompc.erniebot4j.executor.Response.Usage;
+import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Usage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,10 +24,10 @@ public class ChatResponseJsonDeserializer extends JsonDeserializer<ChatResponse>
                 node.get("id").asText(),
                 node.get("object").asText(),
                 deserializeTimestamp(node),
-                deserializeSentence(node),
+                deserializeUsage(node, context),
+                deserializeSentence(node, context),
                 deserializeFunctionCall(node),
-                deserializeSearch(node),
-                deserializeUsage(node)
+                deserializeSearch(node)
         );
     }
 
@@ -52,29 +52,6 @@ public class ChatResponseJsonDeserializer extends JsonDeserializer<ChatResponse>
         return new Search(items);
     }
 
-    private Sentence deserializeSentence(JsonNode node) {
-        if (!node.has("sentence_id")) {
-            return Sentence.last(node.get("result").asText());
-        }
-        return new Sentence(
-                node.get("sentence_id").asInt(),
-                node.get("is_end").asBoolean(),
-                node.get("result").asText()
-        );
-    }
-
-    private Usage deserializeUsage(JsonNode node) {
-        if (!node.has("usage")) {
-            return new Usage();
-        }
-        final var usageNode = node.get("usage");
-        return new Usage(
-                usageNode.get("prompt_tokens").asInt(),
-                usageNode.get("completion_tokens").asInt(),
-                usageNode.get("total_tokens").asInt()
-        );
-    }
-
     private ChatResponse.FunctionCall deserializeFunctionCall(JsonNode node) {
         if (!node.has("function_call")) {
             return null;
@@ -85,6 +62,18 @@ public class ChatResponseJsonDeserializer extends JsonDeserializer<ChatResponse>
                 fcNode.has("thoughts") ? fcNode.get("thoughts").asText() : null,
                 fcNode.get("arguments").asText()
         );
+    }
+
+    private Sentence deserializeSentence(JsonNode node, DeserializationContext context) throws IOException {
+        return node.has("sentence_id")
+                ? context.readValue(node.traverse(), Sentence.class)
+                : Sentence.last(node.get("result").asText());
+    }
+
+    private Usage deserializeUsage(JsonNode node, DeserializationContext context) throws IOException {
+        return node.has("usage")
+                ? context.readValue(node.get("usage").traverse(), Usage.class)
+                : new Usage();
     }
 
 }

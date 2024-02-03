@@ -1,7 +1,7 @@
 package io.github.ompc.erniebot4j.chat.http;
 
 import io.github.ompc.erniebot4j.chat.ChatResponse;
-import io.github.ompc.erniebot4j.executor.Response;
+import io.github.ompc.erniebot4j.executor.Usage;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class Merged {
 
-    private final AtomicReference<Response.Usage> usageRef = new AtomicReference<>(new Response.Usage(0, 0, 0));
+    private final AtomicReference<Usage> usageRef = new AtomicReference<>(new Usage(0, 0, 0));
     private final Set<ChatResponse.Search.Item> searchItemSet = ConcurrentHashMap.newKeySet();
     private final Set<String> uniqueIdSet = ConcurrentHashMap.newKeySet();
 
@@ -26,7 +26,7 @@ class Merged {
         if (Objects.nonNull(response.usage())) {
             while (true) {
                 final var existed = usageRef.get();
-                final var updated = new Response.Usage(
+                final var updated = new Usage(
                         existed.prompt() + response.usage().prompt(),
                         existed.completion() + response.usage().completion(),
                         existed.total() + response.usage().total()
@@ -44,7 +44,7 @@ class Merged {
 
     }
 
-    public Response.Usage usage() {
+    public Usage usage() {
         return usageRef.get();
     }
 
