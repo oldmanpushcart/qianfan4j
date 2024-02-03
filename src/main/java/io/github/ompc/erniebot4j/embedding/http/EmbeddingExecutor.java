@@ -6,9 +6,7 @@ import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.embedding.EmbeddingRequest;
 import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
-import io.github.ompc.erniebot4j.executor.mapper.TextualizableJsonSerializer;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
-import io.github.ompc.erniebot4j.util.Textualizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

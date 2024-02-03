@@ -1,6 +1,5 @@
 package io.github.ompc.erniebot4j.test;
 
-import io.github.ompc.erniebot4j.ErnieBotClient;
 import io.github.ompc.erniebot4j.chat.ChatModel;
 import io.github.ompc.erniebot4j.chat.ChatOptions;
 import io.github.ompc.erniebot4j.chat.ChatRequest;

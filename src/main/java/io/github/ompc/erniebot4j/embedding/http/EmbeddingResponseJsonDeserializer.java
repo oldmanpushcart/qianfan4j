@@ -1,13 +1,11 @@
 package io.github.ompc.erniebot4j.embedding.http;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.ompc.erniebot4j.embedding.Embedding;
 import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
-import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
 import io.github.ompc.erniebot4j.util.CheckUtils;
 
@@ -17,7 +15,7 @@ import java.util.stream.StreamSupport;
 public class EmbeddingResponseJsonDeserializer extends JsonDeserializer<EmbeddingResponse> {
 
     @Override
-    public EmbeddingResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException, JacksonException {
+    public EmbeddingResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         final var node = context.readTree(parser);
         return new EmbeddingResponse(
                 node.get("id").asText(),
