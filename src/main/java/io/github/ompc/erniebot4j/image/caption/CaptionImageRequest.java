@@ -1,5 +1,6 @@
 package io.github.ompc.erniebot4j.image.caption;
 
+import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
@@ -54,6 +55,11 @@ public class CaptionImageRequest implements Request {
 
     public BufferedImage image() {
         return image;
+    }
+
+    public <T, R> CaptionImageRequest option(Option.Opt<T, R> opt, T value) {
+        options.option(opt, value);
+        return this;
     }
 
     public static class Builder {

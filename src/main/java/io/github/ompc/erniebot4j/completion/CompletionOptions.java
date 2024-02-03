@@ -1,10 +1,10 @@
-package io.github.ompc.erniebot4j.image.caption;
+package io.github.ompc.erniebot4j.completion;
 
 import io.github.ompc.erniebot4j.executor.Option;
 
 import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 
-public interface CaptionOptions {
+public interface CompletionOptions {
 
     Option.SimpleOpt<Boolean> IS_STREAM = new Option.SimpleOpt<>("stream", Boolean.class);
 
@@ -25,5 +25,6 @@ public interface CaptionOptions {
     );
 
     Option.SimpleOpt<String[]> STOP_WORDS = new Option.SimpleOpt<>("stop", String[].class);
+
 
 }

@@ -3,6 +3,9 @@ package io.github.ompc.erniebot4j;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.ChatResponse;
 import io.github.ompc.erniebot4j.chat.http.ChatExecutor;
+import io.github.ompc.erniebot4j.completion.CompletionRequest;
+import io.github.ompc.erniebot4j.completion.CompletionResponse;
+import io.github.ompc.erniebot4j.completion.http.CompletionExecutor;
 import io.github.ompc.erniebot4j.embedding.EmbeddingRequest;
 import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
 import io.github.ompc.erniebot4j.embedding.http.EmbeddingExecutor;
@@ -39,6 +42,11 @@ public class ErnieBotClient {
 
     public Op<ChatResponse> chat(ChatRequest request) {
         return consumer -> new ChatExecutor(refresher, executor)
+                .execute(http, request, consumer);
+    }
+
+    public Op<CompletionResponse> completion(CompletionRequest request) {
+        return consumer -> new CompletionExecutor(refresher, executor)
                 .execute(http, request, consumer);
     }
 

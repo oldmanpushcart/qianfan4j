@@ -20,9 +20,16 @@ public record HttpContentType(String mime, Map<String, String> parameters) {
     public static HttpContentType parse(HttpHeaders headers) {
         return headers.firstValue("Content-Type")
                 .map(ct -> {
-                    final var codec = new FeatureCodec(';', '=');
-                    final var mime = ct.substring(ct.indexOf(":") + 1, ct.indexOf(";")).trim();
+
+                    // mime only
+                    if (!ct.contains(";")) {
+                        return new HttpContentType(ct, emptyMap());
+                    }
+
+                    // mime with parameters
+                    final var mime = ct.substring(0, ct.indexOf(";")).trim();
                     final var parameterString = ct.substring(ct.indexOf(";") + 1).trim();
+                    final var codec = new FeatureCodec(';', '=');
                     final var parameters = codec.toMap(parameterString);
                     return new HttpContentType(mime, parameters);
                 })

@@ -1,30 +1,30 @@
-package io.github.ompc.erniebot4j.embedding;
+package io.github.ompc.erniebot4j.completion;
 
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
+import java.awt.image.BufferedImage;
 import java.time.Duration;
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
 
-public class EmbeddingRequest implements Request {
+public class CompletionRequest implements Request {
 
-    private final EmbeddingModel model;
+    private final Model model;
     private final String user;
     private final Option options;
     private final Duration timeout;
-    private final List<String> documents;
+    private final String prompt;
 
-    private EmbeddingRequest(Builder builder) {
+    private CompletionRequest(Builder builder) {
         this.model = requireNonNull(builder.model);
-        this.documents = requireNonNull(builder.documents);
         this.options = requireNonNullElseGet(builder.options, Option::new);
-        this.user = builder.user;
+        this.prompt = requireNonNull(builder.prompt);
         this.timeout = builder.timeout;
+        this.user = builder.user;
     }
 
     @Override
@@ -47,24 +47,24 @@ public class EmbeddingRequest implements Request {
         return timeout;
     }
 
-    public List<String> documents() {
-        return documents;
+    public String prompt() {
+        return prompt;
     }
 
-    public <T, R> EmbeddingRequest option(Option.Opt<T, R> opt, T value) {
+    public <T, R> CompletionRequest option(Option.Opt<T, R> opt, T value) {
         options.option(opt, value);
         return this;
     }
 
     public static class Builder {
-
-        private EmbeddingModel model;
+        private Model model;
         private String user;
         private Option options;
         private Duration timeout;
-        private List<String> documents;
+        private String prompt;
+        private BufferedImage image;
 
-        public Builder model(EmbeddingModel model) {
+        public Builder model(Model model) {
             this.model = model;
             return this;
         }
@@ -84,18 +84,13 @@ public class EmbeddingRequest implements Request {
             return this;
         }
 
-        public Builder documents(List<String> documents) {
-            this.documents = documents;
+        public Builder prompt(String prompt) {
+            this.prompt = prompt;
             return this;
         }
 
-        public Builder documents(String... documents) {
-            this.documents = List.of(documents);
-            return this;
-        }
-
-        public EmbeddingRequest build() {
-            return new EmbeddingRequest(this);
+        public CompletionRequest build() {
+            return new CompletionRequest(this);
         }
 
     }
