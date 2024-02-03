@@ -1,6 +1,5 @@
 package io.github.ompc.erniebot4j.image.caption;
 
-import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;

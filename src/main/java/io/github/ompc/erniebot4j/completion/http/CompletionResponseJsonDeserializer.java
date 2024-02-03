@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.github.ompc.erniebot4j.completion.CompletionResponse;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
-import io.github.ompc.erniebot4j.image.caption.CaptionImageResponse;
 
 import java.io.IOException;
 

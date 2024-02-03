@@ -1,11 +1,9 @@
 package io.github.ompc.erniebot4j.completion;
 
-import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
-import java.awt.image.BufferedImage;
 import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
@@ -62,7 +60,6 @@ public class CompletionRequest implements Request {
         private Option options;
         private Duration timeout;
         private String prompt;
-        private BufferedImage image;
 
         public Builder model(Model model) {
             this.model = model;
