@@ -67,7 +67,7 @@ public class ChatExecutorTestCase implements LoadingProperties {
                         .message(Message.human("计算张三、李四、王五的语文平均分"))
                         .function(new QueryScoreFunction())
                         .function(new ComputeAvgScoreFunction())
-                        .option(ChatOptions.IS_STREAM, true)
+                        .option(ChatOptions.IS_STREAM, false)
                         .option(ChatOptions.IS_ENABLE_SEARCH, false)
                         .option(ChatOptions.TEMPERATURE, 0.01f)
                 )
