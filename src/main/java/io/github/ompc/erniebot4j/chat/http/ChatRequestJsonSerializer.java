@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.chat.codec;
+package io.github.ompc.erniebot4j.chat.http;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -16,7 +16,7 @@ public class ChatRequestJsonSerializer extends JsonSerializer<ChatRequest> {
 
     @Override
     public void serialize(ChatRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {
-        generator.writeObject(new HashMap<String, Object>() {{
+        generator.writeObject(new HashMap<>() {{
 
             // 对话消息
             put("messages", request.messages());

@@ -1,8 +1,13 @@
 package io.github.ompc.erniebot4j;
 
-import io.github.ompc.erniebot4j.chat.ChatExecutor;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.ChatResponse;
+import io.github.ompc.erniebot4j.chat.http.ChatExecutor;
+import io.github.ompc.erniebot4j.image.caption.CaptionImageRequest;
+import io.github.ompc.erniebot4j.image.caption.CaptionImageResponse;
+import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
+import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
+import io.github.ompc.erniebot4j.image.generation.http.GenImageExecutor;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -33,6 +38,23 @@ public class ErnieBotClient {
                 .execute(http, request, consumer);
     }
 
+    public ImageOp image() {
+        return new ImageOp() {
+
+            @Override
+            public Op<GenImageResponse> generation(GenImageRequest request) {
+                return consumer -> new GenImageExecutor(refresher, executor)
+                        .execute(http, request, consumer);
+            }
+
+            @Override
+            public Op<CaptionImageResponse> caption(CaptionImageRequest request) {
+                return null;
+            }
+
+        };
+    }
+
     public interface Op<R> {
 
         default CompletableFuture<R> async() {
@@ -40,7 +62,15 @@ public class ErnieBotClient {
             });
         }
 
-        CompletableFuture<R> stream(Consumer<ChatResponse> consumer);
+        CompletableFuture<R> stream(Consumer<R> consumer);
+
+    }
+
+    public interface ImageOp {
+
+        Op<GenImageResponse> generation(GenImageRequest request);
+
+        Op<CaptionImageResponse> caption(CaptionImageRequest request);
 
     }
 

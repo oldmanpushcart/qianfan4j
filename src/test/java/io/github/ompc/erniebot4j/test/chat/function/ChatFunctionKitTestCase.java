@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.test.function;
+package io.github.ompc.erniebot4j.test.chat.function;
 
 import io.github.ompc.erniebot4j.chat.function.ChatFunctionKit;
 import org.junit.Assert;

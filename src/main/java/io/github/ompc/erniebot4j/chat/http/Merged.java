@@ -1,5 +1,6 @@
-package io.github.ompc.erniebot4j.chat;
+package io.github.ompc.erniebot4j.chat.http;
 
+import io.github.ompc.erniebot4j.chat.ChatResponse;
 import io.github.ompc.erniebot4j.executor.Response;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ class Merged {
         if (Objects.nonNull(response.search()) && !response.search().isEmpty()) {
             searchItemSet.addAll(response.search().items());
         }
-        
+
     }
 
     public Response.Usage usage() {

@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.test.function;
+package io.github.ompc.erniebot4j.test.chat.function;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;

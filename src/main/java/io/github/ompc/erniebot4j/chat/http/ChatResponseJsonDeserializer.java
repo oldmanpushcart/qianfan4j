@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.chat.codec;
+package io.github.ompc.erniebot4j.chat.http;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

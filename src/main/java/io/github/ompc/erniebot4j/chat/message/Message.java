@@ -1,5 +1,7 @@
 package io.github.ompc.erniebot4j.chat.message;
 
+import io.github.ompc.erniebot4j.util.Textualizable;
+
 /**
  * 对话消息
  */
@@ -64,23 +66,33 @@ public interface Message {
     /**
      * 角色
      */
-    enum Role {
+    enum Role implements Textualizable {
 
         /**
          * 人类
          */
-        HUMAN,
+        HUMAN("user"),
 
         /**
          * AI
          */
-        BOT,
+        BOT("assistant"),
 
         /**
          * 函数
          */
-        FUNCTION,
+        FUNCTION("function");
 
+        private final String text;
+
+        Role(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String getText() {
+            return text;
+        }
     }
 
 }

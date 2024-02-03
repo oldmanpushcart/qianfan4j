@@ -40,19 +40,9 @@ public final class ChatRequest implements Request {
         return this;
     }
 
-    @Override
-    public Option options() {
-        return options;
-    }
-
     public <T, R> ChatRequest option(Option.Opt<T, R> opt, T value) {
         options.option(opt, value);
         return this;
-    }
-
-    @Override
-    public Model model() {
-        return model;
     }
 
     public ChatFunctionKit kit() {
@@ -65,8 +55,18 @@ public final class ChatRequest implements Request {
     }
 
     @Override
+    public Model model() {
+        return model;
+    }
+
+    @Override
     public String user() {
         return user;
+    }
+
+    @Override
+    public Option options() {
+        return options;
     }
 
     @Override

@@ -1,6 +1,8 @@
-package io.github.ompc.erniebot4j.chat;
+package io.github.ompc.erniebot4j.chat.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ompc.erniebot4j.chat.ChatRequest;
+import io.github.ompc.erniebot4j.chat.ChatResponse;
 import io.github.ompc.erniebot4j.chat.function.ChatFunctionKit;
 import io.github.ompc.erniebot4j.chat.message.Message;
 import io.github.ompc.erniebot4j.util.JacksonUtils;

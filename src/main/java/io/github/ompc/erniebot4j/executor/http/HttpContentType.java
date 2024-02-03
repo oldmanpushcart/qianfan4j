@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.executor;
+package io.github.ompc.erniebot4j.executor.http;
 
 import io.github.ompc.erniebot4j.util.FeatureCodec;
 

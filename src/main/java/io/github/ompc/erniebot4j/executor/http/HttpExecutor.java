@@ -1,4 +1,7 @@
-package io.github.ompc.erniebot4j.executor;
+package io.github.ompc.erniebot4j.executor.http;
+
+import io.github.ompc.erniebot4j.executor.Request;
+import io.github.ompc.erniebot4j.executor.Response;
 
 import java.net.http.HttpClient;
 import java.util.concurrent.CompletableFuture;

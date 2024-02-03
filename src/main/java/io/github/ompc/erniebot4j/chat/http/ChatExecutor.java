@@ -1,13 +1,15 @@
-package io.github.ompc.erniebot4j.chat;
+package io.github.ompc.erniebot4j.chat.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
-import io.github.ompc.erniebot4j.chat.codec.ChatRequestJsonSerializer;
-import io.github.ompc.erniebot4j.chat.codec.MessageRoleJsonSerializer;
+import io.github.ompc.erniebot4j.chat.ChatRequest;
+import io.github.ompc.erniebot4j.chat.ChatResponse;
 import io.github.ompc.erniebot4j.chat.message.Message;
-import io.github.ompc.erniebot4j.executor.HttpExecutor;
+import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
+import io.github.ompc.erniebot4j.executor.http.TextualizableJsonSerializer;
+import io.github.ompc.erniebot4j.util.Textualizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,7 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
                 addSerializer(ChatRequest.class, new ChatRequestJsonSerializer());
-                addSerializer(Message.Role.class, new MessageRoleJsonSerializer());
+                addSerializer(Textualizable.class, new TextualizableJsonSerializer());
             }});
     private final TokenRefresher refresher;
     private final Executor executor;
