@@ -1,12 +1,12 @@
-package io.github.ompc.erniebot4j.image.generation.http;
+package io.github.ompc.erniebot4j.embedding.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
+import io.github.ompc.erniebot4j.embedding.EmbeddingRequest;
+import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.TextualizableJsonSerializer;
-import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
-import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
 import io.github.ompc.erniebot4j.util.Textualizable;
 import org.slf4j.Logger;
@@ -21,26 +21,25 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-public class GenImageExecutor implements HttpExecutor<GenImageRequest, GenImageResponse> {
+public class EmbeddingExecutor implements HttpExecutor<EmbeddingRequest, EmbeddingResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
                 addSerializer(Textualizable.class, new TextualizableJsonSerializer());
-                addSerializer(GenImageRequest.class, new GenImageRequestJsonSerializer());
-                addDeserializer(GenImageResponse.class, new GenImageResponseJsonDeserializer());
+                addSerializer(EmbeddingRequest.class, new EmbeddingRequestJsonSerializer());
+                addDeserializer(EmbeddingResponse.class, new EmbeddingResponseJsonDeserializer());
             }});
-
     private final TokenRefresher refresher;
     private final Executor executor;
 
-    public GenImageExecutor(TokenRefresher refresher, Executor executor) {
+    public EmbeddingExecutor(TokenRefresher refresher, Executor executor) {
         this.refresher = refresher;
         this.executor = executor;
     }
 
     @Override
-    public CompletableFuture<GenImageResponse> execute(HttpClient http, GenImageRequest request, Consumer<GenImageResponse> consumer) {
+    public CompletableFuture<EmbeddingResponse> execute(HttpClient http, EmbeddingRequest request, Consumer<EmbeddingResponse> consumer) {
         return refresher.refresh(http)
                 .thenCompose(token -> {
 
@@ -63,16 +62,17 @@ public class GenImageExecutor implements HttpExecutor<GenImageRequest, GenImageR
                                 return JacksonUtils.toResponseNode(mapper, body);
                             })
                             .thenCompose(node -> {
-                                final var response = JacksonUtils.toObject(mapper, GenImageResponse.class, node);
+                                final var response = JacksonUtils.toObject(mapper, EmbeddingResponse.class, node);
                                 consumer.accept(response);
                                 return CompletableFuture.completedFuture(response);
                             });
+
                 });
     }
 
     @Override
     public String toString() {
-        return "erniebot://image/generation";
+        return "erniebot://embedding";
     }
 
 }

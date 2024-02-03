@@ -22,10 +22,6 @@ public class DebugTestCase implements LoadingProperties {
 
     @Test
     public void test$debug() {
-        final var client = new ErnieBotClient.Builder()
-                .refresher(refresher)
-                .executor(executor)
-                .build();
         final var request = new ChatRequest.Builder()
                 .model(ChatModel.ERNIEBOT_8K)
                 .build();

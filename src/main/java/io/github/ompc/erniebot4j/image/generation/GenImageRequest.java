@@ -19,7 +19,7 @@ public class GenImageRequest implements Request {
     private final String prompt;
     private final String negative;
 
-    public GenImageRequest(Builder builder) {
+    private GenImageRequest(Builder builder) {
         this.model = requireNonNull(builder.model);
         this.prompt = requireNonNull(builder.prompt);
         this.options = requireNonNullElseGet(builder.options, Option::new);

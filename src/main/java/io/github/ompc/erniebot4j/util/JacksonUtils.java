@@ -36,6 +36,22 @@ public class JacksonUtils {
         }
     }
 
+    public static JsonNode toResponseNode(ObjectMapper mapper, String json) {
+        final var node = toNode(mapper, json);
+
+        // 处理返回错误
+        if (node.has("error_code")) {
+            throw new RuntimeException("response error: %s; %s".formatted(
+                    node.get("error_code").asInt(),
+                    node.has("error_msg")
+                            ? node.get("error_msg").asText()
+                            : null
+            ));
+        }
+
+        return node;
+    }
+
     public static <T> T toObject(ObjectMapper mapper, Type type, String json) {
         try {
             final var jType = mapper.constructType(type);

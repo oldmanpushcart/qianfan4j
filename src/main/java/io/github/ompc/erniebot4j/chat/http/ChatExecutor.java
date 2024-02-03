@@ -29,8 +29,8 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
-                addSerializer(ChatRequest.class, new ChatRequestJsonSerializer());
                 addSerializer(Textualizable.class, new TextualizableJsonSerializer());
+                addSerializer(ChatRequest.class, new ChatRequestJsonSerializer());
                 addDeserializer(ChatResponse.class, new ChatResponseJsonDeserializer());
             }});
     private final TokenRefresher refresher;
@@ -80,26 +80,13 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
             // 构建请求处理器
             final var responseBodyHandler = new ResponseBodyHandler.Builder<ChatResponse>()
 
-                    // 消费ChatResponse
-                    .consumer(consumer)
-
                     // 将json转为ChatResponse
                     .convertor(json -> {
 
                         logger.debug("erniebot://chat/{}/http <= {}", request.model().name(), json);
 
                         // 转为Node处理
-                        final var node = JacksonUtils.toNode(mapper, json);
-
-                        // 处理返回错误
-                        if (node.has("error_code")) {
-                            throw new RuntimeException("response error: %s; %s".formatted(
-                                    node.get("error_code").asInt(),
-                                    node.has("error_msg")
-                                            ? node.get("error_msg").asText()
-                                            : null
-                            ));
-                        }
+                        final var node = JacksonUtils.toResponseNode(mapper, json);
 
                         // 检查是否安全
                         if (node.has("need_clear_history") && node.get("need_clear_history").asBoolean()) {
@@ -111,6 +98,9 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
                         // 返回应答对象
                         return JacksonUtils.toObject(mapper, ChatResponse.class, node);
                     })
+
+                    // 消费ChatResponse
+                    .consumer(consumer)
 
                     // 合并ChatResponse
                     .accumulator((left, right) -> {
