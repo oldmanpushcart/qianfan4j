@@ -12,13 +12,6 @@ import java.util.concurrent.Executors;
 
 public class DebugTestCase implements LoadingProperties {
 
-    private static final ExecutorService executor = Executors.newFixedThreadPool(10);
-
-    @AfterClass
-    public static void clean() {
-        executor.shutdown();
-    }
-
     @Test
     public void test$debug() {
         final var request = new ChatRequest.Builder()

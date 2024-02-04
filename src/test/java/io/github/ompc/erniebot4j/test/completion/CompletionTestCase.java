@@ -10,7 +10,7 @@ import org.junit.Test;
 public class CompletionTestCase implements LoadingProperties {
 
     @Test
-    public void test$completion$base() {
+    public void test$completion() {
 
         final var request = new CompletionRequest.Builder()
                 .model(CompletionModel.SQL_CODER_7B)

@@ -18,7 +18,7 @@ public record HttpContentType(String mime, Map<String, String> parameters) {
     }
 
     public static HttpContentType parse(HttpHeaders headers) {
-        return headers.firstValue("Content-Type")
+        return headers.firstValue("content-type")
                 .map(ct -> {
 
                     // mime only
