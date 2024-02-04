@@ -379,7 +379,7 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                         check(anEx.question(), isNotBlank(anEx.question()), "question is required!");
 
                         // 添加正向例子
-                        if (!anEx.negative()) {
+                        if (anEx.negative()) {
                             example.add(new ObjectMapper().createObjectNode()
                                     .put("role", "user")
                                     .put("content", anEx.question())
@@ -388,11 +388,9 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                                     .put("role", "assistant")
                                     .putNull("content")
                                     .set("function_call", new ObjectMapper().createObjectNode()
-                                            .put("name", name)
-                                            .put("arguments", isNotBlank(anEx.arguments())
-                                                    ? compact(mapper, anEx.arguments())
-                                                    : "{}"
-                                            )
+                                            .put("name", "")
+                                            .put("thoughts", "我无需调用任何工具")
+                                            .put("arguments", "{}")
                                     )
                             );
                         }
@@ -407,12 +405,16 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                                     .put("role", "assistant")
                                     .putNull("content")
                                     .set("function_call", new ObjectMapper().createObjectNode()
-                                            .put("name", "")
-                                            .put("arguments", "{}")
-                                            .put("thoughts", "我无需调用任何工具")
+                                            .put("name", name)
+                                            .put("thoughts", anEx.thoughts())
+                                            .put("arguments", isNotBlank(anEx.arguments())
+                                                    ? compact(mapper, anEx.arguments())
+                                                    : "{}"
+                                            )
                                     )
                             );
                         }
+
 
                         return example;
                     })

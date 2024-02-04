@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 
 @ChatFn(name = "query_score", description = "query student's scores")
 @ChatFnExample(
-        question = "查询张三的数学成绩",
+        question = "查询张三、李四的数学成绩",
+        thoughts = "用户需要计算张三、李四、王五的数学成绩，但函数一次只能查询一个学生，所以我们先查询张三的成绩，然后再分别查询李四和王五的数学成绩",
         arguments = """
                 {
                      "name": "张三",

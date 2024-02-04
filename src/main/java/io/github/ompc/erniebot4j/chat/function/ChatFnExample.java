@@ -23,6 +23,13 @@ public @interface ChatFnExample {
     String question();
 
     /**
+     * 思考过程
+     *
+     * @return 思考过程
+     */
+    String thoughts() default "";
+
+    /**
      * 请求参数(JSON格式)
      * <p>
      * 如果{@link #negative}为true, 则忽略该参数
