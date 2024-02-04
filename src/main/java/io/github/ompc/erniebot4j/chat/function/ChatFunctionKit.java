@@ -1,6 +1,5 @@
 package io.github.ompc.erniebot4j.chat.function;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
@@ -253,7 +252,7 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
      * @param parameterType 参数类型
      * @param returnType    返回类型
      */
-    public record Meta(JsonNode schema, String name, String description, Method method, Type parameterType,
+    public record Meta(Map<String, Object> schema, String name, String description, Method method, Type parameterType,
                        Type returnType) {
 
         /**
@@ -278,19 +277,19 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                     )
             );
 
-            // BotFn注解
-            final var anBotFn = functionClass.getAnnotation(ChatFn.class);
+            // ChatFn注解
+            final var anChatFn = functionClass.getAnnotation(ChatFn.class);
 
             // 函数名称
-            final var name = Objects.isNull(anBotFn.name()) || anBotFn.name().isBlank()
+            final var name = Objects.isNull(anChatFn.name()) || anChatFn.name().isBlank()
                     ? functionClass.getSimpleName()
-                    : anBotFn.name();
+                    : anChatFn.name();
 
             // 函数描述
-            final var description = anBotFn.description();
+            final var description = anChatFn.description();
 
-            // 找到BotFunction接口
-            final var botFunctionInterface = Stream.of(functionClass.getGenericInterfaces())
+            // 找到ChatFunction接口
+            final var chatFunctionInterface = Stream.of(functionClass.getGenericInterfaces())
                     .filter(genericInterface -> genericInterface instanceof ParameterizedType)
                     .map(genericInterface -> (ParameterizedType) genericInterface)
                     .filter(pType -> pType.getRawType().equals(ChatFunction.class))
@@ -299,11 +298,11 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                             ChatFunction.class.getName()
                     )));
 
-            final var parameterType = botFunctionInterface.getActualTypeArguments()[0];
-            final var returnType = botFunctionInterface.getActualTypeArguments()[1];
+            final var parameterType = chatFunctionInterface.getActualTypeArguments()[0];
+            final var returnType = chatFunctionInterface.getActualTypeArguments()[1];
 
-            // 找到BotFunction接口的apply方法
-            final var applyMethod = Stream.of(functionClass.getMethods())
+            // 找到ChatFunction接口的call方法
+            final var callMethod = Stream.of(functionClass.getMethods())
                     .filter(method -> method.getName().equals("call"))
                     .filter(method -> method.getParameterCount() == 1)
                     .filter(method -> method.getParameterTypes()[0].equals(parameterType))
@@ -316,41 +315,91 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
             final var schema = new ObjectMapper().createObjectNode();
             schema.put("name", name);
             schema.put("description", description);
-
-            setupSchemaParameters(schema, parameterType);
-            setupSchemaResponses(schema, anBotFn, returnType);
+            setupSchemaParameters(schema, functionClass, parameterType);
+            setupSchemaResponses(schema, anChatFn, functionClass, returnType);
             setupSchemaExamples(schema, name, functionClass);
 
-            // 返回schema
-            return new Meta(schema, name, description, applyMethod, parameterType, returnType);
+            // 封装为不可变集合
+            final var unmodifiableSchema = JacksonUtils.toUnmodifiableMap(schema);
+            return new Meta(unmodifiableSchema, name, description, callMethod, parameterType, returnType);
         }
 
         /**
          * 添加参数的schema
          *
          * @param schema        schema
+         * @param functionClass 函数类型
          * @param parameterType 函数参数类型
          */
-        private static void setupSchemaParameters(ObjectNode schema, Type parameterType) {
-            schema.set("parameters", JacksonUtils.schema(mapper, parameterType));
+        private static void setupSchemaParameters(ObjectNode schema, Class<?> functionClass, Type parameterType) {
+
+            // 如果有注解指定参数的schema资源，则加载资源
+            if (functionClass.isAnnotationPresent(ChatFnSchemaResource.class)) {
+                final var anChatFnSchemaResource = functionClass.getAnnotation(ChatFnSchemaResource.class);
+                if (isNotBlank(anChatFnSchemaResource.parameters())) {
+                    try (final var input = functionClass.getResourceAsStream(anChatFnSchemaResource.parameters())) {
+                        final var parameters = new ObjectMapper().readTree(input);
+                        schema.set("parameters", parameters);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(
+                                "load parameters schema resource error: %s".formatted(
+                                        anChatFnSchemaResource.parameters()
+                                ),
+                                ex
+                        );
+                    }
+                }
+            }
+
+            // 否则尝试从类型中进行解析
+            else {
+                schema.set("parameters", JacksonUtils.schema(mapper, parameterType));
+            }
+
         }
 
         /**
          * 添加返回值的schema
          *
-         * @param schema     schema
-         * @param anChatFn   BotFn注解
-         * @param returnType 函数返回类型
+         * @param schema        schema
+         * @param anChatFn      ChatFn注解
+         * @param functionClass 函数类型
+         * @param returnType    函数返回类型
          */
-        private static void setupSchemaResponses(ObjectNode schema, ChatFn anChatFn, Type returnType) {
+        private static void setupSchemaResponses(ObjectNode schema, ChatFn anChatFn, Class<?> functionClass, Type returnType) {
+
             // 如果忽略返回值的schema，则不添加返回值的schema
-            if (!anChatFn.isIgnoreReturnSchema()) {
+            if (anChatFn.isIgnoreResponseSchema()) {
+                return;
+            }
+
+            // 如果有注解指定参数的schema资源，则加载资源
+            if (functionClass.isAnnotationPresent(ChatFnSchemaResource.class)) {
+                final var anChatFnSchemaResource = functionClass.getAnnotation(ChatFnSchemaResource.class);
+                if (isNotBlank(anChatFnSchemaResource.responses())) {
+                    try (final var input = functionClass.getResourceAsStream(anChatFnSchemaResource.responses())) {
+                        final var parameters = new ObjectMapper().readTree(input);
+                        schema.set("responses", parameters);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(
+                                "load responses schema resource error: %s".formatted(
+                                        anChatFnSchemaResource.responses()
+                                ),
+                                ex
+                        );
+                    }
+                }
+            }
+
+            // 否则尝试从类型中进行解析
+            else {
                 schema.set("responses", JacksonUtils.schema(mapper, returnType));
             }
+
         }
 
         // 列出函数上注解的所有例子
-        private static Set<ChatFnExample> listBotFnExampleSet(Class<?> functionClass) {
+        private static Set<ChatFnExample> listChatFnExampleSet(Class<?> functionClass) {
             final var examples = new LinkedHashSet<ChatFnExample>();
             if (functionClass.isAnnotationPresent(ChatFnExample.class)) {
                 examples.add(functionClass.getAnnotation(ChatFnExample.class));
@@ -370,7 +419,7 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
          */
         private static void setupSchemaExamples(ObjectNode schema, String name, Class<?> functionClass) {
             final var examples = new ObjectMapper().createArrayNode();
-            listBotFnExampleSet(functionClass).stream()
+            listChatFnExampleSet(functionClass).stream()
                     .map(anEx -> {
 
                         final var example = new ObjectMapper().createArrayNode();
@@ -414,7 +463,6 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                                     )
                             );
                         }
-
 
                         return example;
                     })

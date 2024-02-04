@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "avg_score": {
+      "description": "平均分",
+      "type": "number"
+    }
+  }
+}

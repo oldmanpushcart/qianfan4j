@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "scores": {
+      "description": "分数集合",
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "required": [
+    "scores"
+  ]
+}

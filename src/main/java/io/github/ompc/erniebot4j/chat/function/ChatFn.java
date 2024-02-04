@@ -34,6 +34,6 @@ public @interface ChatFn {
      *
      * @return 是否忽略返回值的schema
      */
-    boolean isIgnoreReturnSchema() default false;
+    boolean isIgnoreResponseSchema() default false;
 
 }

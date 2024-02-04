@@ -16,7 +16,7 @@ import io.github.ompc.erniebot4j.executor.mapper.TextualizableJsonSerializer;
 import io.github.ompc.erniebot4j.executor.mapper.UsageJsonDeserializer;
 
 import java.lang.reflect.Type;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 /**
  * Jackson工具类
@@ -233,6 +233,42 @@ public class JacksonUtils {
             }
         }
 
+    }
+
+    public static Map<String, Object> toUnmodifiableMap(JsonNode node) {
+        final var map = new HashMap<String, Object>();
+        node.fields().forEachRemaining(entry -> {
+            final var key = entry.getKey();
+            final var value = entry.getValue();
+            if (value.isNull()) {
+                return;
+            }
+            if (value.isObject()) {
+                map.put(key, toUnmodifiableMap(value));
+            } else if (value.isArray()) {
+                map.put(key, toUnmodifiableList(value));
+            } else {
+                map.put(key, value.asText());
+            }
+        });
+        return Collections.unmodifiableMap(map);
+    }
+
+    private static List<Object> toUnmodifiableList(JsonNode node) {
+        final var list = new ArrayList<>();
+        node.forEach(item -> {
+            if (item.isNull()) {
+                return;
+            }
+            if (item.isObject()) {
+                list.add(toUnmodifiableMap(item));
+            } else if (item.isArray()) {
+                list.add(toUnmodifiableList(item));
+            } else {
+                list.add(item.asText());
+            }
+        });
+        return Collections.unmodifiableList(list);
     }
 
 }

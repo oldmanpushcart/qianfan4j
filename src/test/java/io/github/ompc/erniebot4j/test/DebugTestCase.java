@@ -4,11 +4,7 @@ import io.github.ompc.erniebot4j.chat.ChatModel;
 import io.github.ompc.erniebot4j.chat.ChatOptions;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.message.Message;
-import org.junit.AfterClass;
 import org.junit.Test;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class DebugTestCase implements LoadingProperties {
 
