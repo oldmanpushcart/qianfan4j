@@ -1,6 +1,5 @@
 package io.github.ompc.erniebot4j.image.generation;
 
-import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 import io.github.ompc.erniebot4j.util.Textualizable;
@@ -8,7 +7,6 @@ import io.github.ompc.erniebot4j.util.Textualizable;
 import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElseGet;
 
 public class GenImageRequest implements Request {
 

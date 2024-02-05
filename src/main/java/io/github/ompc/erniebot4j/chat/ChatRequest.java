@@ -3,7 +3,6 @@ package io.github.ompc.erniebot4j.chat;
 import io.github.ompc.erniebot4j.chat.function.ChatFunction;
 import io.github.ompc.erniebot4j.chat.function.ChatFunctionKit;
 import io.github.ompc.erniebot4j.chat.message.Message;
-import io.github.ompc.erniebot4j.executor.Model;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
