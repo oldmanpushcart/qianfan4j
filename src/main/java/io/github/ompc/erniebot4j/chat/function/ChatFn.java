@@ -30,6 +30,13 @@ public @interface ChatFn {
     String description() default "";
 
     /**
+     * schema resource file path
+     *
+     * @return schema resource file path
+     */
+    String resource() default "";
+
+    /**
      * 是否忽略返回值的schema
      *
      * @return 是否忽略返回值的schema

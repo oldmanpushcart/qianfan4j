@@ -56,4 +56,24 @@ public class StringUtils {
         return new String(c);
     }
 
+    public static String toSnake(String string) {
+        if (isBlank(string)) {
+            return string;
+        }
+
+        final var result = new StringBuilder();
+        for (int i = 0; i < string.length(); i++) {
+            char ch = string.charAt(i);
+            if (Character.isUpperCase(ch)) {
+                if (i != 0) {
+                    result.append("_");
+                }
+                result.append(Character.toLowerCase(ch));
+            } else {
+                result.append(ch);
+            }
+        }
+        return result.toString();
+    }
+
 }

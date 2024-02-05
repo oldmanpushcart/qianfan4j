@@ -64,8 +64,8 @@ public class CompletionTestCase implements LoadingProperties {
                         ### SQL
                         Given the database schema, here is the SQL query that answers `What is our total revenue by product in the last week?`:
                         """)
-                .build()
-                .option(CompletionOptions.IS_STREAM, true);
+                .option(CompletionOptions.IS_STREAM, true)
+                .build();
 
         final var response = client.completion(request)
                 .async()

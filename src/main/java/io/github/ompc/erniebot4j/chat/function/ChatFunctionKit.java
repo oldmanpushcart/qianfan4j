@@ -1,8 +1,10 @@
 package io.github.ompc.erniebot4j.chat.function;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
+import io.github.ompc.erniebot4j.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,6 +18,7 @@ import java.util.stream.StreamSupport;
 
 import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static io.github.ompc.erniebot4j.util.JacksonUtils.compact;
+import static io.github.ompc.erniebot4j.util.StringUtils.isBlank;
 import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.requireNonNull;
 
@@ -44,8 +47,9 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
         this.stubMap = stubMap;
     }
 
-    public void load(ChatFunctionKit kit) {
+    public ChatFunctionKit load(ChatFunctionKit kit) {
         kit.stubMap.values().forEach(this::put);
+        return this;
     }
 
     public ChatFunctionKit copy() {
@@ -263,30 +267,19 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
          */
         public static Meta make(Class<?> functionClass) {
 
-            // 检查是否是BotFunction的实现类
+            // 检查是否是ChatFunction的实现类
             check(functionClass, ChatFunction.class.isAssignableFrom(functionClass),
                     "required implements interface: %s".formatted(
                             ChatFunction.class.getName()
                     )
             );
 
-            // 检查是否有BotFn注解
+            // 检查是否有注解
             check(functionClass, functionClass.isAnnotationPresent(ChatFn.class),
                     "required annotation: %s".formatted(
                             ChatFn.class.getName()
                     )
             );
-
-            // ChatFn注解
-            final var anChatFn = functionClass.getAnnotation(ChatFn.class);
-
-            // 函数名称
-            final var name = Objects.isNull(anChatFn.name()) || anChatFn.name().isBlank()
-                    ? functionClass.getSimpleName()
-                    : anChatFn.name();
-
-            // 函数描述
-            final var description = anChatFn.description();
 
             // 找到ChatFunction接口
             final var chatFunctionInterface = Stream.of(functionClass.getGenericInterfaces())
@@ -312,87 +305,87 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                     )));
 
             // 封装schema
-            final var schema = new ObjectMapper().createObjectNode();
-            schema.put("name", name);
-            schema.put("description", description);
-            setupSchemaParameters(schema, functionClass, parameterType);
-            setupSchemaResponses(schema, anChatFn, functionClass, returnType);
-            setupSchemaExamples(schema, name, functionClass);
+            final var anChatFn = functionClass.getAnnotation(ChatFn.class);
+            final var schema = loadingSchemaFromResource(anChatFn, functionClass);
+            setupSchemaFunctionName(schema, anChatFn, functionClass);
+            setupSchemaFunctionDescription(schema, anChatFn);
+            setupSchemaParameters(schema, parameterType);
+            setupSchemaResponses(schema, anChatFn, returnType);
+            setupSchemaExamples(schema, functionClass);
 
             // 封装为不可变集合
             final var unmodifiableSchema = JacksonUtils.toUnmodifiableMap(schema);
-            return new Meta(unmodifiableSchema, name, description, callMethod, parameterType, returnType);
+            return new Meta(
+                    unmodifiableSchema,
+                    schema.get("name").asText(),
+                    schema.get("description").asText(),
+                    callMethod,
+                    parameterType,
+                    returnType
+            );
         }
 
-        /**
-         * 添加参数的schema
-         *
-         * @param schema        schema
-         * @param functionClass 函数类型
-         * @param parameterType 函数参数类型
-         */
-        private static void setupSchemaParameters(ObjectNode schema, Class<?> functionClass, Type parameterType) {
+        private static ObjectNode loadingSchemaFromResource(ChatFn anChatFn, Class<?> functionClass) {
+            final var mapper = new ObjectMapper();
 
-            // 如果有注解指定参数的schema资源，则加载资源
-            if (functionClass.isAnnotationPresent(ChatFnSchemaResource.class)) {
-                final var anChatFnSchemaResource = functionClass.getAnnotation(ChatFnSchemaResource.class);
-                if (isNotBlank(anChatFnSchemaResource.parameters())) {
-                    try (final var input = functionClass.getResourceAsStream(anChatFnSchemaResource.parameters())) {
-                        final var parameters = new ObjectMapper().readTree(input);
-                        schema.set("parameters", parameters);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(
-                                "load parameters schema resource error: %s".formatted(
-                                        anChatFnSchemaResource.parameters()
-                                ),
-                                ex
-                        );
-                    }
-                }
+            // 如果没有定义schema资源路径，则创建一个空的schema
+            if (isBlank(anChatFn.resource())) {
+                return mapper.createObjectNode();
             }
 
-            // 否则尝试从类型中进行解析
-            else {
+            // 如果定义了，则尝试加载它
+            try (final var input = functionClass.getResourceAsStream(anChatFn.resource())) {
+                return (ObjectNode) mapper.readTree(input);
+            } catch (Exception ex) {
+                throw new RuntimeException(
+                        "load schema resource error: %s".formatted(
+                                anChatFn.resource()
+                        ),
+                        ex
+                );
+            }
+
+        }
+
+        private static void setupSchemaFunctionName(ObjectNode schema, ChatFn anChatFn, Class<?> functionClass) {
+
+            // 如果有强制命名，则采用强制命名的函数名
+            if (isNotBlank(anChatFn.name())) {
+                schema.put("name", anChatFn.name());
+            }
+
+            // 如果资源中没有指定函数名，则在这里重新按照类名蛇形命名
+            if (!schema.has("name")
+                    || schema.get("name").isNull()
+                    || isBlank(schema.get("name").asText())) {
+                schema.put("name", StringUtils.toSnake(functionClass.getSimpleName()));
+            }
+
+        }
+
+        private static void setupSchemaFunctionDescription(ObjectNode schema, ChatFn anChatFn) {
+            if (isNotBlank(anChatFn.description())) {
+                schema.put("description", anChatFn.description());
+            }
+        }
+
+        private static void setupSchemaParameters(ObjectNode schema, Type parameterType) {
+            // 只有当schema中没有parameters时，才会添加
+            if (!schema.has("parameters")) {
                 schema.set("parameters", JacksonUtils.schema(mapper, parameterType));
             }
-
         }
 
-        /**
-         * 添加返回值的schema
-         *
-         * @param schema        schema
-         * @param anChatFn      ChatFn注解
-         * @param functionClass 函数类型
-         * @param returnType    函数返回类型
-         */
-        private static void setupSchemaResponses(ObjectNode schema, ChatFn anChatFn, Class<?> functionClass, Type returnType) {
+        private static void setupSchemaResponses(ObjectNode schema, ChatFn anChatFn, Type returnType) {
 
-            // 如果忽略返回值的schema，则不添加返回值的schema
+            // 如果忽略返回值，则不添加
             if (anChatFn.isIgnoreResponseSchema()) {
+                schema.remove("responses");
                 return;
             }
 
-            // 如果有注解指定参数的schema资源，则加载资源
-            if (functionClass.isAnnotationPresent(ChatFnSchemaResource.class)) {
-                final var anChatFnSchemaResource = functionClass.getAnnotation(ChatFnSchemaResource.class);
-                if (isNotBlank(anChatFnSchemaResource.responses())) {
-                    try (final var input = functionClass.getResourceAsStream(anChatFnSchemaResource.responses())) {
-                        final var parameters = new ObjectMapper().readTree(input);
-                        schema.set("responses", parameters);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(
-                                "load responses schema resource error: %s".formatted(
-                                        anChatFnSchemaResource.responses()
-                                ),
-                                ex
-                        );
-                    }
-                }
-            }
-
-            // 否则尝试从类型中进行解析
-            else {
+            // 只有当schema中没有responses时，才会添加
+            if (!schema.has("responses")) {
                 schema.set("responses", JacksonUtils.schema(mapper, returnType));
             }
 
@@ -410,14 +403,8 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
             return examples;
         }
 
-        /**
-         * 添加例子的schema
-         *
-         * @param schema        schema
-         * @param name          函数名称
-         * @param functionClass 函数类型
-         */
-        private static void setupSchemaExamples(ObjectNode schema, String name, Class<?> functionClass) {
+        private static void setupSchemaExamples(ObjectNode schema, Class<?> functionClass) {
+            final var name = schema.get("name").asText();
             final var examples = new ObjectMapper().createArrayNode();
             listChatFnExampleSet(functionClass).stream()
                     .map(anEx -> {
@@ -468,9 +455,20 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                     })
                     .forEach(examples::add);
 
-            if (!examples.isEmpty()) {
-                schema.set("examples", examples);
+            // 如果没有找到example的注解，则返回
+            if (examples.isEmpty()) {
+                return;
             }
+
+            // 如果examples已经存在而且还是个数组，则追加元素
+            if (schema.has("examples") && schema.get("examples").isArray()) {
+                final var examplesNode = (ArrayNode) schema.get("examples");
+                examples.forEach(examplesNode::add);
+                return;
+            }
+
+            // 如果resource中没有指定examples，则直接添加
+            schema.set("examples", examples);
 
         }
 

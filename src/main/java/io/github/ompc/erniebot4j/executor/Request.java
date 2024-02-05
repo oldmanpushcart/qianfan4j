@@ -6,7 +6,7 @@ public interface Request {
 
     Model model();
 
-    Option options();
+    Option option();
 
     Duration timeout();
 

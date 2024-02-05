@@ -125,11 +125,10 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
             return completedFuture(response);
         }
         final var task = queue.poll();
-        final var taskRequest = new ChatRequest.Builder()
-                .reference(request)
-                .kit(parseSubTaskFunctionKit(request.kit(), task))
-                .build()
-                .message(Message.human(task));
+        final var taskRequest = new ChatRequest.Builder(request)
+                .replaceKit(parseSubTaskFunctionKit(request.kit(), task))
+                .message(Message.human(task))
+                .build();
 
         return executor.execute(merged, http, taskRequest, consumer)
                 .thenCompose(taskResponse -> executeTask(taskResponse, queue));

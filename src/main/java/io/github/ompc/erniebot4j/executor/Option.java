@@ -15,6 +15,11 @@ public class Option {
         return copy;
     }
 
+    public Option load(Option option) {
+        map.putAll(option.map);
+        return this;
+    }
+
     public <T, R> Option option(Opt<T, R> opt, T value) {
         map.put(opt.name(), opt.convert(value));
         return this;

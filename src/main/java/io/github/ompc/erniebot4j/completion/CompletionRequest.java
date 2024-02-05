@@ -7,26 +7,25 @@ import io.github.ompc.erniebot4j.executor.Request;
 import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElseGet;
 
 public class CompletionRequest implements Request {
 
-    private final Model model;
+    private final CompletionModel model;
     private final String user;
-    private final Option options;
+    private final Option option;
     private final Duration timeout;
     private final String prompt;
 
     private CompletionRequest(Builder builder) {
         this.model = requireNonNull(builder.model);
-        this.options = requireNonNullElseGet(builder.options, Option::new);
-        this.prompt = requireNonNull(builder.prompt);
+        this.option = builder.option;
         this.timeout = builder.timeout;
         this.user = builder.user;
+        this.prompt = requireNonNull(builder.prompt);
     }
 
     @Override
-    public Model model() {
+    public CompletionModel model() {
         return model;
     }
 
@@ -36,8 +35,8 @@ public class CompletionRequest implements Request {
     }
 
     @Override
-    public Option options() {
-        return options;
+    public Option option() {
+        return option;
     }
 
     @Override
@@ -49,40 +48,40 @@ public class CompletionRequest implements Request {
         return prompt;
     }
 
-    public <T, R> CompletionRequest option(Option.Opt<T, R> opt, T value) {
-        options.option(opt, value);
-        return this;
-    }
-
     public static class Builder {
-        private Model model;
+        private CompletionModel model;
         private String user;
-        private Option options;
+        private final Option option = new Option();
         private Duration timeout;
         private String prompt;
 
-        public Builder model(Model model) {
-            this.model = model;
+        public Builder model(CompletionModel model) {
+            this.model = requireNonNull(model);
             return this;
         }
 
         public Builder user(String user) {
-            this.user = user;
+            this.user = requireNonNull(user);
             return this;
         }
 
-        public Builder options(Option options) {
-            this.options = options;
+        public Builder option(Option options) {
+            this.option.load(options);
+            return this;
+        }
+
+        public <T, R> Builder option(Option.Opt<T, R> opt, T value) {
+            option.option(opt, value);
             return this;
         }
 
         public Builder timeout(Duration timeout) {
-            this.timeout = timeout;
+            this.timeout = requireNonNull(timeout);
             return this;
         }
 
         public Builder prompt(String prompt) {
-            this.prompt = prompt;
+            this.prompt = requireNonNull(prompt);
             return this;
         }
 

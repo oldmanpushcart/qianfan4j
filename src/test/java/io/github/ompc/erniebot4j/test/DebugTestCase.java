@@ -12,13 +12,11 @@ public class DebugTestCase implements LoadingProperties {
     public void test$debug() {
         final var request = new ChatRequest.Builder()
                 .model(ChatModel.ERNIEBOT_8K)
-                .build();
-        request.messages().add(Message.human("北京和上海的天气"));
-        request.options()
+                .message(Message.human("北京和上海的天气"))
                 .option(ChatOptions.IS_STREAM, true)
                 .option(ChatOptions.IS_ENABLE_SEARCH, true)
                 .option(ChatOptions.IS_ENABLE_CITATION, true)
-        ;
+                .build();
         final var response = client.chat(request)
                 .async()
                 .join();

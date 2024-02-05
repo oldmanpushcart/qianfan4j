@@ -37,9 +37,9 @@ public class GenImageTestCase implements LoadingProperties {
                 .model(GenImageModel.STABLE_DIFFUSION_XL)
                 .prompt("猫")
                 .negative("白色")
-                .build()
                 .option(GenImageOptions.NUMBERS, 4)
-                .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024);
+                .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024)
+                .build();
 
         final var response = client.image().generation(request)
                 .async()

@@ -5,29 +5,30 @@ import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElseGet;
 
 public class EmbeddingRequest implements Request {
 
     private final EmbeddingModel model;
     private final String user;
-    private final Option options;
+    private final Option option;
     private final Duration timeout;
     private final List<String> documents;
 
     private EmbeddingRequest(Builder builder) {
         this.model = requireNonNull(builder.model);
-        this.documents = requireNonNull(builder.documents);
-        this.options = requireNonNullElseGet(builder.options, Option::new);
+        this.documents = check(builder.documents, v -> null != v && !v.isEmpty(), "documents is empty");
+        this.option = builder.option;
         this.user = builder.user;
         this.timeout = builder.timeout;
     }
 
     @Override
-    public Model model() {
+    public EmbeddingModel model() {
         return model;
     }
 
@@ -37,8 +38,8 @@ public class EmbeddingRequest implements Request {
     }
 
     @Override
-    public Option options() {
-        return options;
+    public Option option() {
+        return option;
     }
 
     @Override
@@ -50,46 +51,46 @@ public class EmbeddingRequest implements Request {
         return documents;
     }
 
-    public <T, R> EmbeddingRequest option(Option.Opt<T, R> opt, T value) {
-        options.option(opt, value);
-        return this;
-    }
-
     public static class Builder {
 
         private EmbeddingModel model;
         private String user;
-        private Option options;
+        private final Option option = new Option();
         private Duration timeout;
-        private List<String> documents;
+        private final List<String> documents = new ArrayList<>();
 
         public Builder model(EmbeddingModel model) {
-            this.model = model;
+            this.model = requireNonNull(model);
             return this;
         }
 
         public Builder user(String user) {
-            this.user = user;
+            this.user = requireNonNull(user);
             return this;
         }
 
-        public Builder options(Option options) {
-            this.options = options;
+        public Builder option(Option options) {
+            this.option.load(options);
+            return this;
+        }
+
+        public <T, R> Builder option(Option.Opt<T, R> opt, T value) {
+            option.option(opt, value);
             return this;
         }
 
         public Builder timeout(Duration timeout) {
-            this.timeout = timeout;
+            this.timeout = requireNonNull(timeout);
             return this;
         }
 
         public Builder documents(List<String> documents) {
-            this.documents = documents;
+            this.documents.addAll(documents);
             return this;
         }
 
         public Builder documents(String... documents) {
-            this.documents = List.of(documents);
+            this.documents.addAll(List.of(documents));
             return this;
         }
 

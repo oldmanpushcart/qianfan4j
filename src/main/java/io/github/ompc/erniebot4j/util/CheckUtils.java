@@ -1,5 +1,7 @@
 package io.github.ompc.erniebot4j.util;
 
+import java.util.function.Predicate;
+
 /**
  * 检查工具类
  */
@@ -19,6 +21,10 @@ public class CheckUtils {
             return value;
         }
         throw new IllegalArgumentException(message);
+    }
+
+    public static <T> T check(T value, Predicate<T> predicate, String message) {
+        return check(value, predicate.test(value), message);
     }
 
 }

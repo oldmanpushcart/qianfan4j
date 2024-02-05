@@ -11,12 +11,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElseGet;
 
 public final class ChatRequest implements Request {
     private final ChatModel model;
-    private final Option options;
+    private final Option option;
     private final Duration timeout;
     private final String user;
     private final List<Message> messages;
@@ -24,15 +24,15 @@ public final class ChatRequest implements Request {
 
     private ChatRequest(Builder builder) {
         this.model = requireNonNull(builder.model);
-        this.messages = requireNonNullElseGet(builder.messages, ArrayList::new);
-        this.kit = requireNonNullElseGet(builder.kit, ChatFunctionKit::new);
-        this.options = requireNonNullElseGet(builder.options, Option::new);
+        this.messages = check(builder.messages, v -> null != v && !v.isEmpty(), "messages is empty");
+        this.kit = builder.kit;
+        this.option = builder.option;
         this.timeout = builder.timeout;
         this.user = builder.user;
     }
 
     @Override
-    public Model model() {
+    public ChatModel model() {
         return model;
     }
 
@@ -42,8 +42,8 @@ public final class ChatRequest implements Request {
     }
 
     @Override
-    public Option options() {
-        return options;
+    public Option option() {
+        return option;
     }
 
     @Override
@@ -55,70 +55,78 @@ public final class ChatRequest implements Request {
         return messages;
     }
 
-    public ChatRequest message(Message message) {
-        messages.add(message);
-        return this;
-    }
-
-    public <T, R> ChatRequest option(Option.Opt<T, R> opt, T value) {
-        options.option(opt, value);
-        return this;
-    }
-
     public ChatFunctionKit kit() {
         return kit;
-    }
-
-    public ChatRequest function(ChatFunction<?, ?> function) {
-        kit.load(function);
-        return this;
     }
 
     public static class Builder {
         private ChatModel model;
         private String user;
-        private List<Message> messages;
-        private ChatFunctionKit kit;
-        private Option options;
+        private List<Message> messages = new ArrayList<>();
+        private ChatFunctionKit kit = new ChatFunctionKit();
+        private Option option = new Option();
         private Duration timeout;
 
-        public Builder reference(ChatRequest request) {
+        public Builder() {
+
+        }
+
+        public Builder(ChatRequest request) {
             this.model = request.model;
             this.user = request.user;
             this.messages = request.messages;
             this.kit = request.kit;
-            this.options = request.options;
+            this.option = request.option;
             this.timeout = request.timeout;
-            return this;
         }
 
         public Builder model(ChatModel model) {
-            this.model = model;
+            this.model = requireNonNull(model);
             return this;
         }
 
         public Builder user(String user) {
-            this.user = user;
+            this.user = requireNonNull(user);
             return this;
         }
 
         public Builder messages(List<Message> messages) {
-            this.messages = messages;
+            this.messages.addAll(messages);
+            return this;
+        }
+
+        public Builder message(Message message) {
+            this.messages.add(message);
+            return this;
+        }
+
+        public Builder replaceKit(ChatFunctionKit kit) {
+            this.kit = requireNonNull(kit);
             return this;
         }
 
         public Builder kit(ChatFunctionKit kit) {
-            this.kit = kit;
+            this.kit.load(kit);
             return this;
         }
 
-        public Builder options(Option options) {
-            this.options = options;
+        public Builder function(ChatFunction<?, ?> function) {
+            this.kit.load(function);
+            return this;
+        }
+
+        public Builder option(Option options) {
+            this.option.load(options);
+            return this;
+        }
+
+        public <T, R> Builder option(Option.Opt<T, R> opt, T value) {
+            option.option(opt, value);
             return this;
         }
 
         public Builder timeout(Duration timeout) {
-            this.timeout = timeout;
+            this.timeout = requireNonNull(timeout);
             return this;
         }
 
