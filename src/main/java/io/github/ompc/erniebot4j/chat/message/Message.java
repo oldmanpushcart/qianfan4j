@@ -1,6 +1,6 @@
 package io.github.ompc.erniebot4j.chat.message;
 
-import io.github.ompc.erniebot4j.util.Textualizable;
+import io.github.ompc.erniebot4j.executor.Textualizable;
 
 /**
  * 对话消息

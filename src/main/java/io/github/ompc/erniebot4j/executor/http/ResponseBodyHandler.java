@@ -1,5 +1,6 @@
 package io.github.ompc.erniebot4j.executor.http;
 
+import io.github.ompc.erniebot4j.executor.Response;
 import io.github.ompc.erniebot4j.util.FeatureDetection;
 
 import java.io.ByteArrayOutputStream;
@@ -21,40 +22,87 @@ import static io.github.ompc.erniebot4j.executor.http.HttpContentType.MIME_TEXT_
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
 
-public class ResponseBodyHandler<R> implements HttpResponse.BodyHandler<R> {
+/**
+ * 响应处理器
+ * <p>
+ * 可以同时处理BLOCK和SSE的响应
+ * </p>
+ *
+ * @param <R> 响应类型
+ */
+public class ResponseBodyHandler<R extends Response> implements HttpResponse.BodyHandler<R> {
 
     private final Function<String, R> convertor;
     private final Consumer<R> consumer;
     private final BinaryOperator<R> accumulator;
 
-    public ResponseBodyHandler(Builder<R> builder) {
+    private ResponseBodyHandler(Builder<R> builder) {
         this.convertor = requireNonNull(builder.convertor);
         this.consumer = requireNonNullElseGet(builder.consumer, () -> r -> {
 
         });
-        this.accumulator = requireNonNullElseGet(builder.accumulator, () -> (left, right) -> right);
+        this.accumulator = requireNonNullElseGet(builder.aggregator, () -> (left, right) -> right);
     }
 
-    public static class Builder<R> {
+    /**
+     * 响应处理构建器
+     *
+     * @param <R> 响应类型
+     */
+    public static class Builder<R extends Response> {
+
         private Function<String, R> convertor;
         private Consumer<R> consumer;
-        private BinaryOperator<R> accumulator;
+        private BinaryOperator<R> aggregator;
 
+        /**
+         * 设置转换器
+         * <p>
+         * {@code json -> R}
+         * </p>
+         *
+         * @param convertor 转换器
+         * @return this
+         */
         public Builder<R> convertor(Function<String, R> convertor) {
             this.convertor = convertor;
             return this;
         }
 
+        /**
+         * 设置响应消费者
+         * <ul>
+         *     <li>如果{@code stream=true}，则会消费每个SSE产生的响应</li>
+         *     <li>如果{@code stream=false}，则只会消费最后返回的响应</li>
+         * </ul>
+         *
+         * @param consumer 响应消费者
+         * @return this
+         */
         public Builder<R> consumer(Consumer<R> consumer) {
             this.consumer = consumer;
             return this;
         }
 
-        public Builder<R> accumulator(BinaryOperator<R> accumulator) {
-            this.accumulator = accumulator;
+        /**
+         * 设置响应聚合器
+         * <p>
+         * 只有在{@code stream=true}的情况下生效，用于将多个SSE产生的响应聚合成一个响应
+         * </p>
+         *
+         * @param aggregator 响应聚合器
+         * @return this
+         */
+        public Builder<R> aggregator(BinaryOperator<R> aggregator) {
+            this.aggregator = aggregator;
             return this;
         }
 
+        /**
+         * 构建响应处理器
+         *
+         * @return 响应处理器
+         */
         public ResponseBodyHandler<R> build() {
             return new ResponseBodyHandler<>(this);
         }
@@ -71,6 +119,9 @@ public class ResponseBodyHandler<R> implements HttpResponse.BodyHandler<R> {
         };
     }
 
+    /**
+     * 块响应订阅器
+     */
     private class BlockBodySubscriber implements HttpResponse.BodySubscriber<R> {
 
         private final CompletableFuture<R> future = new CompletableFuture<>();
@@ -125,6 +176,9 @@ public class ResponseBodyHandler<R> implements HttpResponse.BodyHandler<R> {
 
     }
 
+    /**
+     * 流响应订阅器
+     */
     private class StreamBodySubscriber implements HttpResponse.BodySubscriber<R> {
 
         private final CompletableFuture<R> future = new CompletableFuture<>();

@@ -12,6 +12,9 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * 百度的令牌刷新器
+ */
 public class TokenRefresher {
 
     private static final String remote = "https://aip.baidubce.com/oauth/2.0/token";
@@ -22,6 +25,12 @@ public class TokenRefresher {
     private final String identity;
     private final String secret;
 
+    /**
+     * 令牌刷新器
+     *
+     * @param identity 身份
+     * @param secret   密钥
+     */
     public TokenRefresher(String identity, String secret) {
         this.identity = identity;
         this.secret = secret;
@@ -32,6 +41,16 @@ public class TokenRefresher {
         return "erniebot://token";
     }
 
+    /**
+     * 刷新令牌
+     * <ul>
+     *     <li>已过期：主动刷新令牌</li>
+     *     <li>未过期：直接返回令牌</li>
+     * </ul>
+     *
+     * @param http HTTP客户端
+     * @return 令牌
+     */
     public CompletableFuture<String> refresh(HttpClient http) {
 
         return futureRef
@@ -79,8 +98,14 @@ public class TokenRefresher {
                 });
     }
 
-    record Ret(String token, long expired) {
+    // 令牌结果封装
+    private record Ret(String token, long expired) {
 
+        /**
+         * 是否过期
+         *
+         * @return TRUE | FALSE
+         */
         public boolean isExpired() {
             return expired <= System.currentTimeMillis();
         }

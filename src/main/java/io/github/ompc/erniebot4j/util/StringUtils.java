@@ -56,11 +56,16 @@ public class StringUtils {
         return new String(c);
     }
 
+    /**
+     * 转换为蛇形命名字符串
+     *
+     * @param string 目标字符串
+     * @return 蛇形命名字符串
+     */
     public static String toSnake(String string) {
         if (isBlank(string)) {
             return string;
         }
-
         final var result = new StringBuilder();
         for (int i = 0; i < string.length(); i++) {
             char ch = string.charAt(i);

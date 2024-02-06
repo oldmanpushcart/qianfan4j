@@ -23,7 +23,7 @@ import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.requireNonNull;
 
 /**
- * 功能函数库
+ * 函数库
  */
 public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
 
@@ -32,14 +32,14 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
     private final Map<String, Stub> stubMap;
 
     /**
-     * 构造功能函数库
+     * 构造函数库
      */
     public ChatFunctionKit() {
         this.stubMap = new ConcurrentHashMap<>();
     }
 
     /**
-     * 构造功能函数库(内部使用)，用于{@link #sub(String...)}
+     * 构造函数库(内部使用)，用于{@link #sub(String...)}
      *
      * @param stubMap 函数存根集合
      */
@@ -47,11 +47,22 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
         this.stubMap = stubMap;
     }
 
-    public ChatFunctionKit load(ChatFunctionKit kit) {
-        kit.stubMap.values().forEach(this::put);
+    /**
+     * 加载函数库
+     *
+     * @param other 函数库
+     * @return this
+     */
+    public ChatFunctionKit load(ChatFunctionKit other) {
+        other.stubMap.values().forEach(this::put);
         return this;
     }
 
+    /**
+     * 克隆函数库
+     *
+     * @return 函数库副本
+     */
     public ChatFunctionKit copy() {
         final var copy = new ChatFunctionKit();
         copy.load(this);
@@ -267,7 +278,7 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
          */
         public static Meta make(Class<?> functionClass) {
 
-            // 检查是否是ChatFunction的实现类
+            // 检查是否实现ChatFunction接口
             check(functionClass, ChatFunction.class.isAssignableFrom(functionClass),
                     "required implements interface: %s".formatted(
                             ChatFunction.class.getName()
@@ -291,7 +302,10 @@ public class ChatFunctionKit implements Iterable<ChatFunctionKit.Stub> {
                             ChatFunction.class.getName()
                     )));
 
+            // 入参类型
             final var parameterType = chatFunctionInterface.getActualTypeArguments()[0];
+
+            // 返回类型
             final var returnType = chatFunctionInterface.getActualTypeArguments()[1];
 
             // 找到ChatFunction接口的call方法

@@ -3,7 +3,7 @@ package io.github.ompc.erniebot4j.executor.mapper;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import io.github.ompc.erniebot4j.util.Textualizable;
+import io.github.ompc.erniebot4j.executor.Textualizable;
 
 import java.io.IOException;
 

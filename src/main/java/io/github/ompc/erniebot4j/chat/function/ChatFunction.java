@@ -3,7 +3,7 @@ package io.github.ompc.erniebot4j.chat.function;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 功能函数
+ * 函数
  *
  * @param <T> 参数类型
  * @param <R> 返回值类型

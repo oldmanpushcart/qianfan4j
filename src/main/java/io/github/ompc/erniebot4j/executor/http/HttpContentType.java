@@ -8,15 +8,32 @@ import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 
+/**
+ * HTTP Content-Type
+ *
+ * @param mime       MIME
+ * @param parameters 参数
+ */
 public record HttpContentType(String mime, Map<String, String> parameters) {
 
     public static final String MIME_APPLICATION_JSON = "application/json";
     public static final String MIME_TEXT_EVENT_STREAM = "text/event-stream";
 
+    /**
+     * 获取字符集
+     *
+     * @return 字符集
+     */
     public Charset charset() {
         return Charset.forName(parameters.getOrDefault("charset", "UTF-8"));
     }
 
+    /**
+     * 解析Content-Type
+     *
+     * @param headers HTTP头
+     * @return Content-Type
+     */
     public static HttpContentType parse(HttpHeaders headers) {
         return headers.firstValue("content-type")
                 .map(ct -> {

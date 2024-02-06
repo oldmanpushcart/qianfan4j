@@ -9,6 +9,12 @@ package io.github.ompc.erniebot4j.executor;
  */
 public record Sentence(int index, boolean isLast, String content) {
 
+    /**
+     * 最后一句
+     *
+     * @param content 内容
+     * @return 句子
+     */
     public static Sentence last(String content) {
         return new Sentence(0, true, content);
     }

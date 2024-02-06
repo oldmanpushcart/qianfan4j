@@ -3,7 +3,7 @@ package io.github.ompc.erniebot4j.image.caption.http;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
-import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Mergeable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
 import io.github.ompc.erniebot4j.image.caption.CaptionImageRequest;
@@ -20,8 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-
-import static java.util.Objects.isNull;
 
 public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, CaptionImageResponse> {
 
@@ -80,25 +78,7 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
                     .consumer(consumer)
 
                     // 合并Response
-                    .accumulator((left, right) -> {
-                        if (left == right || isNull(right)) {
-                            return left;
-                        } else if (isNull(left)) {
-                            return right;
-                        } else {
-                            return new CaptionImageResponse(
-                                    left.id(),
-                                    left.type(),
-                                    left.timestamp(),
-                                    right.usage(),
-                                    new Sentence(
-                                            left.sentence().index(),
-                                            left.sentence().isLast() || right.sentence().isLast(),
-                                            left.sentence().content() + right.sentence().content()
-                                    )
-                            );
-                        }
-                    })
+                    .aggregator(Mergeable::aggregate)
 
                     .build();
 

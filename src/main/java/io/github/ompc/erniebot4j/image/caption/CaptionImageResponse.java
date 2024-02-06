@@ -1,8 +1,11 @@
 package io.github.ompc.erniebot4j.image.caption;
 
+import io.github.ompc.erniebot4j.executor.Mergeable;
 import io.github.ompc.erniebot4j.executor.Response;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
+
+import java.util.Optional;
 
 public record CaptionImageResponse(
         String id,
@@ -10,26 +13,23 @@ public record CaptionImageResponse(
         long timestamp,
         Usage usage,
         Sentence sentence
-) implements Response {
-    @Override
-    public String id() {
-        return id;
-    }
+) implements Response, Mergeable<CaptionImageResponse> {
 
     @Override
-    public String type() {
-        return type;
+    public CaptionImageResponse merge(CaptionImageResponse response) {
+        return Optional.ofNullable(response)
+                .map(other -> new CaptionImageResponse(
+                        this.id(),
+                        this.type(),
+                        this.timestamp(),
+                        other.usage(),
+                        new Sentence(
+                                this.sentence().index(),
+                                this.sentence().isLast() || other.sentence().isLast(),
+                                this.sentence().content() + other.sentence().content()
+                        )
+                ))
+                .orElse(this);
     }
-
-    @Override
-    public long timestamp() {
-        return timestamp;
-    }
-
-    @Override
-    public Usage usage() {
-        return usage;
-    }
-
 
 }

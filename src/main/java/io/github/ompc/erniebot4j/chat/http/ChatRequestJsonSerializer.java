@@ -36,7 +36,7 @@ public class ChatRequestJsonSerializer extends JsonSerializer<ChatRequest> {
 
             // 设置选项
             if (nonNull(request.option()) && !request.option().isEmpty()) {
-                putAll(request.option().dump());
+                putAll(request.option().export());
             }
 
         }});

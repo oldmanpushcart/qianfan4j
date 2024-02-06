@@ -2,7 +2,7 @@ package io.github.ompc.erniebot4j.image.generation;
 
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
-import io.github.ompc.erniebot4j.util.Textualizable;
+import io.github.ompc.erniebot4j.executor.Textualizable;
 
 import java.time.Duration;
 

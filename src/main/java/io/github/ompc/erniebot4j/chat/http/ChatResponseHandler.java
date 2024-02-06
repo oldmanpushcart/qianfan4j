@@ -119,8 +119,7 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
     }
 
     // 执行子任务
-    private CompletableFuture<ChatResponse> executeTask(final ChatResponse response,
-                                                        final Queue<String> queue) {
+    private CompletableFuture<ChatResponse> executeTask(ChatResponse response, Queue<String> queue) {
         if (queue.isEmpty()) {
             return completedFuture(response);
         }

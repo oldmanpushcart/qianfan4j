@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.ChatResponse;
-import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Mergeable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
@@ -16,13 +16,15 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 
+/**
+ * 对话执行器
+ */
 public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -71,13 +73,14 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
                     .uri(URI.create("%s?access_token=%s".formatted(request.model().remote(), token)))
                     .POST(HttpRequest.BodyPublishers.ofString(httpRequestBodyJson));
 
-            Optional.ofNullable(request.timeout()).ifPresent(builder::timeout);
+            // 设置超时
+            ofNullable(request.timeout()).ifPresent(builder::timeout);
             final var httpRequest = builder.build();
 
             // 构建请求处理器
             final var responseBodyHandler = new ResponseBodyHandler.Builder<ChatResponse>()
 
-                    // 将json转为Response
+                    // 转换
                     .convertor(json -> {
 
                         logger.debug("{}/{}/http <= {}", this, request.model().name(), json);
@@ -96,31 +99,13 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
                         return JacksonUtils.toObject(mapper, ChatResponse.class, node);
                     })
 
-                    // 消费Response
+                    // 消费
                     .consumer(consumer)
 
-                    // 合并Response
-                    .accumulator((left, right) -> {
-                        if (left == right || isNull(right)) {
-                            return left;
-                        } else if (isNull(left)) {
-                            return right;
-                        } else {
-                            return new ChatResponse(
-                                    left.id(),
-                                    left.type(),
-                                    left.timestamp(),
-                                    right.usage(),
-                                    new Sentence(
-                                            left.sentence().index(),
-                                            left.sentence().isLast() || right.sentence().isLast(),
-                                            left.sentence().content() + right.sentence().content()
-                                    ),
-                                    left.call(),
-                                    right.search()
-                            );
-                        }
-                    })
+                    // 合并
+                    .aggregator(Mergeable::aggregate)
+
+                    // 构造
                     .build();
 
             // 执行HTTP

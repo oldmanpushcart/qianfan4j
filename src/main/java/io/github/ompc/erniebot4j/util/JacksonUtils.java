@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import io.github.ompc.erniebot4j.executor.Sentence;
+import io.github.ompc.erniebot4j.executor.Textualizable;
 import io.github.ompc.erniebot4j.executor.Usage;
 import io.github.ompc.erniebot4j.executor.mapper.SentenceJsonDeserializer;
 import io.github.ompc.erniebot4j.executor.mapper.TextualizableJsonSerializer;

@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 功能函数
+ * 函数
  * <p>
- * 用于标记功能函数相关信息
+ * 用于标记函数相关信息
  * </p>
  */
 @Target(ElementType.TYPE)
@@ -30,9 +30,9 @@ public @interface ChatFn {
     String description() default "";
 
     /**
-     * schema resource file path
+     * schema资源文件路径
      *
-     * @return schema resource file path
+     * @return schema资源文件路径
      */
     String resource() default "";
 

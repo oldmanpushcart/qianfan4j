@@ -1,11 +1,9 @@
 package io.github.ompc.erniebot4j.chat;
 
-import io.github.ompc.erniebot4j.executor.Response;
-import io.github.ompc.erniebot4j.executor.Sentence;
-import io.github.ompc.erniebot4j.executor.Usage;
-import io.github.ompc.erniebot4j.util.Textualizable;
+import io.github.ompc.erniebot4j.executor.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public record ChatResponse(
         String id,
@@ -16,10 +14,29 @@ public record ChatResponse(
         FunctionCall call,
         Search search
 
-) implements Response {
+) implements Response, Mergeable<ChatResponse> {
 
     public boolean isFunctionCall() {
         return null != call;
+    }
+
+    @Override
+    public ChatResponse merge(ChatResponse response) {
+        return Optional.ofNullable(response)
+                .map(other -> new ChatResponse(
+                        this.id(),
+                        this.type(),
+                        this.timestamp(),
+                        other.usage(),
+                        new Sentence(
+                                this.sentence().index(),
+                                this.sentence().isLast() || other.sentence().isLast(),
+                                this.sentence().content() + other.sentence().content()
+                        ),
+                        other.call(),
+                        other.search()
+                ))
+                .orElse(this);
     }
 
     public enum Format implements Textualizable {
