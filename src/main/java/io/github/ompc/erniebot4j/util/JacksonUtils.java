@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
+import io.github.ompc.erniebot4j.exception.ErnieBotResponseErrorException;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Textualizable;
 import io.github.ompc.erniebot4j.executor.Usage;
@@ -41,6 +42,10 @@ public class JacksonUtils {
         return node.has(name) ? node.get(name).asInt() : def;
     }
 
+    public static String getTextDefault(JsonNode node, String name, String def) {
+        return node.has(name) ? node.get(name).asText() : def;
+    }
+
     public static JsonNode toNode(ObjectMapper mapper, String json) {
         try {
             return mapper.readTree(json);
@@ -57,12 +62,10 @@ public class JacksonUtils {
 
         // 处理返回错误
         if (node.has("error_code")) {
-            throw new RuntimeException("response error: %s; %s".formatted(
-                    node.get("error_code").asInt(),
-                    node.has("error_msg")
-                            ? node.get("error_msg").asText()
-                            : null
-            ));
+            throw new ErnieBotResponseErrorException(
+                    getIntDefault(node, "error_code", -1),
+                    getTextDefault(node, "error_msg", null)
+            );
         }
 
         return node;

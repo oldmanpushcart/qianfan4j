@@ -3,6 +3,7 @@ package io.github.ompc.erniebot4j.image.caption.http;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
+import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.executor.Mergeable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
@@ -68,7 +69,9 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
 
                         // 检查是否安全
                         if (node.has("is_safe") && node.get("is_safe").asInt() == 0) {
-                            throw new RuntimeException("response is not safe!");
+                            throw new ErnieBotResponseNotSafeException(
+                                    node.get("result").asText()
+                            );
                         }
 
                         return JacksonUtils.toObject(mapper, CaptionImageResponse.class, json);

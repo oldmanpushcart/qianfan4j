@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.ChatResponse;
+import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.executor.Mergeable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
@@ -99,9 +100,10 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
 
                         // 检查是否安全
                         if (node.has("need_clear_history") && node.get("need_clear_history").asBoolean()) {
-                            throw new RuntimeException("response is not safe! ban=%s".formatted(
-                                    node.get("ban_round").asInt()
-                            ));
+                            throw new ErnieBotResponseNotSafeException(
+                                    node.get("ban_round").asInt(),
+                                    node.get("result").asText()
+                            );
                         }
 
                         // 返回应答对象

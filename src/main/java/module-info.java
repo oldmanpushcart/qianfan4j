@@ -11,6 +11,7 @@ module erniebot4j {
     opens io.github.ompc.erniebot4j.chat.message to com.fasterxml.jackson.databind;
 
     exports io.github.ompc.erniebot4j;
+    exports io.github.ompc.erniebot4j.exception;
     exports io.github.ompc.erniebot4j.executor;
     exports io.github.ompc.erniebot4j.chat;
     exports io.github.ompc.erniebot4j.chat.message;
