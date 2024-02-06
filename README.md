@@ -113,24 +113,24 @@ ChatResponse[id=as-414fqwb8p3, type=chat.completion, timestamp=1707245236000, us
 ```java
 @ChatFn(name = "echo", description = "echo words")
 @ChatFnExample(
-        question = "echo: words",
-        thoughts = "当用户输入echo:开头的消息时，机器人会原样返回用户输入的消息",
-        arguments = """
-                {
-                    "words": "hello, world"
-                }
-                """
+    question = "echo: words",
+    thoughts = "当用户输入echo:开头的消息时，机器人会原样返回用户输入的消息",
+    arguments = """
+        {
+            "words": "hello, world"
+        }
+        """
 )
 public class EchoFunction implements ChatFunction<EchoFunction.Echo, EchoFunction.Echo> {
 
-  @Override
-  public CompletableFuture<Echo> call(Echo echo) {
-    return CompletableFuture.completedFuture(new Echo(echo.words()));
-  }
-
-  public record Echo(String words) {
-
-  }
+    @Override
+    public CompletableFuture<Echo> call(Echo echo) {
+      return CompletableFuture.completedFuture(new Echo(echo.words()));
+    }
+    
+    public record Echo(String words) {
+    
+    }
 
 }
 ```
@@ -140,15 +140,15 @@ public class EchoFunction implements ChatFunction<EchoFunction.Echo, EchoFunctio
 ```java
 // 对话请求
 final var request = new ChatRequest.Builder()
-        .model(ChatModel.ERNIEBOT_8K)
-        .message(Message.human("echo: hello world!"))
-        .function(new EchoFunction())
-        .build();
+    .model(ChatModel.ERNIEBOT_8K)
+    .message(Message.human("echo: hello world!"))
+    .function(new EchoFunction())
+    .build();
 
 // 对话响应
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 ```
 输出结果
 ```text
