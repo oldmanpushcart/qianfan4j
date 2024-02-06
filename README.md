@@ -85,15 +85,15 @@ final var client = new ErnieBotClient.Builder()
 ```java
 // 对话请求
 final var request = new ChatRequest.Builder()
-        .model(ChatModel.ERNIEBOT_8K)
-        .message(Message.human("你是谁?"))
-        .option(ChatOptions.IS_STREAM, true)
-        .build();
+    .model(ChatModel.ERNIEBOT_8K)
+    .message(Message.human("你是谁?"))
+    .option(ChatOptions.IS_STREAM, true)
+    .build();
 
 // 对话响应
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 ```
 输出结果
 ```text
