@@ -216,6 +216,29 @@ ChatResponse[id=as-upp67fpwz2, type=chat.completion, timestamp=1707250370000, us
 
 在一次对话中，用户首先询问了张三的语文成绩，然后询问了李四的语文成绩，最后询问了王五的语文成绩。在这个过程中，`erniebot4j`根据用户的需求，分别调用了`query_score`工具来查询张三、李四、王五的语文成绩，并使用`compute_avg_score`工具来计算他们的语文平均分。最终，助手返回了张三、李四、王五三人的语文平均分为80分。
 
+### 文生图示例
+
+`erniebot4j`会将文心一言返回的BASE64编码封装为`BufferedImage`类型，方便开发者进行后续的图像处理。下面是一个简单的示例，展示了如何使用`erniebot4j`进行图像处理：
+
+```java
+// 对话请求
+final var request = new GenImageRequest.Builder()
+    .model(GenImageModel.STABLE_DIFFUSION_XL)
+    .prompt("猫")
+    .option(GenImageOptions.NUMBERS, 1)
+    .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024)
+    .build();
+
+// 对话响应
+final var response = client.image().generation(request)
+    .async()
+    .join();
+```
+
+然后你就可以通过`response.images()[0]`拿到生成的图片的`BufferedImage`类型进行后续操作了。
+
+![文生图-猫](https://ompc-images.oss-cn-hangzhou.aliyuncs.com/erniebot4j/gen-image-as-mr0hyfmsix-001.png)
+
 ## 五、参与贡献
 
 如果你对erniebot4j感兴趣并希望为其做出贡献，请遵循以下步骤：
