@@ -9,13 +9,21 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-class Merged {
+/**
+ * 对话执行统计
+ */
+class Statistics {
 
     private final AtomicReference<Usage> usageRef = new AtomicReference<>(new Usage(0, 0, 0));
     private final Set<ChatResponse.Search.Item> searchItemSet = ConcurrentHashMap.newKeySet();
     private final Set<String> uniqueIdSet = ConcurrentHashMap.newKeySet();
 
-    public void merge(ChatResponse response) {
+    /**
+     * 统计对话应答
+     *
+     * @param response 对话应答
+     */
+    public void stats(ChatResponse response) {
 
         // 去重，如果response.id()已经存在，则不进行合并操作
         if (!uniqueIdSet.add(response.id())) {
@@ -44,10 +52,20 @@ class Merged {
 
     }
 
+    /**
+     * 获取用量
+     *
+     * @return 用量
+     */
     public Usage usage() {
         return usageRef.get();
     }
 
+    /**
+     * 获取搜索信息
+     *
+     * @return 搜索信息
+     */
     public ChatResponse.Search search() {
         return new ChatResponse.Search(new ArrayList<>(searchItemSet));
     }

@@ -2,6 +2,12 @@ package io.github.ompc.erniebot4j.chat;
 
 import io.github.ompc.erniebot4j.executor.Model;
 
+/**
+ * 对话模型
+ *
+ * @param name   名称
+ * @param remote 远程地址
+ */
 public record ChatModel(String name, String remote) implements Model {
 
     public static final ChatModel ERNIEBOT_V4 = new ChatModel(

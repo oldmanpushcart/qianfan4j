@@ -48,19 +48,28 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
 
     @Override
     public CompletableFuture<ChatResponse> execute(HttpClient http, ChatRequest request, Consumer<ChatResponse> consumer) {
-        final var merged = new Merged();
-        return execute(merged, http, request, consumer)
+        final var statistics = new Statistics();
+        return execute(statistics, http, request, consumer)
                 .thenApply(response -> new ChatResponse(
                         response.id(),
                         response.type(),
                         response.timestamp(),
-                        merged.usage(), response.sentence(),
+                        statistics.usage(), response.sentence(),
                         response.call(),
-                        merged.search()
+                        statistics.search()
                 ));
     }
 
-    CompletableFuture<ChatResponse> execute(Merged merged, HttpClient http, ChatRequest request, Consumer<ChatResponse> consumer) {
+    /**
+     * 对话执行
+     *
+     * @param statistics 统计
+     * @param http       HTTP客户端
+     * @param request    请求
+     * @param consumer   应答消费者
+     * @return 应答
+     */
+    CompletableFuture<ChatResponse> execute(Statistics statistics, HttpClient http, ChatRequest request, Consumer<ChatResponse> consumer) {
         return refresher.refresh(http).thenCompose(token -> {
 
             // 构建HTTP请求体
@@ -111,7 +120,7 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
             // 执行HTTP
             return http.sendAsync(httpRequest, responseBodyHandler)
                     .thenApplyAsync(HttpResponse::body, executor)
-                    .thenCompose(new ChatResponseHandler(merged, this, http, request, consumer));
+                    .thenCompose(new ChatResponseHandler(statistics, this, http, request, consumer));
         });
 
     }

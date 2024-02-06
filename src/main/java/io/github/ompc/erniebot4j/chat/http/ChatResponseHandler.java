@@ -23,18 +23,30 @@ import java.util.regex.Pattern;
 import static io.github.ompc.erniebot4j.util.JacksonUtils.compact;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
+/**
+ * 对话响应处理器
+ */
 class ChatResponseHandler implements Function<ChatResponse, CompletionStage<ChatResponse>> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ObjectMapper mapper = JacksonUtils.mapper();
-    private final Merged merged;
+    private final Statistics statistics;
     private final ChatExecutor executor;
     private final HttpClient http;
     private final ChatRequest request;
     private final Consumer<ChatResponse> consumer;
 
-    public ChatResponseHandler(Merged merged, ChatExecutor executor, HttpClient http, ChatRequest request, Consumer<ChatResponse> consumer) {
-        this.merged = merged;
+    /**
+     * 对话响应处理器
+     *
+     * @param statistics 对话统计
+     * @param executor   对话执行器
+     * @param http       HTTP客户端
+     * @param request    请求
+     * @param consumer   对话响应消费者
+     */
+    public ChatResponseHandler(Statistics statistics, ChatExecutor executor, HttpClient http, ChatRequest request, Consumer<ChatResponse> consumer) {
+        this.statistics = statistics;
         this.executor = executor;
         this.http = http;
         this.request = request;
@@ -45,7 +57,7 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
     public CompletionStage<ChatResponse> apply(ChatResponse response) {
 
         // 合并调用量
-        merged.merge(response);
+        statistics.stats(response);
 
         // 处理函数调用
         if (response.isFunctionCall()) {
@@ -57,6 +69,7 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
         return completedFuture(response);
     }
 
+    // 处理函数调用
     private CompletableFuture<ChatResponse> handingFunctionCall(ChatResponse response) {
         final var call = response.call();
         final var stub = request.kit().require(call.name());
@@ -64,10 +77,11 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
 
         // 第一个任务一定是当前正在执行的FunctionCall，所以这里可以直接弹栈
         queue.poll();
-
         if (logger.isDebugEnabled()) {
             logger.debug("erniebot://chat/{}/function <= {}", request.model().name(), compact(mapper, call.arguments()));
         }
+
+        // 执行函数调用
         return stub.call(call.arguments())
                 .thenCompose(resultJson -> {
                     if (logger.isDebugEnabled()) {
@@ -77,7 +91,7 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
                     final var frMessage = Message.functionResult(call.name(), resultJson);
                     request.messages().add(fcMessage);
                     request.messages().add(frMessage);
-                    return executor.execute(merged, http, request, consumer)
+                    return executor.execute(statistics, http, request, consumer)
                             .whenComplete((v, ex) -> {
                                 request.messages().remove(fcMessage);
                                 request.messages().remove(frMessage);
@@ -86,12 +100,7 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
                 });
     }
 
-    /**
-     * 解析思考过程中的任务拆解
-     *
-     * @param thought 思考过程
-     * @return 任务拆解队列
-     */
+    // 解析思考过程中的任务拆解
     private static Queue<String> parseTaskQueue(String thought) {
 
         final var queue = new LinkedList<String>();
@@ -129,7 +138,7 @@ class ChatResponseHandler implements Function<ChatResponse, CompletionStage<Chat
                 .message(Message.human(task))
                 .build();
 
-        return executor.execute(merged, http, taskRequest, consumer)
+        return executor.execute(statistics, http, taskRequest, consumer)
                 .thenCompose(taskResponse -> executeTask(taskResponse, queue));
     }
 

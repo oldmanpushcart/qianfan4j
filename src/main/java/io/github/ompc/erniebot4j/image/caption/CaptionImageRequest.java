@@ -1,5 +1,6 @@
 package io.github.ompc.erniebot4j.image.caption;
 
+import io.github.ompc.erniebot4j.executor.BaseRequest;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
@@ -8,42 +9,20 @@ import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
 
-public class CaptionImageRequest implements Request {
+public class CaptionImageRequest extends BaseRequest implements Request {
 
-    private final CaptionModel model;
-    private final String user;
-    private final Option option;
-    private final Duration timeout;
     private final String prompt;
     private final BufferedImage image;
 
     private CaptionImageRequest(Builder builder) {
-        this.model = requireNonNull(builder.model);
-        this.option = builder.option;
+        super(
+                requireNonNull(builder.model),
+                builder.option,
+                builder.timeout,
+                builder.user
+        );
         this.prompt = requireNonNull(builder.prompt);
         this.image = requireNonNull(builder.image);
-        this.timeout = builder.timeout;
-        this.user = builder.user;
-    }
-
-    @Override
-    public CaptionModel model() {
-        return model;
-    }
-
-    @Override
-    public String user() {
-        return user;
-    }
-
-    @Override
-    public Option option() {
-        return option;
-    }
-
-    @Override
-    public Duration timeout() {
-        return timeout;
     }
 
     public String prompt() {

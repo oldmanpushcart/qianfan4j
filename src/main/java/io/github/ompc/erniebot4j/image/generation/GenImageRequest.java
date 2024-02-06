@@ -1,5 +1,6 @@
 package io.github.ompc.erniebot4j.image.generation;
 
+import io.github.ompc.erniebot4j.executor.BaseRequest;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 import io.github.ompc.erniebot4j.executor.Textualizable;
@@ -8,42 +9,20 @@ import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
 
-public class GenImageRequest implements Request {
+public class GenImageRequest extends BaseRequest implements Request {
 
-    private final GenImageModel model;
-    private final String user;
-    private final Option option;
-    private final Duration timeout;
     private final String prompt;
     private final String negative;
 
     private GenImageRequest(Builder builder) {
-        this.model = requireNonNull(builder.model);
+        super(
+                requireNonNull(builder.model),
+                builder.option,
+                builder.timeout,
+                builder.user
+        );
         this.prompt = requireNonNull(builder.prompt);
-        this.option = builder.option;
-        this.user = builder.user;
-        this.timeout = builder.timeout;
         this.negative = builder.negative;
-    }
-
-    @Override
-    public GenImageModel model() {
-        return model;
-    }
-
-    @Override
-    public String user() {
-        return user;
-    }
-
-    @Override
-    public Option option() {
-        return option;
-    }
-
-    @Override
-    public Duration timeout() {
-        return timeout;
     }
 
     public String prompt() {

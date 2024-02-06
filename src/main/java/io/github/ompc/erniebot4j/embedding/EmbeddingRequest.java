@@ -1,5 +1,6 @@
 package io.github.ompc.erniebot4j.embedding;
 
+import io.github.ompc.erniebot4j.executor.BaseRequest;
 import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
@@ -10,40 +11,18 @@ import java.util.List;
 import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static java.util.Objects.requireNonNull;
 
-public class EmbeddingRequest implements Request {
+public class EmbeddingRequest extends BaseRequest implements Request {
 
-    private final EmbeddingModel model;
-    private final String user;
-    private final Option option;
-    private final Duration timeout;
     private final List<String> documents;
 
     private EmbeddingRequest(Builder builder) {
-        this.model = requireNonNull(builder.model);
+        super(
+                requireNonNull(builder.model),
+                builder.option,
+                builder.timeout,
+                builder.user
+        );
         this.documents = check(builder.documents, v -> null != v && !v.isEmpty(), "documents is empty");
-        this.option = builder.option;
-        this.user = builder.user;
-        this.timeout = builder.timeout;
-    }
-
-    @Override
-    public EmbeddingModel model() {
-        return model;
-    }
-
-    @Override
-    public String user() {
-        return user;
-    }
-
-    @Override
-    public Option option() {
-        return option;
-    }
-
-    @Override
-    public Duration timeout() {
-        return timeout;
     }
 
     public List<String> documents() {
@@ -89,8 +68,7 @@ public class EmbeddingRequest implements Request {
         }
 
         public Builder documents(String... documents) {
-            this.documents.addAll(List.of(documents));
-            return this;
+            return documents(List.of(documents));
         }
 
         public EmbeddingRequest build() {
