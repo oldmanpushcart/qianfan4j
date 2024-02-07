@@ -37,7 +37,7 @@ public class GenImageTestCase implements LoadingProperties {
                 .model(GenImageModel.STABLE_DIFFUSION_XL)
                 .prompt("猫")
                 .negative("白色")
-                .option(GenImageOptions.NUMBERS, 4)
+                .option(GenImageOptions.NUMBERS, 2)
                 .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024)
                 .build();
 
@@ -46,7 +46,7 @@ public class GenImageTestCase implements LoadingProperties {
                 .join();
 
         BufferedImage[] images = response.images();
-        Assert.assertEquals(4, images.length);
+        Assert.assertEquals(2, images.length);
 
         final var imagesDir = new File("gen-images");
 
