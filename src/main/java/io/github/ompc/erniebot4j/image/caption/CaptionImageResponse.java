@@ -1,6 +1,6 @@
 package io.github.ompc.erniebot4j.image.caption;
 
-import io.github.ompc.erniebot4j.executor.Mergeable;
+import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.Response;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
@@ -13,10 +13,10 @@ public record CaptionImageResponse(
         long timestamp,
         Usage usage,
         Sentence sentence
-) implements Response, Mergeable<CaptionImageResponse> {
+) implements Response, Aggregatable<CaptionImageResponse> {
 
     @Override
-    public CaptionImageResponse merge(CaptionImageResponse response) {
+    public CaptionImageResponse aggregate(CaptionImageResponse response) {
         return Optional.ofNullable(response)
                 .map(other -> new CaptionImageResponse(
                         this.id(),

@@ -25,7 +25,7 @@ public record ChatResponse(
         FunctionCall call,
         Search search
 
-) implements Response, Mergeable<ChatResponse> {
+) implements Response, Aggregatable<ChatResponse> {
 
     /**
      * 是否是函数调用
@@ -37,7 +37,7 @@ public record ChatResponse(
     }
 
     @Override
-    public ChatResponse merge(ChatResponse response) {
+    public ChatResponse aggregate(ChatResponse response) {
         return Optional.ofNullable(response)
                 .map(other -> new ChatResponse(
                         this.id(),

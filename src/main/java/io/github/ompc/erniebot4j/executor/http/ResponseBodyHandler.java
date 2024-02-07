@@ -41,7 +41,7 @@ public class ResponseBodyHandler<R extends Response> implements HttpResponse.Bod
         this.consumer = requireNonNullElseGet(builder.consumer, () -> r -> {
 
         });
-        this.accumulator = requireNonNullElseGet(builder.aggregator, () -> (left, right) -> right);
+        this.accumulator = requireNonNullElseGet(builder.accumulator, () -> (left, right) -> right);
     }
 
     /**
@@ -53,7 +53,7 @@ public class ResponseBodyHandler<R extends Response> implements HttpResponse.Bod
 
         private Function<String, R> convertor;
         private Consumer<R> consumer;
-        private BinaryOperator<R> aggregator;
+        private BinaryOperator<R> accumulator;
 
         /**
          * 设置转换器
@@ -85,16 +85,16 @@ public class ResponseBodyHandler<R extends Response> implements HttpResponse.Bod
         }
 
         /**
-         * 设置响应聚合器
+         * 设置响应累加器
          * <p>
          * 只有在{@code stream=true}的情况下生效，用于将多个SSE产生的响应聚合成一个响应
          * </p>
          *
-         * @param aggregator 响应聚合器
+         * @param accumulator 响应累加器
          * @return this
          */
-        public Builder<R> aggregator(BinaryOperator<R> aggregator) {
-            this.aggregator = aggregator;
+        public Builder<R> accumulator(BinaryOperator<R> accumulator) {
+            this.accumulator = accumulator;
             return this;
         }
 

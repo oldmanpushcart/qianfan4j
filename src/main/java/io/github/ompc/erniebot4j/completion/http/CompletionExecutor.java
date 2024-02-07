@@ -6,7 +6,7 @@ import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.completion.CompletionRequest;
 import io.github.ompc.erniebot4j.completion.CompletionResponse;
 import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
-import io.github.ompc.erniebot4j.executor.Mergeable;
+import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
@@ -81,7 +81,7 @@ public class CompletionExecutor implements HttpExecutor<CompletionRequest, Compl
                     .consumer(consumer)
 
                     // 合并Response
-                    .aggregator(Mergeable::aggregate)
+                    .accumulator(Aggregatable::accumulate)
 
                     .build();
 

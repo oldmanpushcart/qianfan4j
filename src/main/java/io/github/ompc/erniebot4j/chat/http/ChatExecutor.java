@@ -6,7 +6,7 @@ import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.ChatResponse;
 import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
-import io.github.ompc.erniebot4j.executor.Mergeable;
+import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
@@ -114,7 +114,7 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
                     .consumer(consumer)
 
                     // 合并
-                    .aggregator(Mergeable::aggregate)
+                    .accumulator(Aggregatable::accumulate)
 
                     // 构造
                     .build();

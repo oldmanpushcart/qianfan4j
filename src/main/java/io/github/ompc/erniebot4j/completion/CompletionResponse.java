@@ -1,6 +1,6 @@
 package io.github.ompc.erniebot4j.completion;
 
-import io.github.ompc.erniebot4j.executor.Mergeable;
+import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.Response;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
@@ -13,10 +13,10 @@ public record CompletionResponse(
         long timestamp,
         Usage usage,
         Sentence sentence
-) implements Response, Mergeable<CompletionResponse> {
+) implements Response, Aggregatable<CompletionResponse> {
 
     @Override
-    public CompletionResponse merge(CompletionResponse response) {
+    public CompletionResponse aggregate(CompletionResponse response) {
         return Optional.ofNullable(response)
                 .map(other -> new CompletionResponse(
                         this.id(),
