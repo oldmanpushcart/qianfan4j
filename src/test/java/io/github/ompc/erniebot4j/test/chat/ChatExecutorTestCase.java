@@ -4,6 +4,7 @@ import io.github.ompc.erniebot4j.chat.ChatModel;
 import io.github.ompc.erniebot4j.chat.ChatOptions;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.message.Message;
+import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.test.LoadingProperties;
 import io.github.ompc.erniebot4j.test.chat.function.ComputeAvgScoreFunction;
 import io.github.ompc.erniebot4j.test.chat.function.QueryScoreFunction;
@@ -28,8 +29,10 @@ public class ChatExecutorTestCase implements LoadingProperties {
         try {
             future.get();
         } catch (Exception ex) {
-            final var cause = ex.getCause();
-            Assert.assertEquals("response is not safe! ban=-1", cause.getMessage());
+            Assert.assertTrue(ex.getCause() instanceof ErnieBotResponseNotSafeException);
+            final var cause = (ErnieBotResponseNotSafeException) ex.getCause();
+            Assert.assertEquals(-1, cause.getBan());
+            Assert.assertFalse(cause.getContent().isBlank());
         }
 
         Assert.assertTrue(future.isCompletedExceptionally());
