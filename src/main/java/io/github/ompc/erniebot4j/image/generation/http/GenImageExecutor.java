@@ -2,6 +2,7 @@ package io.github.ompc.erniebot4j.image.generation.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
@@ -55,16 +56,35 @@ public class GenImageExecutor implements HttpExecutor<GenImageRequest, GenImageR
 
                     return http.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                             .thenApplyAsync(HttpResponse::body, executor)
-                            .thenApply(body -> {
-                                logger.debug("{}/{}/http <= {}", this, request.model().name(), body);
-                                return JacksonUtils.toResponseNode(mapper, body);
-                            })
+                            .thenApply(body -> loggingHttpResponse(request, body))
+                            .thenApply(body -> JacksonUtils.toResponseNode(mapper, body))
                             .thenCompose(node -> {
                                 final var response = JacksonUtils.toObject(mapper, GenImageResponse.class, node);
                                 consumer.accept(response);
                                 return CompletableFuture.completedFuture(response);
                             });
                 });
+    }
+
+    // 记录日志，这里需要做个特殊处理：图片的BASE64太大了导致日志输出刷屏，所以这里进行省略
+    private String loggingHttpResponse(GenImageRequest request, String body) {
+        if (logger.isDebugEnabled()) {
+            String content;
+            try {
+                final var node = JacksonUtils.toNode(mapper, body);
+                node.get("data").forEach(image -> {
+                    final var imageNode = (ObjectNode) image;
+                    final var size = imageNode.get("b64_image").asText().length();
+                    imageNode.put("b64_image", "...(base64, size: %d bytes)".formatted(size));
+                });
+                content = node.toString();
+            } catch (Exception cause) {
+                // ignore
+                content = body;
+            }
+            logger.debug("{}/{}/http <= {}", this, request.model().name(), content);
+        }
+        return body;
     }
 
     @Override

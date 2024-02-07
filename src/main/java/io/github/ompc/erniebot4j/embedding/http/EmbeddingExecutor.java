@@ -2,6 +2,7 @@ package io.github.ompc.erniebot4j.embedding.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.embedding.EmbeddingRequest;
 import io.github.ompc.erniebot4j.embedding.EmbeddingResponse;
@@ -54,10 +55,8 @@ public class EmbeddingExecutor implements HttpExecutor<EmbeddingRequest, Embeddi
 
                     return http.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
                             .thenApplyAsync(HttpResponse::body, executor)
-                            .thenApply(body -> {
-                                logger.debug("{}/{}/http <= {}", this, request.model().name(), body);
-                                return JacksonUtils.toResponseNode(mapper, body);
-                            })
+                            .thenApply(body -> loggingHttpResponse(request, body))
+                            .thenApply(body -> JacksonUtils.toResponseNode(mapper, body))
                             .thenCompose(node -> {
                                 final var response = JacksonUtils.toObject(mapper, EmbeddingResponse.class, node);
                                 consumer.accept(response);
@@ -65,6 +64,26 @@ public class EmbeddingExecutor implements HttpExecutor<EmbeddingRequest, Embeddi
                             });
 
                 });
+    }
+
+    private String loggingHttpResponse(EmbeddingRequest request, String body) {
+        if (logger.isDebugEnabled()) {
+            String content;
+            try {
+                final var node = JacksonUtils.toNode(mapper, body);
+                node.get("data").forEach(embedding -> {
+                    final var embeddingNode = (ObjectNode) embedding;
+                    final var size = embeddingNode.get("embedding").size() * Float.BYTES;
+                    embeddingNode.put("embedding", "...(embedding, size: %d bytes)".formatted(size));
+                });
+                content = node.toString();
+            } catch (Exception cause) {
+                // ignore
+                content = body;
+            }
+            logger.debug("{}/{}/http <= {}", this, request.model().name(), content);
+        }
+        return body;
     }
 
     @Override

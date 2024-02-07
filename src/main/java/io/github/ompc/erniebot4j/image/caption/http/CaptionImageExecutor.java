@@ -2,6 +2,7 @@ package io.github.ompc.erniebot4j.image.caption.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.ompc.erniebot4j.TokenRefresher;
 import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.executor.Aggregatable;
@@ -45,7 +46,7 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
 
             // 构建HTTP请求体
             final var httpRequestBodyJson = JacksonUtils.toJson(mapper, request);
-            logger.debug("{}/{}/http => {}", this, request.model().name(), httpRequestBodyJson);
+            loggingHttpRequest(request, httpRequestBodyJson);
 
             // 构建HTTP请求
             final var builder = HttpRequest.newBuilder()
@@ -88,6 +89,23 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
             return http.sendAsync(httpRequest, responseBodyHandler)
                     .thenApplyAsync(HttpResponse::body, executor);
         });
+    }
+
+    // 记录日志，这里需要做个特殊处理：图片的BASE64太大了导致日志输出刷屏，所以这里进行省略
+    private void loggingHttpRequest(CaptionImageRequest request, String body) {
+        if (logger.isDebugEnabled()) {
+            String content;
+            try {
+                final var node = (ObjectNode) JacksonUtils.toNode(mapper, body);
+                final var size = node.get("image").asText().length();
+                node.put("image", "...(base64, size: %d bytes)".formatted(size));
+                content = node.toString();
+            } catch (Exception cause) {
+                // ignore
+                content = body;
+            }
+            logger.debug("{}/{}/http => {}", this, request.model().name(), content);
+        }
     }
 
     @Override
