@@ -52,9 +52,17 @@ public class TokenRefresher {
      * @return 令牌
      */
     public CompletableFuture<String> refresh(HttpClient http) {
-
         return futureRef
-                .updateAndGet(expect -> isNecessaryRefresh(expect) ? _refresh(http) : expect)
+                .updateAndGet(existed -> {
+                    if (isNecessaryRefresh(existed)) {
+                        synchronized (this) {
+                            if (isNecessaryRefresh(existed)) {
+                                return _refresh(http);
+                            }
+                        }
+                    }
+                    return existed;
+                })
                 .thenApply(Ret::token);
     }
 
