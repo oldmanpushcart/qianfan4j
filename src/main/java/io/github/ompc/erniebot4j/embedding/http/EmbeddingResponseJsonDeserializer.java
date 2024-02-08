@@ -45,12 +45,13 @@ public class EmbeddingResponseJsonDeserializer extends JsonDeserializer<Embeddin
         final var type = node.get("object").asText();
         CheckUtils.check(type, type.equals("embedding"), "invalid type: " + type);
         final var vectorsNode = node.get("embedding");
+        final var vectors = new float[vectorsNode.size()];
+        for (int i = 0; i < vectorsNode.size(); i++) {
+            vectors[i] = vectorsNode.get(i).floatValue();
+        }
         return new Embedding(
                 node.get("index").asInt(),
-                StreamSupport.stream(vectorsNode.spliterator(), false)
-                        .map(JsonNode::floatValue)
-                        .mapToDouble(Float::doubleValue)
-                        .toArray()
+                vectors
         );
     }
 
