@@ -4,11 +4,8 @@ import io.github.ompc.erniebot4j.chat.function.ChatFunction;
 import io.github.ompc.erniebot4j.chat.function.ChatFunctionKit;
 import io.github.ompc.erniebot4j.chat.message.Message;
 import io.github.ompc.erniebot4j.executor.BaseRequest;
-import io.github.ompc.erniebot4j.executor.Model;
-import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +15,13 @@ import static java.util.Objects.requireNonNull;
 /**
  * 对话请求
  */
-public final class ChatRequest extends BaseRequest implements Request {
+public final class ChatRequest extends BaseRequest<ChatModel> implements Request {
 
     private final List<Message> messages;
     private final ChatFunctionKit kit;
 
     private ChatRequest(Builder builder) {
-        super(
-                requireNonNull(builder.model),
-                builder.option,
-                builder.timeout,
-                builder.user
-        );
+        super(builder);
         this.messages = check(builder.messages, v -> null != v && !v.isEmpty(), "messages is empty");
         this.kit = builder.kit;
     }
@@ -55,13 +47,10 @@ public final class ChatRequest extends BaseRequest implements Request {
     /**
      * 对话请求构建器
      */
-    public static class Builder {
-        private Model model;
-        private String user;
+    public static class Builder extends BaseBuilder<ChatModel, ChatRequest, Builder> {
+
         private List<Message> messages = new ArrayList<>();
         private ChatFunctionKit kit = new ChatFunctionKit();
-        private Option option = new Option();
-        private Duration timeout;
 
         /**
          * 对话请求构建器
@@ -76,27 +65,18 @@ public final class ChatRequest extends BaseRequest implements Request {
          * @param request 已有的对话请求
          */
         public Builder(ChatRequest request) {
-            this.model = request.model();
-            this.option = request.option();
-            this.timeout = request.timeout();
-            this.user = request.user();
+            super(request);
             this.messages = request.messages;
             this.kit = request.kit;
-        }
-
-        public Builder model(ChatModel model) {
-            this.model = requireNonNull(model);
-            return this;
-        }
-
-        public Builder user(String user) {
-            this.user = requireNonNull(user);
-            return this;
         }
 
         public Builder messages(List<Message> messages) {
             this.messages.addAll(messages);
             return this;
+        }
+
+        public Builder messages(Message... messages) {
+            return messages(List.of(messages));
         }
 
         public Builder message(Message message) {
@@ -119,21 +99,7 @@ public final class ChatRequest extends BaseRequest implements Request {
             return this;
         }
 
-        public Builder option(Option options) {
-            this.option.load(options);
-            return this;
-        }
-
-        public <T, R> Builder option(Option.Opt<T, R> opt, T value) {
-            option.option(opt, value);
-            return this;
-        }
-
-        public Builder timeout(Duration timeout) {
-            this.timeout = requireNonNull(timeout);
-            return this;
-        }
-
+        @Override
         public ChatRequest build() {
             return new ChatRequest(this);
         }

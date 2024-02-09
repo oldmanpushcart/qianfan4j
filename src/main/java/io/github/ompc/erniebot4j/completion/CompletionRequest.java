@@ -1,68 +1,50 @@
 package io.github.ompc.erniebot4j.completion;
 
 import io.github.ompc.erniebot4j.executor.BaseRequest;
-import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
-
-import java.time.Duration;
 
 import static java.util.Objects.requireNonNull;
 
-public class CompletionRequest extends BaseRequest implements Request {
+/**
+ * 补全请求
+ */
+public class CompletionRequest extends BaseRequest<CompletionModel> implements Request {
 
     private final String prompt;
 
     private CompletionRequest(Builder builder) {
-        super(
-                requireNonNull(builder.model),
-                builder.option,
-                builder.timeout,
-                builder.user
-        );
+        super(builder);
         this.prompt = requireNonNull(builder.prompt);
     }
 
+    /**
+     * 获取提示
+     *
+     * @return 提示
+     */
     public String prompt() {
         return prompt;
     }
 
-    public static class Builder {
-        private CompletionModel model;
-        private String user;
-        private final Option option = new Option();
-        private Duration timeout;
+    /**
+     * 补全请求构建器
+     */
+    public static class Builder extends BaseRequest.BaseBuilder<CompletionModel, CompletionRequest, Builder> {
+
         private String prompt;
 
-        public Builder model(CompletionModel model) {
-            this.model = requireNonNull(model);
-            return this;
-        }
-
-        public Builder user(String user) {
-            this.user = requireNonNull(user);
-            return this;
-        }
-
-        public Builder option(Option options) {
-            this.option.load(options);
-            return this;
-        }
-
-        public <T, R> Builder option(Option.Opt<T, R> opt, T value) {
-            option.option(opt, value);
-            return this;
-        }
-
-        public Builder timeout(Duration timeout) {
-            this.timeout = requireNonNull(timeout);
-            return this;
-        }
-
+        /**
+         * 设置提示
+         *
+         * @param prompt 提示
+         * @return this
+         */
         public Builder prompt(String prompt) {
             this.prompt = requireNonNull(prompt);
             return this;
         }
 
+        @Override
         public CompletionRequest build() {
             return new CompletionRequest(this);
         }

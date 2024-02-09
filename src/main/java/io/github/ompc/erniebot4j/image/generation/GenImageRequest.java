@@ -1,26 +1,18 @@
 package io.github.ompc.erniebot4j.image.generation;
 
 import io.github.ompc.erniebot4j.executor.BaseRequest;
-import io.github.ompc.erniebot4j.executor.Option;
 import io.github.ompc.erniebot4j.executor.Request;
 import io.github.ompc.erniebot4j.executor.Textualizable;
 
-import java.time.Duration;
-
 import static java.util.Objects.requireNonNull;
 
-public class GenImageRequest extends BaseRequest implements Request {
+public class GenImageRequest extends BaseRequest<GenImageModel> implements Request {
 
     private final String prompt;
     private final String negative;
 
     private GenImageRequest(Builder builder) {
-        super(
-                requireNonNull(builder.model),
-                builder.option,
-                builder.timeout,
-                builder.user
-        );
+        super(builder);
         this.prompt = requireNonNull(builder.prompt);
         this.negative = builder.negative;
     }
@@ -33,38 +25,9 @@ public class GenImageRequest extends BaseRequest implements Request {
         return negative;
     }
 
-    public static class Builder {
-        private GenImageModel model;
-        private String user;
-        private final Option option = new Option();
-        private Duration timeout;
+    public static class Builder extends BaseRequest.BaseBuilder<GenImageModel, GenImageRequest, Builder> {
         private String prompt;
         private String negative;
-
-        public Builder model(GenImageModel model) {
-            this.model = requireNonNull(model);
-            return this;
-        }
-
-        public Builder user(String user) {
-            this.user = requireNonNull(user);
-            return this;
-        }
-
-        public Builder option(Option option) {
-            this.option.load(option);
-            return this;
-        }
-
-        public <T, R> Builder option(Option.Opt<T, R> opt, T value) {
-            option.option(opt, value);
-            return this;
-        }
-
-        public Builder timeout(Duration timeout) {
-            this.timeout = requireNonNull(timeout);
-            return this;
-        }
 
         public Builder prompt(String prompt) {
             this.prompt = requireNonNull(prompt);
@@ -76,6 +39,7 @@ public class GenImageRequest extends BaseRequest implements Request {
             return this;
         }
 
+        @Override
         public GenImageRequest build() {
             return new GenImageRequest(this);
         }
