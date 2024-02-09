@@ -5,6 +5,7 @@ import io.github.ompc.erniebot4j.chat.ChatOptions;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.message.Message;
 import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
+import io.github.ompc.erniebot4j.test.ErnieBotAssert;
 import io.github.ompc.erniebot4j.test.LoadingProperties;
 import io.github.ompc.erniebot4j.test.chat.function.ComputeAvgScoreFunction;
 import io.github.ompc.erniebot4j.test.chat.function.QueryScoreFunction;
@@ -56,6 +57,8 @@ public class ChatExecutorTestCase implements LoadingProperties {
                 .async()
                 .join();
 
+        ErnieBotAssert.assertResponse(response);
+        Assert.assertEquals("chat.completion", response.type());
         System.out.println(response);
 
         final var check = client
@@ -72,6 +75,7 @@ public class ChatExecutorTestCase implements LoadingProperties {
                 .async()
                 .join();
 
+        ErnieBotAssert.assertResponse(check);
         Assert.assertTrue(check.sentence().content().contains("YES"));
         System.out.println(check);
 

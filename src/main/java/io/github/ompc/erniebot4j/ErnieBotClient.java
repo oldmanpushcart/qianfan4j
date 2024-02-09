@@ -16,6 +16,9 @@ import io.github.ompc.erniebot4j.image.caption.http.CaptionImageExecutor;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
 import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
 import io.github.ompc.erniebot4j.image.generation.http.GenImageExecutor;
+import io.github.ompc.erniebot4j.plugin.knowledgebase.KnowledgeBaseRequest;
+import io.github.ompc.erniebot4j.plugin.knowledgebase.KnowledgeBaseResponse;
+import io.github.ompc.erniebot4j.plugin.knowledgebase.http.KnowledgeBaseExecutor;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -100,6 +103,13 @@ public class ErnieBotClient {
                 .execute(http, request, consumer);
     }
 
+    public PluginOp plugin() {
+        return request -> consumer -> new KnowledgeBaseExecutor(refresher, executor)
+                .execute(http, request, consumer);
+    }
+
+
+
     /**
      * 操作
      *
@@ -152,6 +162,16 @@ public class ErnieBotClient {
          */
         Op<CaptionImageResponse> caption(CaptionImageRequest request);
 
+    }
+
+    public interface PluginOp {
+        /**
+         * 知识库
+         *
+         * @param request 请求
+         * @return 操作
+         */
+        Op<KnowledgeBaseResponse> kb(KnowledgeBaseRequest request);
     }
 
     /**

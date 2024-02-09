@@ -74,7 +74,7 @@ public class CompletionExecutor implements HttpExecutor<CompletionRequest, Compl
                             );
                         }
 
-                        return JacksonUtils.toObject(mapper, CompletionResponse.class, json);
+                        return JacksonUtils.toObject(mapper, CompletionResponse.class, node);
                     })
 
                     // 消费Response

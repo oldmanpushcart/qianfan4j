@@ -61,6 +61,10 @@ public class Option {
         return this;
     }
 
+    public boolean has(String name) {
+        return map.containsKey(name);
+    }
+
     /**
      * 设置选项
      *
@@ -77,11 +81,14 @@ public class Option {
      * 删除选项
      *
      * @param name 选项名称
-     * @return this
+     * @return 选项值
      */
-    public Option remove(String name) {
-        map.remove(name);
-        return this;
+    public Object remove(String name) {
+        return map.remove(name);
+    }
+
+    public Object get(String name) {
+        return map.get(name);
     }
 
     /**

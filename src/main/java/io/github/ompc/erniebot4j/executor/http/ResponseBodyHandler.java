@@ -218,8 +218,10 @@ public class ResponseBodyHandler<R extends Response> implements HttpResponse.Bod
                     if (body.startsWith("data:")) {
                         final var segments = body.split(":", 2);
                         final var response = convertor.apply(segments[1].trim());
-                        consumer.accept(response);
-                        responseRef.accumulateAndGet(response, accumulator);
+                        if(null != response) {
+                            consumer.accept(response);
+                            responseRef.accumulateAndGet(response, accumulator);
+                        }
                     } else {
                         throw new RuntimeException("unsupported stream-event: %s".formatted(body));
                     }

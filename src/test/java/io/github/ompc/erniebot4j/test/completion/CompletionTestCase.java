@@ -3,6 +3,7 @@ package io.github.ompc.erniebot4j.test.completion;
 import io.github.ompc.erniebot4j.completion.CompletionModel;
 import io.github.ompc.erniebot4j.completion.CompletionOptions;
 import io.github.ompc.erniebot4j.completion.CompletionRequest;
+import io.github.ompc.erniebot4j.test.ErnieBotAssert;
 import io.github.ompc.erniebot4j.test.LoadingProperties;
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,6 +71,11 @@ public class CompletionTestCase implements LoadingProperties {
         final var response = client.completion(request)
                 .async()
                 .join();
+
+        ErnieBotAssert.assertResponse(response);
+
+        // 没想到这个测试用例的返回值竟然和文档不一样
+        // Assert.assertEquals("completion", response.type());
 
         Assert.assertTrue(response.sentence().isLast());
         Assert.assertTrue(response.sentence().content().contains("SELECT"));

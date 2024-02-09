@@ -1,5 +1,6 @@
-package io.github.ompc.erniebot4j.image.caption.http;
+package io.github.ompc.erniebot4j.plugin.knowledgebase.http;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,8 +9,8 @@ import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
-import io.github.ompc.erniebot4j.image.caption.CaptionImageRequest;
-import io.github.ompc.erniebot4j.image.caption.CaptionImageResponse;
+import io.github.ompc.erniebot4j.plugin.knowledgebase.KnowledgeBaseRequest;
+import io.github.ompc.erniebot4j.plugin.knowledgebase.KnowledgeBaseResponse;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,32 +22,33 @@ import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, CaptionImageResponse> {
+public class KnowledgeBaseExecutor implements HttpExecutor<KnowledgeBaseRequest, KnowledgeBaseResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
-                addSerializer(CaptionImageRequest.class, new CaptionImageRequestJsonSerializer());
-                addDeserializer(CaptionImageResponse.class, new CaptionImageResponseJsonDeserializer());
+                addSerializer(KnowledgeBaseRequest.class, new KnowledgeBaseRequestJsonSerializer());
+                addDeserializer(KnowledgeBaseResponse.class, new KnowledgeBaseResponseJsonDeserializer());
+                addDeserializer(KnowledgeBaseResponse.Meta.class, new KnowledgeBaseResponseMetaJsonDeserializer());
             }});
-
     private final TokenRefresher refresher;
     private final Executor executor;
 
-    public CaptionImageExecutor(TokenRefresher refresher, Executor executor) {
+    public KnowledgeBaseExecutor(TokenRefresher refresher, Executor executor) {
         this.refresher = refresher;
         this.executor = executor;
     }
 
     @Override
-    public CompletableFuture<CaptionImageResponse> execute(HttpClient http, CaptionImageRequest request, Consumer<CaptionImageResponse> consumer) {
+    public CompletableFuture<KnowledgeBaseResponse> execute(HttpClient http, KnowledgeBaseRequest request, Consumer<KnowledgeBaseResponse> consumer) {
         return refresher.refresh(http).thenCompose(token -> {
 
             // 构建HTTP请求体
             final var httpRequestBodyJson = JacksonUtils.toJson(mapper, request);
-            loggingHttpRequest(request, httpRequestBodyJson);
+            logger.debug("{}/{}/http => {}", this, request.model().name(), httpRequestBodyJson);
 
             // 构建HTTP请求
             final var builder = HttpRequest.newBuilder()
@@ -57,8 +59,10 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
             Optional.ofNullable(request.timeout()).ifPresent(builder::timeout);
             final var httpRequest = builder.build();
 
+            final var metaNodeRef = new AtomicReference<JsonNode>();
+
             // 构建请求处理器
-            final var responseBodyHandler = new ResponseBodyHandler.Builder<CaptionImageResponse>()
+            final var responseBodyHandler = new ResponseBodyHandler.Builder<KnowledgeBaseResponse>()
 
                     // 将json转为Response
                     .convertor(json -> {
@@ -68,14 +72,27 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
                         // 转为Node处理
                         final var node = JacksonUtils.toResponseNode(mapper, json);
 
+                        // 检查是否为首包，plugin在SSE模式下开启了verbose的时候，首包为META-INFO
+                        if (!node.has("object")) {
+                            metaNodeRef.set(node);
+                            return null;
+                        }
+
+                        // 后续的包才是正式的应答
+                        else {
+                            final var responseNode = (ObjectNode) node;
+                            responseNode.set("meta_info", metaNodeRef.get());
+                        }
+
                         // 检查是否安全
-                        if (node.has("is_safe") && node.get("is_safe").asInt() == 0) {
+                        if (node.has("need_clear_history") && node.get("need_clear_history").asBoolean()) {
                             throw new ErnieBotResponseNotSafeException(
+                                    node.get("ban_round").asInt(),
                                     node.get("result").asText()
                             );
                         }
 
-                        return JacksonUtils.toObject(mapper, CaptionImageResponse.class, node);
+                        return JacksonUtils.toObject(mapper, KnowledgeBaseResponse.class, node);
                     })
 
                     // 消费Response
@@ -91,26 +108,9 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
         });
     }
 
-    // 记录日志，这里需要做个特殊处理：图片的BASE64太大了导致日志输出刷屏，所以这里进行省略
-    private void loggingHttpRequest(CaptionImageRequest request, String body) {
-        if (logger.isDebugEnabled()) {
-            String content;
-            try {
-                final var node = (ObjectNode) JacksonUtils.toNode(mapper, body);
-                final var size = node.get("image").asText().length();
-                node.put("image", "...(base64, size: %d bytes)".formatted(size));
-                content = node.toString();
-            } catch (Exception cause) {
-                // ignore
-                content = body;
-            }
-            logger.debug("{}/{}/http => {}", this, request.model().name(), content);
-        }
-    }
-
     @Override
     public String toString() {
-        return "erniebot://image/caption";
+        return "erniebot://plugin/kb";
     }
 
 }

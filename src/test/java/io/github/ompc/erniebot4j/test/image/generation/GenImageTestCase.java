@@ -4,6 +4,7 @@ import io.github.ompc.erniebot4j.ErnieBotClient;
 import io.github.ompc.erniebot4j.image.generation.GenImageModel;
 import io.github.ompc.erniebot4j.image.generation.GenImageOptions;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
+import io.github.ompc.erniebot4j.test.ErnieBotAssert;
 import io.github.ompc.erniebot4j.test.LoadingProperties;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -45,6 +46,8 @@ public class GenImageTestCase implements LoadingProperties {
                 .async()
                 .join();
 
+        ErnieBotAssert.assertResponse(response);
+        Assert.assertEquals("image", response.type());
         BufferedImage[] images = response.images();
         Assert.assertEquals(2, images.length);
 

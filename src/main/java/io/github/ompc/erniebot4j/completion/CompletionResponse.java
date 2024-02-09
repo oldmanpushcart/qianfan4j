@@ -22,7 +22,12 @@ public record CompletionResponse(
                         this.id(),
                         this.type(),
                         this.timestamp(),
-                        other.usage(),
+                        new Usage(
+                                other.usage().prompt(),
+                                // completion的usage有点特殊，它的completion是两个completion的和
+                                this.usage().completion() + other.usage().completion(),
+                                other.usage().total()
+                        ),
                         new Sentence(
                                 this.sentence().index(),
                                 this.sentence().isLast() || other.sentence().isLast(),
