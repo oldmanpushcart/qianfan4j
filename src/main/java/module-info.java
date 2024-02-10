@@ -21,6 +21,8 @@ module erniebot4j {
     exports io.github.ompc.erniebot4j.image.caption;
     exports io.github.ompc.erniebot4j.image.generation;
     exports io.github.ompc.erniebot4j.plugin;
-    exports io.github.ompc.erniebot4j.plugin.knowledgebase;
+
+    exports io.github.ompc.erniebot4j.bce;
+    exports io.github.ompc.erniebot4j.bce.bos;
 
 }

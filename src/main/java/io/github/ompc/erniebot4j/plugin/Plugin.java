@@ -1,23 +1,20 @@
 package io.github.ompc.erniebot4j.plugin;
 
-import io.github.ompc.erniebot4j.executor.Textualizable;
-
-public enum Plugin implements Textualizable {
+public record Plugin(String text) {
 
     /**
      * 知识库
      */
-    KNOWLEDGE_BASE("uuid-zhishiku");
+    public static final Plugin KNOWLEDGE_BASE = new Plugin("uuid-zhishiku");
 
-    private final String text;
+    /**
+     * 智慧图问
+     */
+    public static final Plugin CHAT_OCR = new Plugin("uuid-chatocr");
 
-    Plugin(String text) {
-        this.text = text;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
+    /**
+     * 天气预报
+     */
+    public static final Plugin WEATHER_FORECAST = new Plugin("uuid-weatherforecast");
+    
 }

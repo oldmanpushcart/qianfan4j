@@ -4,10 +4,7 @@ import io.github.ompc.erniebot4j.chat.ChatModel;
 import io.github.ompc.erniebot4j.chat.ChatOptions;
 import io.github.ompc.erniebot4j.chat.ChatRequest;
 import io.github.ompc.erniebot4j.chat.message.Message;
-import io.github.ompc.erniebot4j.test.chat.function.EchoFunction;
 import org.junit.Test;
-
-import static io.github.ompc.erniebot4j.executor.Options.IS_STREAM;
 
 public class DebugTestCase implements LoadingProperties {
 

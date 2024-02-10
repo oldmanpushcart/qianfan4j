@@ -30,14 +30,16 @@ public class EmbeddingExecutor implements HttpExecutor<EmbeddingRequest, Embeddi
             }});
     private final TokenRefresher refresher;
     private final Executor executor;
+    private final HttpClient http;
 
-    public EmbeddingExecutor(TokenRefresher refresher, Executor executor) {
+    public EmbeddingExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
         this.refresher = refresher;
         this.executor = executor;
+        this.http = http;
     }
 
     @Override
-    public CompletableFuture<EmbeddingResponse> execute(HttpClient http, EmbeddingRequest request, Consumer<EmbeddingResponse> consumer) {
+    public CompletableFuture<EmbeddingResponse> execute(EmbeddingRequest request, Consumer<EmbeddingResponse> consumer) {
         return refresher.refresh(http)
                 .thenCompose(token -> {
 

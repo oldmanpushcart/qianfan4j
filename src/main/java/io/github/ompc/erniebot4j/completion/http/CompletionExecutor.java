@@ -33,14 +33,16 @@ public class CompletionExecutor implements HttpExecutor<CompletionRequest, Compl
 
     private final TokenRefresher refresher;
     private final Executor executor;
+    private final HttpClient http;
 
-    public CompletionExecutor(TokenRefresher refresher, Executor executor) {
+    public CompletionExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
         this.refresher = refresher;
         this.executor = executor;
+        this.http = http;
     }
 
     @Override
-    public CompletableFuture<CompletionResponse> execute(HttpClient http, CompletionRequest request, Consumer<CompletionResponse> consumer) {
+    public CompletableFuture<CompletionResponse> execute(CompletionRequest request, Consumer<CompletionResponse> consumer) {
         return refresher.refresh(http).thenCompose(token -> {
 
             // 构建HTTP请求体

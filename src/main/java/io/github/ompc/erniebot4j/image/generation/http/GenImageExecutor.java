@@ -31,14 +31,16 @@ public class GenImageExecutor implements HttpExecutor<GenImageRequest, GenImageR
 
     private final TokenRefresher refresher;
     private final Executor executor;
+    private final HttpClient http;
 
-    public GenImageExecutor(TokenRefresher refresher, Executor executor) {
+    public GenImageExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
         this.refresher = refresher;
         this.executor = executor;
+        this.http = http;
     }
 
     @Override
-    public CompletableFuture<GenImageResponse> execute(HttpClient http, GenImageRequest request, Consumer<GenImageResponse> consumer) {
+    public CompletableFuture<GenImageResponse> execute(GenImageRequest request, Consumer<GenImageResponse> consumer) {
         return refresher.refresh(http)
                 .thenCompose(token -> {
 

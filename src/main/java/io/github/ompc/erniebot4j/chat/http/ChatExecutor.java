@@ -36,10 +36,12 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
             }});
     private final TokenRefresher refresher;
     private final Executor executor;
+    private final HttpClient http;
 
-    public ChatExecutor(TokenRefresher refresher, Executor executor) {
+    public ChatExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
         this.refresher = refresher;
         this.executor = executor;
+        this.http = http;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class ChatExecutor implements HttpExecutor<ChatRequest, ChatResponse> {
     }
 
     @Override
-    public CompletableFuture<ChatResponse> execute(HttpClient http, ChatRequest request, Consumer<ChatResponse> consumer) {
+    public CompletableFuture<ChatResponse> execute(ChatRequest request, Consumer<ChatResponse> consumer) {
         final var statistics = new Statistics();
         return execute(statistics, http, request, consumer)
                 .thenApply(response -> new ChatResponse(

@@ -16,9 +16,9 @@ import io.github.ompc.erniebot4j.image.caption.http.CaptionImageExecutor;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
 import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
 import io.github.ompc.erniebot4j.image.generation.http.GenImageExecutor;
-import io.github.ompc.erniebot4j.plugin.knowledgebase.KnowledgeBaseRequest;
-import io.github.ompc.erniebot4j.plugin.knowledgebase.KnowledgeBaseResponse;
-import io.github.ompc.erniebot4j.plugin.knowledgebase.http.KnowledgeBaseExecutor;
+import io.github.ompc.erniebot4j.plugin.PluginRequest;
+import io.github.ompc.erniebot4j.plugin.PluginResponse;
+import io.github.ompc.erniebot4j.plugin.http.PluginExecutor;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -41,10 +41,13 @@ public class ErnieBotClient {
     private ErnieBotClient(Builder builder) {
         this.refresher = requireNonNull(builder.refresher);
         this.executor = requireNonNull(builder.executor);
+        this.http = newHttpClient(builder);
+    }
 
+    private HttpClient newHttpClient(Builder builder) {
         final var httpBuilder = HttpClient.newBuilder().executor(executor);
         Optional.ofNullable(builder.connectTimeout).ifPresent(httpBuilder::connectTimeout);
-        this.http = httpBuilder.build();
+        return httpBuilder.build();
     }
 
     /**
@@ -54,8 +57,8 @@ public class ErnieBotClient {
      * @return 操作
      */
     public Op<ChatResponse> chat(ChatRequest request) {
-        return consumer -> new ChatExecutor(refresher, executor)
-                .execute(http, request, consumer);
+        return consumer -> new ChatExecutor(refresher, executor, http)
+                .execute(request, consumer);
     }
 
     /**
@@ -65,8 +68,8 @@ public class ErnieBotClient {
      * @return 操作
      */
     public Op<CompletionResponse> completion(CompletionRequest request) {
-        return consumer -> new CompletionExecutor(refresher, executor)
-                .execute(http, request, consumer);
+        return consumer -> new CompletionExecutor(refresher, executor, http)
+                .execute(request, consumer);
     }
 
     /**
@@ -79,14 +82,14 @@ public class ErnieBotClient {
 
             @Override
             public Op<GenImageResponse> generation(GenImageRequest request) {
-                return consumer -> new GenImageExecutor(refresher, executor)
-                        .execute(http, request, consumer);
+                return consumer -> new GenImageExecutor(refresher, executor, http)
+                        .execute(request, consumer);
             }
 
             @Override
             public Op<CaptionImageResponse> caption(CaptionImageRequest request) {
-                return consumer -> new CaptionImageExecutor(refresher, executor)
-                        .execute(http, request, consumer);
+                return consumer -> new CaptionImageExecutor(refresher, executor, http)
+                        .execute(request, consumer);
             }
 
         };
@@ -99,15 +102,14 @@ public class ErnieBotClient {
      * @return 操作
      */
     public Op<EmbeddingResponse> embedding(EmbeddingRequest request) {
-        return consumer -> new EmbeddingExecutor(refresher, executor)
-                .execute(http, request, consumer);
+        return consumer -> new EmbeddingExecutor(refresher, executor, http)
+                .execute(request, consumer);
     }
 
-    public PluginOp plugin() {
-        return request -> consumer -> new KnowledgeBaseExecutor(refresher, executor)
-                .execute(http, request, consumer);
+    public Op<PluginResponse> plugin(PluginRequest request) {
+        return consumer -> new PluginExecutor(refresher, executor, http)
+                .execute(request, consumer);
     }
-
 
 
     /**
@@ -162,16 +164,6 @@ public class ErnieBotClient {
          */
         Op<CaptionImageResponse> caption(CaptionImageRequest request);
 
-    }
-
-    public interface PluginOp {
-        /**
-         * 知识库
-         *
-         * @param request 请求
-         * @return 操作
-         */
-        Op<KnowledgeBaseResponse> kb(KnowledgeBaseRequest request);
     }
 
     /**

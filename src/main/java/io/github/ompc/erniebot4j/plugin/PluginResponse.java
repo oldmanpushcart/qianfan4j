@@ -1,14 +1,13 @@
-package io.github.ompc.erniebot4j.plugin.knowledgebase;
+package io.github.ompc.erniebot4j.plugin;
 
 import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.Response;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
-import io.github.ompc.erniebot4j.plugin.Plugin;
 
 import java.util.Optional;
 
-public record KnowledgeBaseResponse(
+public record PluginResponse(
         String id,
         String type,
         long timestamp,
@@ -16,12 +15,12 @@ public record KnowledgeBaseResponse(
         long logId,
         Sentence sentence,
         Meta meta
-) implements Response, Aggregatable<KnowledgeBaseResponse> {
+) implements Response, Aggregatable<PluginResponse> {
 
     @Override
-    public KnowledgeBaseResponse aggregate(KnowledgeBaseResponse response) {
+    public PluginResponse aggregate(PluginResponse response) {
         return Optional.ofNullable(response)
-                .map(other -> new KnowledgeBaseResponse(
+                .map(other -> new PluginResponse(
                         this.id(),
                         this.type(),
                         this.timestamp(),
@@ -37,35 +36,11 @@ public record KnowledgeBaseResponse(
                 .orElse(this);
     }
 
-    public record Meta(Plugin plugin, RawRequest request, RawResponse response) {
+    public record Meta(String pluginId, Raw raw) {
 
     }
 
-    public record RawRequest(String query, String[] kbs, float score, int topN) {
-
-    }
-
-    public record RawResponse(int code, String message, RawCost cost, RawDocument[] documents) {
-
-    }
-
-    public record RawCost(long bes, long db, long embedded, long signed) {
-
-    }
-
-    public record RawDocument(
-            String download,
-            String id,
-            String name,
-            String kbId,
-            float score,
-            Shard shard,
-            String content
-    ) {
-
-    }
-
-    public record Shard(String id, int index) {
+    public record Raw(String request, String response) {
 
     }
 

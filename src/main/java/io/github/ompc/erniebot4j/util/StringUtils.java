@@ -22,6 +22,35 @@ public class StringUtils {
                 && !string.isBlank();
     }
 
+    private static final char[] HEX_UPPER_CHARS = "0123456789ABCDEF".toCharArray();
+    private static final char[] HEX_LOWER_CHARS = "0123456789abcdef".toCharArray();
+
+    public static String encodeHex(byte[] data, boolean isLowerCase) {
+
+        // null to null
+        if (data == null) {
+            return null;
+        }
+
+        final var hexChars = isLowerCase ? HEX_LOWER_CHARS : HEX_UPPER_CHARS;
+        final var length = data.length;
+
+        // 两个字符表示一个字节，所以长度要乘以2
+        final var out = new char[length << 1];
+
+        for (int i = 0, j = 0; i < length; i++) {
+
+            // 取高4位
+            out[j++] = hexChars[(0xF0 & data[i]) >>> 4];
+
+            // 取低4位
+            out[j++] = hexChars[0x0F & data[i]];
+
+        }
+
+        return new String(out);
+    }
+
     /**
      * 转半角的函数(DBC case)
      * <p>

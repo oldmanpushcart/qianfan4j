@@ -34,14 +34,16 @@ public class CaptionImageExecutor implements HttpExecutor<CaptionImageRequest, C
 
     private final TokenRefresher refresher;
     private final Executor executor;
+    private final HttpClient http;
 
-    public CaptionImageExecutor(TokenRefresher refresher, Executor executor) {
+    public CaptionImageExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
         this.refresher = refresher;
         this.executor = executor;
+        this.http = http;
     }
 
     @Override
-    public CompletableFuture<CaptionImageResponse> execute(HttpClient http, CaptionImageRequest request, Consumer<CaptionImageResponse> consumer) {
+    public CompletableFuture<CaptionImageResponse> execute(CaptionImageRequest request, Consumer<CaptionImageResponse> consumer) {
         return refresher.refresh(http).thenCompose(token -> {
 
             // 构建HTTP请求体
