@@ -2,16 +2,12 @@ package io.github.ompc.erniebot4j.plugin;
 
 import io.github.ompc.erniebot4j.chat.message.Message;
 import io.github.ompc.erniebot4j.executor.BaseRequest;
-import io.github.ompc.erniebot4j.util.LazyGet;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElseGet;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * 插件请求
@@ -19,7 +15,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 public final class PluginRequest extends BaseRequest<PluginModel> {
 
     private final String question;
-    private final LazyGet<ImageUrlSupplier> imageUrlSupplierLazyGet;
+    private final URL imageUrl;
     private final Set<Plugin> plugins;
     private final Map<String, Object> variables;
     private final List<Message> messages;
@@ -30,7 +26,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
         this.plugins = check(builder.plugins, v -> !v.isEmpty(), "plugins is empty");
         this.variables = builder.variables;
         this.messages = builder.messages;
-        this.imageUrlSupplierLazyGet = LazyGet.of(() -> requireNonNullElseGet(builder.imageUrlSupplier, () -> () -> completedFuture(null)));
+        this.imageUrl = builder.imageUrl;
     }
 
     /**
@@ -70,12 +66,12 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
     }
 
     /**
-     * 获取图片URL
+     * 图片URL
      *
      * @return 图片URL
      */
-    public CompletableFuture<URL> fetchImageUrl() {
-        return imageUrlSupplierLazyGet.get().get();
+    public URL imageUrl() {
+        return imageUrl;
     }
 
     /**
@@ -84,7 +80,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
     public static class Builder extends BaseBuilder<PluginModel, PluginRequest, Builder> {
 
         private String question;
-        private ImageUrlSupplier imageUrlSupplier;
+        private URL imageUrl;
         private final Set<Plugin> plugins = new HashSet<>();
         private final Map<String, Object> variables = new HashMap<>();
         private final List<Message> messages = new ArrayList<>();
@@ -103,11 +99,11 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
         /**
          * 设置图片URL
          *
-         * @param supplier 获取图片URL
+         * @param imageUrl 图片URL
          * @return this
          */
-        public Builder imageUrl(ImageUrlSupplier supplier) {
-            this.imageUrlSupplier = requireNonNull(supplier);
+        public Builder imageUrl(URL imageUrl) {
+            this.imageUrl = requireNonNull(imageUrl);
             return this;
         }
 

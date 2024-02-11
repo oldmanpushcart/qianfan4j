@@ -6,7 +6,7 @@ import io.github.ompc.erniebot4j.executor.Textualizable;
 
 import static java.util.Objects.requireNonNull;
 
-public class GenImageRequest extends BaseRequest<GenImageModel> implements Request {
+public final class GenImageRequest extends BaseRequest<GenImageModel> implements Request {
 
     private final String prompt;
     private final String negative;

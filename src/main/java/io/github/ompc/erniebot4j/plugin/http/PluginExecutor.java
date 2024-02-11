@@ -9,7 +9,6 @@ import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
-import io.github.ompc.erniebot4j.plugin.Plugin;
 import io.github.ompc.erniebot4j.plugin.PluginRequest;
 import io.github.ompc.erniebot4j.plugin.PluginResponse;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
@@ -20,7 +19,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -36,6 +34,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
+                addSerializer(PluginRequest.class, new PluginRequestJsonSerializer());
                 addDeserializer(PluginResponse.class, new PluginResponseJsonDeserializer());
             }});
     private final TokenRefresher refresher;
@@ -51,118 +50,57 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
     @Override
     public CompletableFuture<PluginResponse> execute(PluginRequest request, Consumer<PluginResponse> consumer) {
 
-        // 序列化请求
-        return serializePluginRequest(request)
+        return refresher.refresh(http).thenCompose(token -> {
 
-                // 获取Token
-                .thenCombine(refresher.refresh(http), (_json, _token) -> new Context() {{
-                    this.httpRequestBodyJson = _json;
-                    this.token = _token;
-                }})
+            // HTTP请求
+            final var httpRequest = newHttpRequest(token, request);
 
-                // 执行HTTP请求
-                .thenCompose(ctx -> {
+            // HTTP应答处理
+            final var httpResponseBodyHandler = newHttpResponseBodyHandler(request, consumer);
 
-                    // 记录HTTP请求日志
-                    logger.debug("{}/{}/http => {}", this, request.model().name(), ctx.httpRequestBodyJson);
+            // 执行插件
+            return http.sendAsync(httpRequest, httpResponseBodyHandler)
+                    .thenApplyAsync(HttpResponse::body, executor);
 
-                    final var httpRequest = newHttpRequest(ctx, request);
-                    final var responseBodyHandler = newResponseBodyHandler(ctx, request, consumer);
-
-                    // 执行插件
-                    return http.sendAsync(httpRequest, responseBodyHandler)
-                            .thenApplyAsync(HttpResponse::body, executor);
-                });
-
-    }
-
-    /**
-     * 序列化插件请求
-     * <p>
-     * 在序列化过程中可能需要与外部进行异步交互，比如上传图片等。所以这里不能用常规的JSON序列化方式。
-     * 必须使用CompletableFuture来进行异步序列化。
-     * </p>
-     *
-     * @param request 插件请求
-     * @return 序列化后的JSON
-     */
-    private CompletableFuture<String> serializePluginRequest(PluginRequest request) {
-        return request.fetchImageUrl().thenApply(imageUrl -> {
-            final var map = new HashMap<String, Object>();
-
-            // 问题
-            map.put("query", request.question());
-
-            // 插件
-            if (!request.plugins().isEmpty()) {
-                map.put("plugins", request.plugins().stream()
-                        .map(Plugin::text)
-                        .toArray(String[]::new)
-                );
-            }
-
-            // 图片
-            if (Objects.nonNull(imageUrl)) {
-                map.put("fileurl", imageUrl);
-            }
-
-            // 变量
-            if (!request.variables().isEmpty()) {
-                map.put("input_variables", request.variables());
-            }
-
-            // 对话历史
-            if (!request.messages().isEmpty()) {
-                map.put("history", request.messages());
-            }
-
-            // 选项参数
-            final var option = request.option().copy();
-            if (option.has("stream")) {
-                map.put("stream", option.remove("stream"));
-            }
-
-            // 是否返回RAW信息
-            if (option.has("verbose")) {
-                map.put("verbose", option.remove("verbose"));
-            }
-
-            // LLM参数
-            if (!option.isEmpty()) {
-                map.put("llm", option.export());
-            }
-
-            // 序列化为JSON
-            return JacksonUtils.toJson(mapper, map);
         });
+
     }
 
-    // 构建HTTP请求
-    private HttpRequest newHttpRequest(Context ctx, PluginRequest request) {
+    // 构造HTTP请求
+    private HttpRequest newHttpRequest(String token, PluginRequest request) {
+        // 构建HTTP请求体
+        final var httpRequestBodyJson = JacksonUtils.toJson(mapper, request);
+
+        // 记录HTTP请求日志
+        logger.debug("{}/{}/http => {}", this, request.model().name(), httpRequestBodyJson);
+
+        // 构建HTTP请求
         final var builder = HttpRequest.newBuilder()
                 .header("Content-Type", "application/json")
-                .uri(URI.create("%s?access_token=%s".formatted(request.model().remote(), ctx.token)))
-                .POST(HttpRequest.BodyPublishers.ofString(ctx.httpRequestBodyJson));
+                .uri(URI.create("%s?access_token=%s".formatted(request.model().remote(), token)))
+                .POST(HttpRequest.BodyPublishers.ofString(httpRequestBodyJson));
 
         Optional.ofNullable(request.timeout()).ifPresent(builder::timeout);
         return builder.build();
     }
 
-    // 构建请求处理器
-    private ResponseBodyHandler<PluginResponse> newResponseBodyHandler(Context ctx, PluginRequest request, Consumer<PluginResponse> consumer) {
+    // 构造HTTP应答处理器
+    private HttpResponse.BodyHandler<PluginResponse> newHttpResponseBodyHandler(PluginRequest request, Consumer<PluginResponse> consumer) {
+        final var metaNodeRef = new AtomicReference<JsonNode>();
         return new ResponseBodyHandler.Builder<PluginResponse>()
 
                 // 将json转为Response
                 .convertor(json -> {
 
+                    // 记录HTTP请求日志
                     logger.debug("{}/{}/http <= {}", this, request.model().name(), json);
 
                     // 转为Node处理
                     final var node = JacksonUtils.toResponseNode(mapper, json);
 
                     // 检查是否为SSE首包，plugin在SSE模式下开启了verbose的时候，首包为META-INFO
-                    if (isFirstSSE(ctx, node)) {
-                        ctx.metaNodeRef.set(node);
+                    if (isFirstSSE(metaNodeRef, node)) {
+                        metaNodeRef.set(node);
                         return null;
                     }
 
@@ -171,7 +109,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
                         final var responseNode = (ObjectNode) node;
 
                         // 恢复META-INFO
-                        final var metaNode = ctx.metaNodeRef.get();
+                        final var metaNode = metaNodeRef.get();
                         if (Objects.nonNull(metaNode)) {
                             responseNode.set("meta_info", metaNode);
                         }
@@ -186,6 +124,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
                         );
                     }
 
+                    // 反序列化应答
                     return JacksonUtils.toObject(mapper, PluginResponse.class, node);
                 })
 
@@ -197,26 +136,15 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
 
                 // 构造
                 .build();
+
     }
+
 
     // 是否SSE的首包
-    private boolean isFirstSSE(Context ctx, JsonNode node) {
-        return Objects.isNull(ctx.metaNodeRef.get())
+    private boolean isFirstSSE(AtomicReference<?> ref, JsonNode node) {
+        return Objects.isNull(ref.get())
                 && node.has("plugin_id");
     }
-
-    /**
-     * 执行上下文。
-     * <p>
-     * PLUGIN比较特殊，执行过程中需要并行处理多个异步交互，因此需要一个上下文来存储中间状态。
-     * </p>
-     */
-    private static class Context {
-        String httpRequestBodyJson;
-        String token;
-        final AtomicReference<JsonNode> metaNodeRef = new AtomicReference<>();
-    }
-
 
     @Override
     public String toString() {

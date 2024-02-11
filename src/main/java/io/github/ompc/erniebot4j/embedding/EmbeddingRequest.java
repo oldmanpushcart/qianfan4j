@@ -8,7 +8,7 @@ import java.util.List;
 
 import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 
-public class EmbeddingRequest extends BaseRequest<EmbeddingModel> implements Request {
+public final class EmbeddingRequest extends BaseRequest<EmbeddingModel> implements Request {
 
     private final List<String> documents;
 

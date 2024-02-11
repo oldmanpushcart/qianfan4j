@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import static java.util.Objects.requireNonNull;
 
-public class CaptionImageRequest extends BaseRequest<CaptionModel> implements Request {
+public final class CaptionImageRequest extends BaseRequest<CaptionModel> implements Request {
 
     private final String prompt;
     private final BufferedImage image;

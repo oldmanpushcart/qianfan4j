@@ -8,7 +8,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * 补全请求
  */
-public class CompletionRequest extends BaseRequest<CompletionModel> implements Request {
+public final class CompletionRequest extends BaseRequest<CompletionModel> implements Request {
 
     private final String prompt;
 
