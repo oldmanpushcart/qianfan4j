@@ -36,13 +36,13 @@
 ## 三、跑通测试
 
 1. 到[百度智能云](https://cloud.baidu.com/)上注册一个账号
-2. 在百度智能云上[创建一个应用](https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application)
-   ，你将会得到一个API Key和一个Secret Key
+2. 在百度智能云上[创建一个应用](https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application)，你将会得到一个API Key和一个Secret Key
 3. 在本地创建一个文件：`$HOME/erniebot-test.properties`，内容如下：
-
    ```properties
-   erniebot.identity=<你的API Key>
-   erniebot.secret=<你的Secret Key>
+   erniebot.qianfan.ak=<千帆大模型平台 AK>
+   erniebot.qianfan.sk=<千帆大模型平台 SK>
+   erniebot.cloud.baidu.ak=<你的百度智能云 AK>
+   erniebot.cloud.baidu.sk=<你的百度智能云 SK>
    ```
 4. 运行测试用例：`mvn test`
 
@@ -232,14 +232,11 @@ final var response = client.chat(request)
 ChatResponse[id=as-upp67fpwz2, type=chat.completion, timestamp=1707250370000, usage=Usage[prompt=4460, completion=439, total=4899], sentence=Sentence[index=0, isLast=true, content=根据您提供的信息，张三、李四、王五三人的语文平均分为80分。], call=null, search=Search[items=[]]]
 ```
 
-在一次对话中，用户首先询问了张三的语文成绩，然后询问了李四的语文成绩，最后询问了王五的语文成绩。在这个过程中，`erniebot4j`
-根据用户的需求，分别调用了`query_score`工具来查询张三、李四、王五的语文成绩，并使用`compute_avg_score`
-工具来计算他们的语文平均分。最终，助手返回了张三、李四、王五三人的语文平均分为80分。
+在一次对话中，用户首先询问了张三的语文成绩，然后询问了李四的语文成绩，最后询问了王五的语文成绩。在这个过程中，`erniebot4j`根据用户的需求，分别调用了`query_score`工具来查询张三、李四、王五的语文成绩，并使用`compute_avg_score`工具来计算他们的语文平均分。最终，助手返回了张三、李四、王五三人的语文平均分为80分。
 
 ### 文生图示例
 
-`erniebot4j`会将文心一言返回的BASE64编码封装为`BufferedImage`
-类型，方便开发者进行后续的图像处理。下面是一个简单的示例，展示了如何使用`erniebot4j`进行图像处理：
+`erniebot4j`会将文心一言返回的BASE64编码封装为`BufferedImage`类型，方便开发者进行后续的图像处理。下面是一个简单的示例，展示了如何使用`erniebot4j`进行图像处理：
 
 ```java
 // 对话请求
@@ -283,15 +280,11 @@ final var response = client.image().generation(request)
 
 当我得知千帆大模型发布了SDK时，我迫不及待地想要集成到我的项目中。然而，我遗憾地发现他们的SDK当时并不支持Java。作为一个Java开发者，我深知Java在开发者社区中的普及程度和重要性。因此，我决定自己动手，填补这一空白，为Java开发者提供一个方便、易用的文心一言客户端。
 
-正是在这样的背景下，我发起了`erniebot4j`
-项目。它旨在成为文心一言的Java开发者最佳伴侣，提供简洁明了的API接口，帮助开发者快速集成和使用文心一言的功能。通过`erniebot4j`
-，Java开发者可以轻松地实现对话、续写、向量嵌入和图像处理等功能，极大地提升了开发效率和用户体验。
+正是在这样的背景下，我发起了`erniebot4j`项目。它旨在成为文心一言的Java开发者最佳伴侣，提供简洁明了的API接口，帮助开发者快速集成和使用文心一言的功能。通过`erniebot4j`，Java开发者可以轻松地实现对话、续写、向量嵌入和图像处理等功能，极大地提升了开发效率和用户体验。
 
 ### 展望与呼吁
 
-展望未来，我希望`erniebot4j`
-能够成为Java开发者与文心一言之间的桥梁，推动文心一言在更多领域的应用和发展。同时，我也呼吁更多的开发者加入到`erniebot4j`
-的开源社区中来，共同完善和优化这个项目，让它更好地服务于整个开发者社区。
+展望未来，我希望`erniebot4j`能够成为Java开发者与文心一言之间的桥梁，推动文心一言在更多领域的应用和发展。 同时，我也呼吁更多的开发者加入到`erniebot4j`的开源社区中来，共同完善和优化这个项目，让它更好地服务于整个开发者社区。
 
 ## 七、相关链接
 

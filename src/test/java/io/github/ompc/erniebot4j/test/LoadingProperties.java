@@ -23,13 +23,13 @@ public interface LoadingProperties {
     }};
 
     TokenRefresher refresher = new TokenRefresher(
-            prop.getProperty("erniebot.identity"),
-            prop.getProperty("erniebot.secret")
+            prop.getProperty("erniebot.qianfan.ak"),
+            prop.getProperty("erniebot.qianfan.sk")
     );
 
     BceCredential credential = new BceCredential(
-            prop.getProperty("erniebot.cloud.baidu.bos.ak"),
-            prop.getProperty("erniebot.cloud.baidu.bos.sk")
+            prop.getProperty("erniebot.cloud.baidu.ak"),
+            prop.getProperty("erniebot.cloud.baidu.sk")
     );
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
