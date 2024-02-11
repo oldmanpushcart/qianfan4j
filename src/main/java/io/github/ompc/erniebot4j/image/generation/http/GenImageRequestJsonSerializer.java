@@ -20,7 +20,7 @@ public class GenImageRequestJsonSerializer extends JsonSerializer<GenImageReques
             put("prompt", request.prompt());
 
             // 负向提示
-            if(isNotBlank(request.negative())) {
+            if (isNotBlank(request.negative())) {
                 put("negative_prompt", request.negative());
             }
 

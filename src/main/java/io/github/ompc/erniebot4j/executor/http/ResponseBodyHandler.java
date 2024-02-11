@@ -218,7 +218,7 @@ public class ResponseBodyHandler<R extends Response> implements HttpResponse.Bod
                     if (body.startsWith("data:")) {
                         final var segments = body.split(":", 2);
                         final var response = convertor.apply(segments[1].trim());
-                        if(null != response) {
+                        if (null != response) {
                             consumer.accept(response);
                             responseRef.accumulateAndGet(response, accumulator);
                         }
