@@ -33,7 +33,7 @@ public class GenImageExecutor implements HttpExecutor<GenImageRequest, GenImageR
     private final Executor executor;
     private final HttpClient http;
 
-    public GenImageExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
+    public GenImageExecutor(HttpClient http, TokenRefresher refresher, Executor executor) {
         this.refresher = refresher;
         this.executor = executor;
         this.http = http;

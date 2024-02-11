@@ -32,7 +32,7 @@ public class EmbeddingExecutor implements HttpExecutor<EmbeddingRequest, Embeddi
     private final Executor executor;
     private final HttpClient http;
 
-    public EmbeddingExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
+    public EmbeddingExecutor(HttpClient http, TokenRefresher refresher, Executor executor) {
         this.refresher = refresher;
         this.executor = executor;
         this.http = http;

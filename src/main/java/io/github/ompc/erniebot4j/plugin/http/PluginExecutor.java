@@ -28,6 +28,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+/**
+ * 插件执行器
+ */
 public class PluginExecutor implements HttpExecutor<PluginRequest, PluginResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -39,7 +42,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
     private final Executor executor;
     private final HttpClient http;
 
-    public PluginExecutor(TokenRefresher refresher, Executor executor, HttpClient http) {
+    public PluginExecutor(HttpClient http, TokenRefresher refresher, Executor executor) {
         this.refresher = refresher;
         this.executor = executor;
         this.http = http;
@@ -48,11 +51,16 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
     @Override
     public CompletableFuture<PluginResponse> execute(PluginRequest request, Consumer<PluginResponse> consumer) {
 
+        // 序列化请求
         return serializePluginRequest(request)
+
+                // 获取Token
                 .thenCombine(refresher.refresh(http), (_json, _token) -> new Context() {{
                     this.httpRequestBodyJson = _json;
                     this.token = _token;
                 }})
+
+                // 执行HTTP请求
                 .thenCompose(ctx -> {
 
                     // 记录HTTP请求日志
@@ -68,51 +76,65 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
 
     }
 
+    /**
+     * 序列化插件请求
+     * <p>
+     * 在序列化过程中可能需要与外部进行异步交互，比如上传图片等。所以这里不能用常规的JSON序列化方式。
+     * 必须使用CompletableFuture来进行异步序列化。
+     * </p>
+     *
+     * @param request 插件请求
+     * @return 序列化后的JSON
+     */
     private CompletableFuture<String> serializePluginRequest(PluginRequest request) {
-        return request.fetchImageUrl().<HashMap<Object, Object>>thenApply(imageUrl -> new HashMap<>() {{
-                    put("query", request.question());
+        return request.fetchImageUrl().thenApply(imageUrl -> {
+            final var map = new HashMap<String, Object>();
 
-                    // 插件
-                    if (!request.plugins().isEmpty()) {
-                        put("plugins", request.plugins().stream()
-                                .map(Plugin::text)
-                                .toArray(String[]::new)
-                        );
-                    }
+            // 问题
+            map.put("query", request.question());
 
-                    // 检查是否有图片
-                    if (Objects.nonNull(imageUrl)) {
-                        put("fileurl", imageUrl);
-                    }
+            // 插件
+            if (!request.plugins().isEmpty()) {
+                map.put("plugins", request.plugins().stream()
+                        .map(Plugin::text)
+                        .toArray(String[]::new)
+                );
+            }
 
-                    // 变量
-                    if (!request.variables().isEmpty()) {
-                        put("input_variables", request.variables());
-                    }
+            // 图片
+            if (Objects.nonNull(imageUrl)) {
+                map.put("fileurl", imageUrl);
+            }
 
-                    // 对话历史
-                    if (!request.messages().isEmpty()) {
-                        put("history", request.messages());
-                    }
+            // 变量
+            if (!request.variables().isEmpty()) {
+                map.put("input_variables", request.variables());
+            }
 
-                    // 选项参数
-                    final var option = request.option().copy();
-                    if (option.has("stream")) {
-                        put("stream", option.remove("stream"));
-                    }
+            // 对话历史
+            if (!request.messages().isEmpty()) {
+                map.put("history", request.messages());
+            }
 
-                    // 是否返回RAW信息
-                    if (option.has("verbose")) {
-                        put("verbose", option.remove("verbose"));
-                    }
+            // 选项参数
+            final var option = request.option().copy();
+            if (option.has("stream")) {
+                map.put("stream", option.remove("stream"));
+            }
 
-                    // LLM参数
-                    if (!option.isEmpty()) {
-                        put("llm", option.export());
-                    }
+            // 是否返回RAW信息
+            if (option.has("verbose")) {
+                map.put("verbose", option.remove("verbose"));
+            }
 
-                }})
-                .thenApply(map -> JacksonUtils.toJson(mapper, map));
+            // LLM参数
+            if (!option.isEmpty()) {
+                map.put("llm", option.export());
+            }
+
+            // 序列化为JSON
+            return JacksonUtils.toJson(mapper, map);
+        });
     }
 
     // 构建HTTP请求
@@ -138,8 +160,8 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
                     // 转为Node处理
                     final var node = JacksonUtils.toResponseNode(mapper, json);
 
-                    // 检查是否为首包，plugin在SSE模式下开启了verbose的时候，首包为META-INFO
-                    if (Objects.isNull(ctx.metaNodeRef.get()) && isMetaInfoNode(node)) {
+                    // 检查是否为SSE首包，plugin在SSE模式下开启了verbose的时候，首包为META-INFO
+                    if (isFirstSSE(ctx, node)) {
                         ctx.metaNodeRef.set(node);
                         return null;
                     }
@@ -177,16 +199,22 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
                 .build();
     }
 
-    private boolean isMetaInfoNode(JsonNode node) {
-        return node.has("plugin_id");
+    // 是否SSE的首包
+    private boolean isFirstSSE(Context ctx, JsonNode node) {
+        return Objects.isNull(ctx.metaNodeRef.get())
+                && node.has("plugin_id");
     }
 
+    /**
+     * 执行上下文。
+     * <p>
+     * PLUGIN比较特殊，执行过程中需要并行处理多个异步交互，因此需要一个上下文来存储中间状态。
+     * </p>
+     */
     private static class Context {
-
         String httpRequestBodyJson;
         String token;
         final AtomicReference<JsonNode> metaNodeRef = new AtomicReference<>();
-
     }
 
 

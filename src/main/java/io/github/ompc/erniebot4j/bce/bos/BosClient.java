@@ -63,7 +63,12 @@ public class BosClient {
         final var signRequest = BceSigner.sign(request, credential, timestamp);
 
         // 记录请求日志
-        logger.debug("{}/{}/put => {} (... {} bytes)", this, bucket, key, data.length);
+        logger.debug("{}/put => bucket={};key={};size={}(bytes)",
+                this,
+                bucket,
+                key,
+                data.length
+        );
 
         // 发送HTTP请求
         return http.sendAsync(signRequest, HttpResponse.BodyHandlers.ofString())
@@ -74,7 +79,13 @@ public class BosClient {
                     final var body = response.body();
 
                     // 记录返回日志
-                    logger.debug("{}/{}/put <= {};{};", this, bucket, code, isBlank(body) ? "success" : body);
+                    logger.debug("{}/put <= bucket={};key={};code={};message={};",
+                            this,
+                            bucket,
+                            key,
+                            code,
+                            isBlank(body) ? "success" : body
+                    );
 
                     // 检查HTTP响应是否成功
                     if (code != 200) {

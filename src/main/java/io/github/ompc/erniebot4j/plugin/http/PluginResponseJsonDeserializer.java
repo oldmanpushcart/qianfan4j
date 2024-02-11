@@ -13,8 +13,7 @@ import java.util.UUID;
 
 import static io.github.ompc.erniebot4j.util.JacksonUtils.getTextDefault;
 
-public class PluginResponseJsonDeserializer extends JsonDeserializer<PluginResponse> {
-
+class PluginResponseJsonDeserializer extends JsonDeserializer<PluginResponse> {
 
     @Override
     public PluginResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {

@@ -2,111 +2,195 @@ package io.github.ompc.erniebot4j.plugin;
 
 import io.github.ompc.erniebot4j.chat.message.Message;
 import io.github.ompc.erniebot4j.executor.BaseRequest;
+import io.github.ompc.erniebot4j.util.LazyGet;
 
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
-public class PluginRequest extends BaseRequest<PluginModel> {
+/**
+ * 插件请求
+ */
+public final class PluginRequest extends BaseRequest<PluginModel> {
 
     private final String question;
-    private final Supplier<CompletableFuture<URL>> imageUrlSupplier;
+    private final LazyGet<ImageUrlSupplier> imageUrlSupplierLazyGet;
     private final Set<Plugin> plugins;
     private final Map<String, Object> variables;
     private final List<Message> messages;
 
-    protected PluginRequest(Builder builder) {
+    private PluginRequest(Builder builder) {
         super(builder);
         this.question = requireNonNull(builder.question);
         this.plugins = check(builder.plugins, v -> !v.isEmpty(), "plugins is empty");
         this.variables = builder.variables;
         this.messages = builder.messages;
-        this.imageUrlSupplier = requireNonNullElseGet(builder.imageUrlSupplier, () -> () -> completedFuture(null));
+        this.imageUrlSupplierLazyGet = LazyGet.of(() -> requireNonNullElseGet(builder.imageUrlSupplier, () -> () -> completedFuture(null)));
     }
 
+    /**
+     * 获取问题
+     *
+     * @return 问题
+     */
     public String question() {
         return question;
     }
 
+    /**
+     * 获取插件列表
+     *
+     * @return 插件列表
+     */
     public Set<Plugin> plugins() {
         return plugins;
     }
 
+    /**
+     * 获取变量
+     *
+     * @return 变量
+     */
     public Map<String, Object> variables() {
         return variables;
     }
 
+    /**
+     * 获取对话历史
+     *
+     * @return 对话历史
+     */
     public List<Message> messages() {
         return messages;
     }
 
+    /**
+     * 获取图片URL
+     *
+     * @return 图片URL
+     */
     public CompletableFuture<URL> fetchImageUrl() {
-        return imageUrlSupplier.get();
+        return imageUrlSupplierLazyGet.get().get();
     }
 
+    /**
+     * 插件请求构建器
+     */
     public static class Builder extends BaseBuilder<PluginModel, PluginRequest, Builder> {
 
         private String question;
-        private Supplier<CompletableFuture<URL>> imageUrlSupplier;
+        private ImageUrlSupplier imageUrlSupplier;
         private final Set<Plugin> plugins = new HashSet<>();
         private final Map<String, Object> variables = new HashMap<>();
         private final List<Message> messages = new ArrayList<>();
 
+        /**
+         * 设置问题
+         *
+         * @param question 问题
+         * @return this
+         */
         public Builder question(String question) {
             this.question = requireNonNull(question);
             return this;
         }
 
-        public Builder imageUrl(Supplier<CompletableFuture<URL>> supplier) {
+        /**
+         * 设置图片URL
+         *
+         * @param supplier 获取图片URL
+         * @return this
+         */
+        public Builder imageUrl(ImageUrlSupplier supplier) {
             this.imageUrlSupplier = requireNonNull(supplier);
             return this;
         }
 
+        /**
+         * 设置插件集合。
+         * <p>
+         * 指明本次插件请求所需要使用的插件，自带插件参见{@link Plugin}。
+         * <ul>
+         *     <li>如需要更多插件，可以访问插件表<a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/llmuflu2o">插件列表</a></li>
+         *     <li>如需要自定义插件，可以访问<a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/2lmuqfng8">插件开发者文档</a></li>
+         * </ul>
+         * </p>
+         *
+         * @param plugins 插件集合
+         * @return this
+         */
         public Builder plugins(Set<Plugin> plugins) {
             this.plugins.addAll(plugins);
             return this;
         }
 
+        /**
+         * @see #plugins(Set)
+         */
         public Builder plugins(Plugin... plugins) {
             this.plugins.addAll(Set.of(plugins));
             return this;
         }
 
-        public Builder plugin(Plugin plugin) {
-            this.plugins.add(plugin);
-            return this;
-        }
-
+        /**
+         * 设置变量表
+         * <p>
+         * 在千帆中配置插件应用时，你会有机会给这个插件应用配置prompt，
+         * 如果prompt中使用了变量，推理时可以在此填写变量具体值。
+         * </p>
+         *
+         * @param variables 变量表
+         * @return this
+         */
         public Builder variables(Map<String, Object> variables) {
             this.variables.putAll(variables);
             return this;
         }
 
+        /**
+         * 设置变量
+         *
+         * @param name  变量名
+         * @param value 变量值
+         * @return this
+         * @see #variables(Map)
+         */
         public Builder variable(String name, Object value) {
             this.variables.put(name, value);
             return this;
         }
 
+        /**
+         * 设置对话历史
+         * <p>
+         * 用于推理时，上下文的对话历史。
+         * </p>
+         *
+         * @param messages 对话历史
+         * @return this
+         */
         public Builder messages(List<Message> messages) {
             this.messages.addAll(messages);
             return this;
         }
 
+        /**
+         * @see #messages(List)
+         */
         public Builder messages(Message... messages) {
             return messages(List.of(messages));
         }
 
-        public Builder message(Message message) {
-            this.messages.add(message);
-            return this;
-        }
-
+        /**
+         * 构建插件请求
+         *
+         * @return 插件请求
+         */
         @Override
         public PluginRequest build() {
             return new PluginRequest(this);

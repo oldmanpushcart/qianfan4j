@@ -22,31 +22,33 @@ import io.github.ompc.erniebot4j.plugin.http.PluginExecutor;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * ErnieBot客户端
  */
 public class ErnieBotClient {
 
+    private final HttpClient http;
     private final TokenRefresher refresher;
     private final Executor executor;
-    private final HttpClient http;
+
 
     private ErnieBotClient(Builder builder) {
+        this.http = newHttpClient(builder);
         this.refresher = requireNonNull(builder.refresher);
         this.executor = requireNonNull(builder.executor);
-        this.http = newHttpClient(builder);
     }
 
     private HttpClient newHttpClient(Builder builder) {
-        final var httpBuilder = HttpClient.newBuilder().executor(executor);
-        Optional.ofNullable(builder.connectTimeout).ifPresent(httpBuilder::connectTimeout);
+        final var httpBuilder = HttpClient.newBuilder();
+        ofNullable(builder.connectTimeout).ifPresent(httpBuilder::connectTimeout);
+        ofNullable(builder.executor).ifPresent(httpBuilder::executor);
         return httpBuilder.build();
     }
 
@@ -57,7 +59,7 @@ public class ErnieBotClient {
      * @return 操作
      */
     public Op<ChatResponse> chat(ChatRequest request) {
-        return consumer -> new ChatExecutor(refresher, executor, http)
+        return consumer -> new ChatExecutor(http, refresher, executor)
                 .execute(request, consumer);
     }
 
@@ -68,7 +70,7 @@ public class ErnieBotClient {
      * @return 操作
      */
     public Op<CompletionResponse> completion(CompletionRequest request) {
-        return consumer -> new CompletionExecutor(refresher, executor, http)
+        return consumer -> new CompletionExecutor(http, refresher, executor)
                 .execute(request, consumer);
     }
 
@@ -82,13 +84,13 @@ public class ErnieBotClient {
 
             @Override
             public Op<GenImageResponse> generation(GenImageRequest request) {
-                return consumer -> new GenImageExecutor(refresher, executor, http)
+                return consumer -> new GenImageExecutor(http, refresher, executor)
                         .execute(request, consumer);
             }
 
             @Override
             public Op<CaptionImageResponse> caption(CaptionImageRequest request) {
-                return consumer -> new CaptionImageExecutor(refresher, executor, http)
+                return consumer -> new CaptionImageExecutor(http, refresher, executor)
                         .execute(request, consumer);
             }
 
@@ -102,12 +104,18 @@ public class ErnieBotClient {
      * @return 操作
      */
     public Op<EmbeddingResponse> embedding(EmbeddingRequest request) {
-        return consumer -> new EmbeddingExecutor(refresher, executor, http)
+        return consumer -> new EmbeddingExecutor(http, refresher, executor)
                 .execute(request, consumer);
     }
 
+    /**
+     * 插件应用
+     *
+     * @param request 插件请求
+     * @return 操作
+     */
     public Op<PluginResponse> plugin(PluginRequest request) {
-        return consumer -> new PluginExecutor(refresher, executor, http)
+        return consumer -> new PluginExecutor(http, refresher, executor)
                 .execute(request, consumer);
     }
 
