@@ -17,7 +17,7 @@ public class DebugTestCase implements LoadingProperties {
                 .model(new PluginModel("ujwdafb5hz1e4qee"))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("解析这张图片")
-                .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/bfa05c91-99ed-419f-bcca-06823f3bcb4b.png"))
+                .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-001.jpeg"))
                 .build();
 
         final var response = client.plugin(request)

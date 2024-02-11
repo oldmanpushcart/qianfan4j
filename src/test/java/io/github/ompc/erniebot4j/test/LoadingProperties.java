@@ -2,8 +2,6 @@ package io.github.ompc.erniebot4j.test;
 
 import io.github.ompc.erniebot4j.ErnieBotClient;
 import io.github.ompc.erniebot4j.TokenRefresher;
-import io.github.ompc.erniebot4j.cloud.baidu.BceCredential;
-import io.github.ompc.erniebot4j.cloud.baidu.bos.BosClient;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,11 +25,6 @@ public interface LoadingProperties {
             prop.getProperty("erniebot.qianfan.sk")
     );
 
-    BceCredential credential = new BceCredential(
-            prop.getProperty("erniebot.cloud.baidu.ak"),
-            prop.getProperty("erniebot.cloud.baidu.sk")
-    );
-
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
     ErnieBotClient client = new ErnieBotClient.Builder()
@@ -40,9 +33,5 @@ public interface LoadingProperties {
             .connectTimeout(Duration.ofSeconds(30))
             .build();
 
-    BosClient bos = new BosClient.Builder()
-            .credential(credential)
-            .executor(executor)
-            .build();
 
 }
