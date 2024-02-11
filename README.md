@@ -180,9 +180,7 @@ ChatResponse[id=as-nx26cc70ms, type=chat.completion, timestamp=1707251619000, us
 
 `erniebot4j`会根据LLM的推理能力，自动拆解多函数调用的任务，然后按照拆解的任务顺序依次调用函数。这样，你就可以专注于函数的实现，而不用再去关心函数的调用顺序了。
 
-我们假设有两个函数 [QueryScoreFunction](src/test/java/io/github/ompc/erniebot4j/test/chat/function/QueryScoreFunction.java)
-和 [ComputeAvgScoreFunction](src/test/java/io/github/ompc/erniebot4j/test/chat/function/ComputeAvgScoreFunction.java)
-，分别用于查询成绩和计算平均分。我们可以通过以下方式实现多函数调用：
+我们假设有两个函数 [QueryScoreFunction](src/test/java/io/github/ompc/erniebot4j/test/chat/function/QueryScoreFunction.java)和 [ComputeAvgScoreFunction](src/test/java/io/github/ompc/erniebot4j/test/chat/function/ComputeAvgScoreFunction.java)，分别用于查询成绩和计算平均分。我们可以通过以下方式实现多函数调用：
 
 ```java
 // 对话请求
