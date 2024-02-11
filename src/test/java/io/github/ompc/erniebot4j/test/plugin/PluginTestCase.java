@@ -93,4 +93,32 @@ public class PluginTestCase implements LoadingProperties {
 
     }
 
+    @Test
+    public void test$plugin$ocr_image$003() throws IOException {
+
+        final var imageUrl = bos.putPngImage(
+                "erniebot4j-image",
+                "%s.png".formatted(UUID.randomUUID()),
+                ImageIO.read(new File("./ocr-image/image-003.jpg"))
+        ).join();
+
+        final var request = new PluginRequest.Builder()
+                .model(new PluginModel("ujwdafb5hz1e4qee"))
+                .question("请描述你看到的图片")
+                .imageUrl(imageUrl)
+                .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
+                .option(PluginOptions.IS_STREAM, true)
+                .option(PluginOptions.IS_VERBOSE, true)
+                .build();
+
+        final var response = client.plugin(request)
+                .async()
+                .join();
+
+        ErnieBotAssert.assertResponse(response);
+        ErnieBotAssert.assertSentence(response.sentence());
+        Assert.assertTrue(response.sentence().content().contains("杜蕾斯"));
+
+    }
+
 }
