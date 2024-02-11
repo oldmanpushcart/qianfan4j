@@ -58,6 +58,7 @@ public class ChatExecutorTestCase implements LoadingProperties {
                 .join();
 
         ErnieBotAssert.assertResponse(response);
+        ErnieBotAssert.assertSentence(response.sentence());
         Assert.assertEquals("chat.completion", response.type());
         System.out.println(response);
 
@@ -76,6 +77,7 @@ public class ChatExecutorTestCase implements LoadingProperties {
                 .join();
 
         ErnieBotAssert.assertResponse(check);
+        ErnieBotAssert.assertSentence(check.sentence());
         Assert.assertTrue(check.sentence().content().contains("YES"));
         System.out.println(check);
 

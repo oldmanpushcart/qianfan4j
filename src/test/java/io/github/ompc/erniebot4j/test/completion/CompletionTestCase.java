@@ -73,6 +73,7 @@ public class CompletionTestCase implements LoadingProperties {
                 .join();
 
         ErnieBotAssert.assertResponse(response);
+        ErnieBotAssert.assertSentence(response.sentence());
 
         // 没想到这个测试用例的返回值竟然和文档不一样
         // Assert.assertEquals("completion", response.type());

@@ -32,6 +32,7 @@ public class PluginTestCase implements LoadingProperties {
                 .join();
 
         ErnieBotAssert.assertResponse(response);
+        ErnieBotAssert.assertSentence(response.sentence());
         Assert.assertTrue(response.sentence().content().contains("NO"));
 
     }
@@ -59,6 +60,7 @@ public class PluginTestCase implements LoadingProperties {
                 .join();
 
         ErnieBotAssert.assertResponse(response);
+        ErnieBotAssert.assertSentence(response.sentence());
         Assert.assertTrue(response.sentence().content().contains("NO"));
 
     }
@@ -86,6 +88,7 @@ public class PluginTestCase implements LoadingProperties {
                 .join();
 
         ErnieBotAssert.assertResponse(response);
+        ErnieBotAssert.assertSentence(response.sentence());
         Assert.assertTrue(response.sentence().content().contains("YES"));
 
     }
