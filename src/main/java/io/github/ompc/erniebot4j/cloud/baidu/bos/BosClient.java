@@ -1,11 +1,14 @@
-package io.github.ompc.erniebot4j.bce.bos;
+package io.github.ompc.erniebot4j.cloud.baidu.bos;
 
-import io.github.ompc.erniebot4j.bce.BceCredential;
+import io.github.ompc.erniebot4j.cloud.baidu.BceCredential;
+import io.github.ompc.erniebot4j.cloud.baidu.BceRegion;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * BOS客户端
@@ -38,6 +41,7 @@ public interface BosClient {
     class Builder {
 
         private BceCredential credential;
+        private BceRegion region = BceRegion.BJ;
         private Executor executor;
 
         /**
@@ -47,7 +51,18 @@ public interface BosClient {
          * @return this
          */
         public Builder credential(BceCredential credential) {
-            this.credential = credential;
+            this.credential = requireNonNull(credential);
+            return this;
+        }
+
+        /**
+         * 设置BCE区域
+         *
+         * @param region BCE区域
+         * @return this
+         */
+        public Builder region(BceRegion region) {
+            this.region = requireNonNull(region);
             return this;
         }
 
@@ -58,12 +73,16 @@ public interface BosClient {
          * @return this
          */
         public Builder executor(Executor executor) {
-            this.executor = executor;
+            this.executor = requireNonNull(executor);
             return this;
         }
 
         BceCredential credential() {
             return credential;
+        }
+
+        BceRegion region() {
+            return region;
         }
 
         Executor executor() {

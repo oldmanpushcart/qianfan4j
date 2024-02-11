@@ -5,6 +5,15 @@ import io.github.ompc.erniebot4j.executor.Usage;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * 文生图响应
+ *
+ * @param id        ID
+ * @param type      类型
+ * @param timestamp 时间戳
+ * @param usage     用量
+ * @param images    生成的图片
+ */
 public record GenImageResponse(
 
         String id,

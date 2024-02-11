@@ -2,6 +2,12 @@ package io.github.ompc.erniebot4j.embedding;
 
 import io.github.ompc.erniebot4j.executor.Model;
 
+/**
+ * 向量计算模型
+ *
+ * @param name   模型名称
+ * @param remote 模型远程地址
+ */
 public record EmbeddingModel(String name, String remote) implements Model {
 
     public static final EmbeddingModel EMBEDDING_V1 = new EmbeddingModel(

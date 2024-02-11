@@ -22,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
+/**
+ * 续写请求执行器
+ */
 public class CompletionExecutor implements HttpExecutor<CompletionRequest, CompletionResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

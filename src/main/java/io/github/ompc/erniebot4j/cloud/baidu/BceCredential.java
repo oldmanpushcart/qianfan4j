@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.bce;
+package io.github.ompc.erniebot4j.cloud.baidu;
 
 /**
  * BCE凭证

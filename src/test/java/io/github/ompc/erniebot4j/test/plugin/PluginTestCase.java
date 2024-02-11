@@ -104,7 +104,7 @@ public class PluginTestCase implements LoadingProperties {
 
         final var request = new PluginRequest.Builder()
                 .model(new PluginModel("ujwdafb5hz1e4qee"))
-                .question("请描述你看到的图片")
+                .question("图片中是什么？")
                 .imageUrl(imageUrl)
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .option(PluginOptions.IS_STREAM, true)

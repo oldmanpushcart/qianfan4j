@@ -20,6 +20,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
+/**
+ * 向量计算请求执行器
+ */
 public class EmbeddingExecutor implements HttpExecutor<EmbeddingRequest, EmbeddingResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

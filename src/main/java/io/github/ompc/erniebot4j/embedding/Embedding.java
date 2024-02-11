@@ -1,5 +1,11 @@
 package io.github.ompc.erniebot4j.embedding;
 
+/**
+ * 向量结算结果
+ *
+ * @param index   结果编号，与{@link EmbeddingRequest#documents()}中的顺序对应
+ * @param vectors 文档向量
+ */
 public record Embedding(int index, float[] vectors) implements Comparable<Embedding> {
 
     @Override

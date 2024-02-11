@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 )
 public class EchoFunction implements ChatFunction<EchoFunction.Echo, EchoFunction.Echo> {
 
-
     @Override
     public CompletableFuture<Echo> call(Echo echo) {
         return CompletableFuture.completedFuture(new Echo(echo.words()));

@@ -89,15 +89,15 @@ final var client = new ErnieBotClient.Builder()
 ```java
 // 对话请求
 final var request = new ChatRequest.Builder()
-        .model(ChatModel.ERNIEBOT_8K)
-        .message(Message.human("你是谁?"))
-        .option(ChatOptions.IS_STREAM, true)
-        .build();
+    .model(ChatModel.ERNIEBOT_8K)
+    .message(Message.human("你是谁?"))
+    .option(ChatOptions.IS_STREAM, true)
+    .build();
 
 // 对话响应
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 ```
 
 输出结果
@@ -147,15 +147,15 @@ public class EchoFunction implements ChatFunction<EchoFunction.Echo, EchoFunctio
 ```java
 // 对话请求
 final var request = new ChatRequest.Builder()
-        .model(ChatModel.ERNIEBOT_8K)
-        .message(Message.human("echo: hello world!"))
-        .function(new EchoFunction())
-        .build();
+    .model(ChatModel.ERNIEBOT_8K)
+    .message(Message.human("echo: hello world!"))
+    .function(new EchoFunction())
+    .build();
 
 // 对话响应
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 ```
 
 输出结果
@@ -181,19 +181,19 @@ ChatResponse[id=as-nx26cc70ms, type=chat.completion, timestamp=1707251619000, us
 ```java
 // 对话请求
 final var request = new ChatRequest.Builder()
-        .model(ChatModel.ERNIEBOT_8K)
-        .message(Message.human("计算张三、李四、王五的语文平均分"))
-        .function(new QueryScoreFunction())
-        .function(new ComputeAvgScoreFunction())
-        .option(ChatOptions.IS_STREAM, false)
-        .option(ChatOptions.IS_ENABLE_SEARCH, false)
-        .option(ChatOptions.TEMPERATURE, 0.01f)
-        .build();
+    .model(ChatModel.ERNIEBOT_8K)
+    .message(Message.human("计算张三、李四、王五的语文平均分"))
+    .function(new QueryScoreFunction())
+    .function(new ComputeAvgScoreFunction())
+    .option(ChatOptions.IS_STREAM, false)
+    .option(ChatOptions.IS_ENABLE_SEARCH, false)
+    .option(ChatOptions.TEMPERATURE, 0.01f)
+    .build();
 
 // 对话响应
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 ```
 
 输出结果
@@ -238,16 +238,16 @@ ChatResponse[id=as-upp67fpwz2, type=chat.completion, timestamp=1707250370000, us
 ```java
 // 对话请求
 final var request = new GenImageRequest.Builder()
-        .model(GenImageModel.STABLE_DIFFUSION_XL)
-        .prompt("猫")
-        .option(GenImageOptions.NUMBERS, 1)
-        .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024)
-        .build();
+    .model(GenImageModel.STABLE_DIFFUSION_XL)
+    .prompt("猫")
+    .option(GenImageOptions.NUMBERS, 1)
+    .option(GenImageOptions.SIZE, GenImageRequest.Size.S_1024_1024)
+    .build();
 
 // 对话响应
 final var response = client.image().generation(request)
-        .async()
-        .join();
+    .async()
+    .join();
 ```
 
 然后你就可以通过`response.images()[0]`拿到生成的图片的`BufferedImage`类型进行后续操作了。

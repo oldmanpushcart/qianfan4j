@@ -1,7 +1,8 @@
-package io.github.ompc.erniebot4j.bce.bos;
+package io.github.ompc.erniebot4j.cloud.baidu.bos;
 
-import io.github.ompc.erniebot4j.bce.BceCredential;
-import io.github.ompc.erniebot4j.bce.util.BceSigner;
+import io.github.ompc.erniebot4j.cloud.baidu.BceCredential;
+import io.github.ompc.erniebot4j.cloud.baidu.BceRegion;
+import io.github.ompc.erniebot4j.cloud.baidu.util.BceSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +14,9 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static io.github.ompc.erniebot4j.bce.util.BceSigner.DATE_FORMATTER_ISO8601;
 import static io.github.ompc.erniebot4j.util.StringUtils.isBlank;
 import static java.util.Objects.requireNonNull;
 
@@ -27,10 +26,12 @@ class BosClientImpl implements BosClient {
     private final HttpClient http;
     private final BceCredential credential;
     private final Executor executor;
+    private final BceRegion region;
 
     BosClientImpl(BosClient.Builder builder) {
         this.credential = requireNonNull(builder.credential());
         this.executor = requireNonNull(builder.executor());
+        this.region = requireNonNull(builder.region());
         this.http = HttpClient.newBuilder()
                 .executor(executor)
                 .build();
@@ -63,9 +64,9 @@ class BosClientImpl implements BosClient {
 
         // 原始HTTP请求
         final var request = HttpRequest.newBuilder()
-                .uri(URI.create("https://%s.bj.bcebos.com/%s".formatted(bucket, key)))
+                .uri(URI.create("https://%s.%s.bcebos.com/%s".formatted(bucket, region, key)))
                 .header("Content-Type", mime)
-                .header("x-bce-date", DATE_FORMATTER_ISO8601.format(new Date(timestamp).toInstant()))
+                .header("x-bce-date", BceSigner.formatToBceDate(timestamp))
                 .PUT(HttpRequest.BodyPublishers.ofByteArray(data))
                 .build();
 

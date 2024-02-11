@@ -22,7 +22,7 @@ module erniebot4j {
     exports io.github.ompc.erniebot4j.image.generation;
     exports io.github.ompc.erniebot4j.plugin;
 
-    exports io.github.ompc.erniebot4j.bce;
-    exports io.github.ompc.erniebot4j.bce.bos;
+    exports io.github.ompc.erniebot4j.cloud.baidu.bos;
+    exports io.github.ompc.erniebot4j.cloud.baidu;
 
 }

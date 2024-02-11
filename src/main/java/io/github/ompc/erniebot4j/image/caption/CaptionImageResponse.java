@@ -7,6 +7,15 @@ import io.github.ompc.erniebot4j.executor.Usage;
 
 import java.util.Optional;
 
+/**
+ * 图生文响应
+ *
+ * @param id        ID
+ * @param type      类型
+ * @param timestamp 时间戳
+ * @param usage     用量
+ * @param sentence  生成的句子
+ */
 public record CaptionImageResponse(
         String id,
         String type,

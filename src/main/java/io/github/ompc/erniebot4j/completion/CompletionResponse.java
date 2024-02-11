@@ -7,6 +7,15 @@ import io.github.ompc.erniebot4j.executor.Usage;
 
 import java.util.Optional;
 
+/**
+ * 续写响应
+ *
+ * @param id        ID
+ * @param type      类型
+ * @param timestamp 时间戳
+ * @param usage     用量
+ * @param sentence  句子
+ */
 public record CompletionResponse(
         String id,
         String type,

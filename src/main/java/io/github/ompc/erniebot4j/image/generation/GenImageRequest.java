@@ -6,6 +6,9 @@ import io.github.ompc.erniebot4j.executor.Textualizable;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * 文生图请求
+ */
 public final class GenImageRequest extends BaseRequest<GenImageModel> implements Request {
 
     private final String prompt;
@@ -17,34 +20,67 @@ public final class GenImageRequest extends BaseRequest<GenImageModel> implements
         this.negative = builder.negative;
     }
 
+    /**
+     * 获取提示
+     *
+     * @return 提示
+     */
     public String prompt() {
         return prompt;
     }
 
+    /**
+     * 获取负面提示
+     *
+     * @return 负面提示
+     */
     public String negative() {
         return negative;
     }
 
+    /**
+     * 文生图构建器
+     */
     public static class Builder extends BaseRequest.BaseBuilder<GenImageModel, GenImageRequest, Builder> {
         private String prompt;
         private String negative;
 
+        /**
+         * 设置提示
+         *
+         * @param prompt 提示
+         * @return this
+         */
         public Builder prompt(String prompt) {
             this.prompt = requireNonNull(prompt);
             return this;
         }
 
+        /**
+         * 设置负面提示
+         *
+         * @param negative 负面提示
+         * @return this
+         */
         public Builder negative(String negative) {
             this.negative = requireNonNull(negative);
             return this;
         }
 
+        /**
+         * 构建文生图请求
+         *
+         * @return 文生图请求
+         */
         @Override
         public GenImageRequest build() {
             return new GenImageRequest(this);
         }
     }
 
+    /**
+     * 图片尺寸
+     */
     public enum Size implements Textualizable {
         S_768_768("768x768"),
         S_768_1024("768x1024"),
@@ -66,7 +102,9 @@ public final class GenImageRequest extends BaseRequest<GenImageModel> implements
 
     }
 
-
+    /**
+     * 图片采样器
+     */
     public enum Sampler implements Textualizable {
 
         EULER("Euler"),
@@ -98,6 +136,9 @@ public final class GenImageRequest extends BaseRequest<GenImageModel> implements
 
     }
 
+    /**
+     * 图片风格
+     */
     public enum Style implements Textualizable {
 
         BASE("Base"),

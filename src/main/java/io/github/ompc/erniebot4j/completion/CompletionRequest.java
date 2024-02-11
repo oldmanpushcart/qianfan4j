@@ -6,7 +6,7 @@ import io.github.ompc.erniebot4j.executor.Request;
 import static java.util.Objects.requireNonNull;
 
 /**
- * 补全请求
+ * 续写请求
  */
 public final class CompletionRequest extends BaseRequest<CompletionModel> implements Request {
 

@@ -98,9 +98,9 @@ public class ErnieBotClient {
     }
 
     /**
-     * 向量
+     * 向量计算
      *
-     * @param request 向量请求
+     * @param request 向量计算请求
      * @return 操作
      */
     public Op<EmbeddingResponse> embedding(EmbeddingRequest request) {

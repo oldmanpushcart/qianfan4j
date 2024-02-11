@@ -1,6 +1,6 @@
-package io.github.ompc.erniebot4j.bce.util;
+package io.github.ompc.erniebot4j.cloud.baidu.util;
 
-import io.github.ompc.erniebot4j.bce.BceCredential;
+import io.github.ompc.erniebot4j.cloud.baidu.BceCredential;
 import io.github.ompc.erniebot4j.util.StringUtils;
 
 import javax.crypto.Mac;
@@ -58,6 +58,16 @@ public class BceSigner {
             .stream()
             .map(String::toLowerCase)
             .collect(Collectors.toSet());
+
+    /**
+     * 格式化时间戳为BCE日期格式
+     *
+     * @param timestamp 时间戳
+     * @return BCE日期格式
+     */
+    public static String formatToBceDate(long timestamp) {
+        return DATE_FORMATTER_ISO8601.format(new Date(timestamp).toInstant());
+    }
 
     /**
      * 对请求进行签名
