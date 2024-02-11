@@ -112,6 +112,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
          * <p>
          * 指明本次插件请求所需要使用的插件，自带插件参见{@link Plugin}。
          * <ul>
+         *     <li>注意：插件应用需要配置开启对应的插件</li>
          *     <li>如需要更多插件，可以访问插件表<a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/llmuflu2o">插件列表</a></li>
          *     <li>如需要自定义插件，可以访问<a href="https://cloud.baidu.com/doc/WENXINWORKSHOP/s/2lmuqfng8">插件开发者文档</a></li>
          * </ul>
