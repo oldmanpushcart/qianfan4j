@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
 public final class PluginRequest extends BaseRequest<PluginModel> {
 
     private final String question;
-    private final URL imageUrl;
+    private final URL fileUrl;
     private final Set<Plugin> plugins;
     private final Map<String, Object> variables;
     private final List<Message> messages;
@@ -26,7 +26,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
         this.plugins = check(builder.plugins, v -> !v.isEmpty(), "plugins is empty");
         this.variables = builder.variables;
         this.messages = builder.messages;
-        this.imageUrl = builder.imageUrl;
+        this.fileUrl = builder.fileUrl;
     }
 
     /**
@@ -66,12 +66,12 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
     }
 
     /**
-     * 图片URL
+     * 文件URL
      *
-     * @return 图片URL
+     * @return 文件URL
      */
-    public URL imageUrl() {
-        return imageUrl;
+    public URL fileUrl() {
+        return fileUrl;
     }
 
     /**
@@ -80,7 +80,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
     public static class Builder extends BaseBuilder<PluginModel, PluginRequest, Builder> {
 
         private String question;
-        private URL imageUrl;
+        private URL fileUrl;
         private final Set<Plugin> plugins = new HashSet<>();
         private final Map<String, Object> variables = new HashMap<>();
         private final List<Message> messages = new ArrayList<>();
@@ -97,13 +97,13 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
         }
 
         /**
-         * 设置图片URL
+         * 设置文件URL
          *
-         * @param imageUrl 图片URL
+         * @param fileUrl 文件URL
          * @return this
          */
-        public Builder imageUrl(URL imageUrl) {
-            this.imageUrl = requireNonNull(imageUrl);
+        public Builder fileUrl(URL fileUrl) {
+            this.fileUrl = requireNonNull(fileUrl);
             return this;
         }
 

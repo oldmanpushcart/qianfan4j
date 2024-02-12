@@ -14,10 +14,10 @@ public class DebugTestCase implements LoadingProperties {
     public void test$debug() throws MalformedURLException {
 
         final var request = new PluginRequest.Builder()
-                .model(new PluginModel("ujwdafb5hz1e4qee"))
-                .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
-                .question("解析这张图片")
-                .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-001.jpeg"))
+                .model(new PluginModel(PLUGIN_ENDPOINT))
+                .plugins(Plugin.CHAT_OCR)
+                .question("解析这个文件")
+                .fileUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-003.jpeg"))
                 .build();
 
         final var response = client.plugin(request)

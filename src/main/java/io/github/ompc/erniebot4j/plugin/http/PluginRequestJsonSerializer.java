@@ -15,8 +15,14 @@ public class PluginRequestJsonSerializer extends JsonSerializer<PluginRequest> {
     @Override
     public void serialize(PluginRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {
         generator.writeObject(new HashMap<>() {{
+
             // 问题
             put("query", request.question());
+
+            // 文件
+            if (Objects.nonNull(request.fileUrl())) {
+                put("fileurl", request.fileUrl());
+            }
 
             // 插件
             if (!request.plugins().isEmpty()) {
@@ -24,11 +30,6 @@ public class PluginRequestJsonSerializer extends JsonSerializer<PluginRequest> {
                         .map(Plugin::text)
                         .toArray(String[]::new)
                 );
-            }
-
-            // 图片
-            if (Objects.nonNull(request.imageUrl())) {
-                put("fileurl", request.imageUrl());
             }
 
             // 变量

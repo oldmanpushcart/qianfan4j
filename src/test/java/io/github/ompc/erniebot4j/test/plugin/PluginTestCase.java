@@ -42,7 +42,7 @@ public class PluginTestCase implements LoadingProperties {
                 .model(new PluginModel(PLUGIN_ENDPOINT))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("请告诉我照片上女人是否有戴口罩，你只需要回答YES或者NO")
-                .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-001.jpeg"))
+                .fileUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-001.jpeg"))
                 .option(PluginOptions.IS_STREAM, true)
                 .option(PluginOptions.IS_VERBOSE, true)
                 .build();
@@ -64,7 +64,7 @@ public class PluginTestCase implements LoadingProperties {
                 .model(new PluginModel(PLUGIN_ENDPOINT))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("请告诉我照片上是否有自行车，你只需要回答YES或者NO")
-                .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-002.jpeg"))
+                .fileUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-002.jpeg"))
                 .option(PluginOptions.IS_STREAM, true)
                 .option(PluginOptions.IS_VERBOSE, true)
                 .build();
@@ -86,7 +86,7 @@ public class PluginTestCase implements LoadingProperties {
                 .model(new PluginModel(PLUGIN_ENDPOINT))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("图片中是什么？")
-                .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-003.jpeg"))
+                .fileUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-003.jpeg"))
                 .option(PluginOptions.IS_STREAM, true)
                 .option(PluginOptions.IS_VERBOSE, true)
                 .build();
