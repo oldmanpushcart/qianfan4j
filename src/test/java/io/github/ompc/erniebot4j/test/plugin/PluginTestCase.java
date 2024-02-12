@@ -18,9 +18,9 @@ public class PluginTestCase implements LoadingProperties {
     public void test$plugin$kb() {
 
         final var request = new PluginRequest.Builder()
-                .model(new PluginModel("ujwdafb5hz1e4qee"))
-                .question("请告诉我哈利波特和罗恩是否情侣关系，你只需要回答YES或者NO")
+                .model(new PluginModel(PLUGIN_ENDPOINT))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
+                .question("请告诉我哈利波特和罗恩是否情侣关系，你只需要回答YES或者NO")
                 .option(PluginOptions.IS_STREAM, true)
                 .option(PluginOptions.IS_VERBOSE, true)
                 .build();
@@ -62,9 +62,9 @@ public class PluginTestCase implements LoadingProperties {
 
         final var request = new PluginRequest.Builder()
                 .model(new PluginModel(PLUGIN_ENDPOINT))
+                .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("请告诉我照片上是否有自行车，你只需要回答YES或者NO")
                 .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-002.jpeg"))
-                .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .option(PluginOptions.IS_STREAM, true)
                 .option(PluginOptions.IS_VERBOSE, true)
                 .build();
@@ -84,9 +84,9 @@ public class PluginTestCase implements LoadingProperties {
 
         final var request = new PluginRequest.Builder()
                 .model(new PluginModel(PLUGIN_ENDPOINT))
+                .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("图片中是什么？")
                 .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-003.jpeg"))
-                .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .option(PluginOptions.IS_STREAM, true)
                 .option(PluginOptions.IS_VERBOSE, true)
                 .build();
