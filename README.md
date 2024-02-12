@@ -44,7 +44,16 @@
    erniebot.cloud.baidu.ak=<你的百度智能云 AK>
    erniebot.cloud.baidu.sk=<你的百度智能云 SK>
    ```
+   注意：[PluginTestCase](https://github.com/oldmanpushcart/erniebot4j/blob/main/src/test/java/io/github/ompc/erniebot4j/test/plugin/PluginTestCase.java) 测试用例如果要跑通，需要在千帆大模型平台创建插件应用，并设置插件的`endpoint`。 并追加一行
+   ```properties
+   erniebot.plugin.endpoint=<插件应用的endpoint>
+   ```
+
 4. 运行测试用例：`mvn test`
+
+
+
+
 
 ## 四、依赖使用
 

@@ -33,5 +33,6 @@ public interface LoadingProperties {
             .connectTimeout(Duration.ofSeconds(30))
             .build();
 
+    String PLUGIN_ENDPOINT = prop.getProperty("erniebot.plugin.endpoint");
 
 }

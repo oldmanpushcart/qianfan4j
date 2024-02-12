@@ -39,7 +39,7 @@ public class PluginTestCase implements LoadingProperties {
     public void test$plugin$ocr_image$001() throws IOException {
 
         final var request = new PluginRequest.Builder()
-                .model(new PluginModel("ujwdafb5hz1e4qee"))
+                .model(new PluginModel(PLUGIN_ENDPOINT))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
                 .question("请告诉我照片上女人是否有戴口罩，你只需要回答YES或者NO")
                 .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-001.jpeg"))
@@ -61,7 +61,7 @@ public class PluginTestCase implements LoadingProperties {
     public void test$plugin$ocr_image$002() throws IOException {
 
         final var request = new PluginRequest.Builder()
-                .model(new PluginModel("ujwdafb5hz1e4qee"))
+                .model(new PluginModel(PLUGIN_ENDPOINT))
                 .question("请告诉我照片上是否有自行车，你只需要回答YES或者NO")
                 .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-002.jpeg"))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
@@ -83,7 +83,7 @@ public class PluginTestCase implements LoadingProperties {
     public void test$plugin$ocr_image$003() throws IOException {
 
         final var request = new PluginRequest.Builder()
-                .model(new PluginModel("ujwdafb5hz1e4qee"))
+                .model(new PluginModel(PLUGIN_ENDPOINT))
                 .question("图片中是什么？")
                 .imageUrl(new URL("https://erniebot4j-image.bj.bcebos.com/image-003.jpeg"))
                 .plugins(Plugin.KNOWLEDGE_BASE, Plugin.CHAT_OCR)
