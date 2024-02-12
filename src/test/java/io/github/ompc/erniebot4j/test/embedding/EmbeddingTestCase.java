@@ -30,7 +30,7 @@ public class EmbeddingTestCase implements LoadingProperties {
         Assert.assertEquals(2, response.embeddings().length);
         for (final var embedding : response.embeddings()) {
             Assert.assertNotNull(embedding);
-            Assert.assertTrue(embedding.vectors().length > 0);
+            Assert.assertTrue(embedding.vector().length > 0);
             System.out.println(embedding);
         }
     }
