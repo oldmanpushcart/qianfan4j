@@ -10,7 +10,7 @@ import io.github.ompc.erniebot4j.image.caption.CaptionImageResponse;
 
 import java.io.IOException;
 
-public class CaptionImageResponseJsonDeserializer extends JsonDeserializer<CaptionImageResponse> {
+class CaptionImageResponseJsonDeserializer extends JsonDeserializer<CaptionImageResponse> {
 
     @Override
     public CaptionImageResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {

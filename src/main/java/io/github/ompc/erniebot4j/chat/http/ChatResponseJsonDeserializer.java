@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 
 import static java.util.Collections.emptyList;
 
-public class ChatResponseJsonDeserializer extends JsonDeserializer<ChatResponse> {
+class ChatResponseJsonDeserializer extends JsonDeserializer<ChatResponse> {
 
     @Override
     public ChatResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {

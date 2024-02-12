@@ -10,7 +10,7 @@ import io.github.ompc.erniebot4j.executor.Usage;
 
 import java.io.IOException;
 
-public class CompletionResponseJsonDeserializer extends JsonDeserializer<CompletionResponse> {
+class CompletionResponseJsonDeserializer extends JsonDeserializer<CompletionResponse> {
 
     @Override
     public CompletionResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {

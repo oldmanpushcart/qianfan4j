@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.plugin.http;
+package io.github.ompc.erniebot4j.pluginapp.http;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -6,19 +6,19 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.ompc.erniebot4j.executor.Sentence;
 import io.github.ompc.erniebot4j.executor.Usage;
-import io.github.ompc.erniebot4j.plugin.PluginResponse;
+import io.github.ompc.erniebot4j.pluginapp.PluginAppResponse;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import static io.github.ompc.erniebot4j.util.JacksonUtils.getTextDefault;
 
-class PluginResponseJsonDeserializer extends JsonDeserializer<PluginResponse> {
+class PluginAppResponseJsonDeserializer extends JsonDeserializer<PluginAppResponse> {
 
     @Override
-    public PluginResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public PluginAppResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         final var node = context.readTree(parser);
-        return new PluginResponse(
+        return new PluginAppResponse(
                 deserializeId(node),
                 deserializeType(node),
                 deserializeTimestamp(node),
@@ -59,14 +59,14 @@ class PluginResponseJsonDeserializer extends JsonDeserializer<PluginResponse> {
                 : new Usage();
     }
 
-    private PluginResponse.Meta deserializeMeta(JsonNode node) {
+    private PluginAppResponse.Meta deserializeMeta(JsonNode node) {
         if (!node.has("meta_info")) {
             return null;
         }
         final var metaNode = node.get("meta_info");
-        return new PluginResponse.Meta(
+        return new PluginAppResponse.Meta(
                 getTextDefault(metaNode, "plugin_id", null),
-                new PluginResponse.Raw(
+                new PluginAppResponse.Raw(
                         metaNode.get("request").toString(),
                         metaNode.get("response").toString()
                 )

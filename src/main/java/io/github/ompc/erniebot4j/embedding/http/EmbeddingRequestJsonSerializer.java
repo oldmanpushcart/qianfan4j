@@ -11,7 +11,7 @@ import java.util.HashMap;
 import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.nonNull;
 
-public class EmbeddingRequestJsonSerializer extends JsonSerializer<EmbeddingRequest> {
+class EmbeddingRequestJsonSerializer extends JsonSerializer<EmbeddingRequest> {
 
     @Override
     public void serialize(EmbeddingRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {

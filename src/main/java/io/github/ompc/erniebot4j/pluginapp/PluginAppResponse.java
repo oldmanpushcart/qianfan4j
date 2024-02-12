@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.plugin;
+package io.github.ompc.erniebot4j.pluginapp;
 
 import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.Response;
@@ -8,7 +8,7 @@ import io.github.ompc.erniebot4j.executor.Usage;
 import java.util.Optional;
 
 /**
- * 插件应答
+ * 插件应用应答
  *
  * @param id        应答ID
  * @param type      应答类型
@@ -16,9 +16,9 @@ import java.util.Optional;
  * @param usage     应答用量
  * @param logId     日志ID
  * @param sentence  应答句子
- * @param meta      应答元数据，只有设置了{@link PluginOptions#IS_VERBOSE}才会有值
+ * @param meta      应答元数据，只有设置了{@link PluginAppOptions#IS_VERBOSE}才会有值
  */
-public record PluginResponse(
+public record PluginAppResponse(
         String id,
         String type,
         long timestamp,
@@ -26,12 +26,12 @@ public record PluginResponse(
         long logId,
         Sentence sentence,
         Meta meta
-) implements Response, Aggregatable<PluginResponse> {
+) implements Response, Aggregatable<PluginAppResponse> {
 
     @Override
-    public PluginResponse aggregate(PluginResponse response) {
+    public PluginAppResponse aggregate(PluginAppResponse response) {
         return Optional.ofNullable(response)
-                .map(other -> new PluginResponse(
+                .map(other -> new PluginAppResponse(
                         this.id(),
                         this.type(),
                         this.timestamp(),

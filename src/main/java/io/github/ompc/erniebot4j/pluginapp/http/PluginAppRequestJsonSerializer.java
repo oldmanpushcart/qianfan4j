@@ -1,19 +1,19 @@
-package io.github.ompc.erniebot4j.plugin.http;
+package io.github.ompc.erniebot4j.pluginapp.http;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import io.github.ompc.erniebot4j.plugin.Plugin;
-import io.github.ompc.erniebot4j.plugin.PluginRequest;
+import io.github.ompc.erniebot4j.pluginapp.Plugin;
+import io.github.ompc.erniebot4j.pluginapp.PluginAppRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class PluginRequestJsonSerializer extends JsonSerializer<PluginRequest> {
+class PluginAppRequestJsonSerializer extends JsonSerializer<PluginAppRequest> {
 
     @Override
-    public void serialize(PluginRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {
+    public void serialize(PluginAppRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {
         generator.writeObject(new HashMap<>() {{
 
             // 问题
@@ -27,7 +27,7 @@ public class PluginRequestJsonSerializer extends JsonSerializer<PluginRequest> {
             // 插件
             if (!request.plugins().isEmpty()) {
                 put("plugins", request.plugins().stream()
-                        .map(Plugin::text)
+                        .map(Plugin::id)
                         .toArray(String[]::new)
                 );
             }

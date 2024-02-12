@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.plugin.http;
+package io.github.ompc.erniebot4j.pluginapp.http;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,8 +9,8 @@ import io.github.ompc.erniebot4j.exception.ErnieBotResponseNotSafeException;
 import io.github.ompc.erniebot4j.executor.Aggregatable;
 import io.github.ompc.erniebot4j.executor.http.HttpExecutor;
 import io.github.ompc.erniebot4j.executor.http.ResponseBodyHandler;
-import io.github.ompc.erniebot4j.plugin.PluginRequest;
-import io.github.ompc.erniebot4j.plugin.PluginResponse;
+import io.github.ompc.erniebot4j.pluginapp.PluginAppRequest;
+import io.github.ompc.erniebot4j.pluginapp.PluginAppResponse;
 import io.github.ompc.erniebot4j.util.JacksonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,28 +27,28 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
- * 插件执行器
+ * 插件应用执行器
  */
-public class PluginExecutor implements HttpExecutor<PluginRequest, PluginResponse> {
+public class PluginAppExecutor implements HttpExecutor<PluginAppRequest, PluginAppResponse> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final ObjectMapper mapper = JacksonUtils.mapper()
             .registerModule(new SimpleModule() {{
-                addSerializer(PluginRequest.class, new PluginRequestJsonSerializer());
-                addDeserializer(PluginResponse.class, new PluginResponseJsonDeserializer());
+                addSerializer(PluginAppRequest.class, new PluginAppRequestJsonSerializer());
+                addDeserializer(PluginAppResponse.class, new PluginAppResponseJsonDeserializer());
             }});
     private final TokenRefresher refresher;
     private final Executor executor;
     private final HttpClient http;
 
-    public PluginExecutor(HttpClient http, TokenRefresher refresher, Executor executor) {
+    public PluginAppExecutor(HttpClient http, TokenRefresher refresher, Executor executor) {
         this.refresher = refresher;
         this.executor = executor;
         this.http = http;
     }
 
     @Override
-    public CompletableFuture<PluginResponse> execute(PluginRequest request, Consumer<PluginResponse> consumer) {
+    public CompletableFuture<PluginAppResponse> execute(PluginAppRequest request, Consumer<PluginAppResponse> consumer) {
 
         return refresher.refresh(http).thenCompose(token -> {
 
@@ -67,7 +67,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
     }
 
     // 构造HTTP请求
-    private HttpRequest newHttpRequest(String token, PluginRequest request) {
+    private HttpRequest newHttpRequest(String token, PluginAppRequest request) {
         // 构建HTTP请求体
         final var httpRequestBodyJson = JacksonUtils.toJson(mapper, request);
 
@@ -85,9 +85,9 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
     }
 
     // 构造HTTP应答处理器
-    private HttpResponse.BodyHandler<PluginResponse> newHttpResponseBodyHandler(PluginRequest request, Consumer<PluginResponse> consumer) {
+    private HttpResponse.BodyHandler<PluginAppResponse> newHttpResponseBodyHandler(PluginAppRequest request, Consumer<PluginAppResponse> consumer) {
         final var metaNodeRef = new AtomicReference<JsonNode>();
-        return new ResponseBodyHandler.Builder<PluginResponse>()
+        return new ResponseBodyHandler.Builder<PluginAppResponse>()
 
                 // 将json转为Response
                 .convertor(json -> {
@@ -125,7 +125,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
                     }
 
                     // 反序列化应答
-                    return JacksonUtils.toObject(mapper, PluginResponse.class, node);
+                    return JacksonUtils.toObject(mapper, PluginAppResponse.class, node);
                 })
 
                 // 消费Response
@@ -148,7 +148,7 @@ public class PluginExecutor implements HttpExecutor<PluginRequest, PluginRespons
 
     @Override
     public String toString() {
-        return "erniebot://plugin";
+        return "erniebot://plugin-app";
     }
 
 }

@@ -37,23 +37,16 @@
 
 1. 到[百度智能云](https://cloud.baidu.com/)上注册一个账号
 2. 在百度智能云上[创建一个应用](https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application)，你将会得到一个API Key和一个Secret Key
-3. 在本地创建一个文件：`$HOME/erniebot-test.properties`，内容如下：
+3. 在本地创建一个配置文件：`$HOME/erniebot-test.properties`，内容如下：
    ```properties
    erniebot.qianfan.ak=<千帆大模型平台 AK>
    erniebot.qianfan.sk=<千帆大模型平台 SK>
-   erniebot.cloud.baidu.ak=<你的百度智能云 AK>
-   erniebot.cloud.baidu.sk=<你的百度智能云 SK>
    ```
-   注意：[PluginTestCase](https://github.com/oldmanpushcart/erniebot4j/blob/main/src/test/java/io/github/ompc/erniebot4j/test/plugin/PluginTestCase.java) 测试用例如果要跑通，需要在千帆大模型平台创建插件应用，并设置插件的`endpoint`。 并追加一行
+   注意：[PluginTestCase](https://github.com/oldmanpushcart/erniebot4j/blob/main/src/test/java/io/github/ompc/erniebot4j/test/pluginapp/PluginAppTestCase.java) 测试用例如果要跑通，需要在千帆大模型平台创建插件应用，开通`ocr-chat`插件。 并在配置文件中追加一行
    ```properties
-   erniebot.plugin.endpoint=<插件应用的endpoint>
+   erniebot.qianfan.plugin-app.id=<插件应用的ID>
    ```
-
 4. 运行测试用例：`mvn test`
-
-
-
-
 
 ## 四、依赖使用
 

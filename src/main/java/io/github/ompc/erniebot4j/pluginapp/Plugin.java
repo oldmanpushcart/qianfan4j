@@ -1,6 +1,11 @@
-package io.github.ompc.erniebot4j.plugin;
+package io.github.ompc.erniebot4j.pluginapp;
 
-public record Plugin(String text) {
+/**
+ * 插件类型
+ *
+ * @param id 插件唯一标识
+ */
+public record Plugin(String id) {
 
     /**
      * 知识库

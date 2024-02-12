@@ -11,7 +11,7 @@ import java.util.HashMap;
 import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.nonNull;
 
-public class GenImageRequestJsonSerializer extends JsonSerializer<GenImageRequest> {
+class GenImageRequestJsonSerializer extends JsonSerializer<GenImageRequest> {
 
     @Override
     public void serialize(GenImageRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {

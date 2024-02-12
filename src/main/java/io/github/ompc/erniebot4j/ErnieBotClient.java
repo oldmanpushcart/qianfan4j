@@ -16,9 +16,9 @@ import io.github.ompc.erniebot4j.image.caption.http.CaptionImageExecutor;
 import io.github.ompc.erniebot4j.image.generation.GenImageRequest;
 import io.github.ompc.erniebot4j.image.generation.GenImageResponse;
 import io.github.ompc.erniebot4j.image.generation.http.GenImageExecutor;
-import io.github.ompc.erniebot4j.plugin.PluginRequest;
-import io.github.ompc.erniebot4j.plugin.PluginResponse;
-import io.github.ompc.erniebot4j.plugin.http.PluginExecutor;
+import io.github.ompc.erniebot4j.pluginapp.PluginAppRequest;
+import io.github.ompc.erniebot4j.pluginapp.PluginAppResponse;
+import io.github.ompc.erniebot4j.pluginapp.http.PluginAppExecutor;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -111,11 +111,11 @@ public class ErnieBotClient {
     /**
      * 插件应用
      *
-     * @param request 插件请求
+     * @param request 插件应用请求
      * @return 操作
      */
-    public Op<PluginResponse> plugin(PluginRequest request) {
-        return consumer -> new PluginExecutor(http, refresher, executor)
+    public Op<PluginAppResponse> pluginApp(PluginAppRequest request) {
+        return consumer -> new PluginAppExecutor(http, refresher, executor)
                 .execute(request, consumer);
     }
 

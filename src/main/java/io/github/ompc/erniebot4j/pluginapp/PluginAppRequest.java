@@ -1,4 +1,4 @@
-package io.github.ompc.erniebot4j.plugin;
+package io.github.ompc.erniebot4j.pluginapp;
 
 import io.github.ompc.erniebot4j.chat.message.Message;
 import io.github.ompc.erniebot4j.executor.BaseRequest;
@@ -10,9 +10,9 @@ import static io.github.ompc.erniebot4j.util.CheckUtils.check;
 import static java.util.Objects.requireNonNull;
 
 /**
- * 插件请求
+ * 插件应用请求
  */
-public final class PluginRequest extends BaseRequest<PluginModel> {
+public final class PluginAppRequest extends BaseRequest<PluginAppModel> {
 
     private final String question;
     private final URL fileUrl;
@@ -20,7 +20,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
     private final Map<String, Object> variables;
     private final List<Message> messages;
 
-    private PluginRequest(Builder builder) {
+    private PluginAppRequest(Builder builder) {
         super(builder);
         this.question = requireNonNull(builder.question);
         this.plugins = check(builder.plugins, v -> !v.isEmpty(), "plugins is empty");
@@ -77,7 +77,7 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
     /**
      * 插件请求构建器
      */
-    public static class Builder extends BaseBuilder<PluginModel, PluginRequest, Builder> {
+    public static class Builder extends BaseBuilder<PluginAppModel, PluginAppRequest, Builder> {
 
         private String question;
         private URL fileUrl;
@@ -189,8 +189,8 @@ public final class PluginRequest extends BaseRequest<PluginModel> {
          * @return 插件请求
          */
         @Override
-        public PluginRequest build() {
-            return new PluginRequest(this);
+        public PluginAppRequest build() {
+            return new PluginAppRequest(this);
         }
 
     }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.nonNull;
 
-public class ChatRequestJsonSerializer extends JsonSerializer<ChatRequest> {
+class ChatRequestJsonSerializer extends JsonSerializer<ChatRequest> {
 
     @Override
     public void serialize(ChatRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {

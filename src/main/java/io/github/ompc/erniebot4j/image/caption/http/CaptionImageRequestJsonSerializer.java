@@ -12,7 +12,7 @@ import java.util.HashMap;
 import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.nonNull;
 
-public class CaptionImageRequestJsonSerializer extends JsonSerializer<CaptionImageRequest> {
+class CaptionImageRequestJsonSerializer extends JsonSerializer<CaptionImageRequest> {
 
     @Override
     public void serialize(CaptionImageRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {

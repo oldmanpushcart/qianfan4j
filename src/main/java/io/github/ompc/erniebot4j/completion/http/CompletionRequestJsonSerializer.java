@@ -11,7 +11,7 @@ import java.util.HashMap;
 import static io.github.ompc.erniebot4j.util.StringUtils.isNotBlank;
 import static java.util.Objects.nonNull;
 
-public class CompletionRequestJsonSerializer extends JsonSerializer<CompletionRequest> {
+class CompletionRequestJsonSerializer extends JsonSerializer<CompletionRequest> {
 
     @Override
     public void serialize(CompletionRequest request, JsonGenerator generator, SerializerProvider provider) throws IOException {

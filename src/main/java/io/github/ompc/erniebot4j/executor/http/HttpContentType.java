@@ -17,7 +17,7 @@ import static java.util.Collections.emptyMap;
 public record HttpContentType(String mime, Map<String, String> parameters) {
 
     public static final String MIME_APPLICATION_JSON = "application/json";
-    public static final String MIME_TEXT_EVENT_STREAM = "text/event-stream";
+    public static final String MIME_TEXT_EVENT_STREAM = "id/event-stream";
 
     /**
      * 获取字符集

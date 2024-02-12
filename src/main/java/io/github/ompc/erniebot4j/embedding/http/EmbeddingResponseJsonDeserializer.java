@@ -12,7 +12,7 @@ import io.github.ompc.erniebot4j.util.CheckUtils;
 import java.io.IOException;
 import java.util.stream.StreamSupport;
 
-public class EmbeddingResponseJsonDeserializer extends JsonDeserializer<EmbeddingResponse> {
+class EmbeddingResponseJsonDeserializer extends JsonDeserializer<EmbeddingResponse> {
 
     @Override
     public EmbeddingResponse deserialize(JsonParser parser, DeserializationContext context) throws IOException {
