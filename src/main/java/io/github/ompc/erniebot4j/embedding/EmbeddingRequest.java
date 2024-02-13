@@ -13,20 +13,20 @@ import static io.github.ompc.erniebot4j.util.CheckUtils.check;
  */
 public final class EmbeddingRequest extends BaseRequest<EmbeddingModel> implements Request {
 
-    private final List<String> documents;
+    private final List<String> texts;
 
     private EmbeddingRequest(Builder builder) {
         super(builder);
-        this.documents = check(builder.documents, v -> null != v && !v.isEmpty(), "documents is empty");
+        this.texts = check(builder.texts, v -> null != v && !v.isEmpty(), "texts is empty");
     }
 
     /**
-     * 获取文档
+     * 获取文本
      *
-     * @return 文档
+     * @return 文本
      */
-    public List<String> documents() {
-        return documents;
+    public List<String> texts() {
+        return texts;
     }
 
     /**
@@ -34,24 +34,24 @@ public final class EmbeddingRequest extends BaseRequest<EmbeddingModel> implemen
      */
     public static class Builder extends BaseBuilder<EmbeddingModel, EmbeddingRequest, Builder> {
 
-        private final List<String> documents = new ArrayList<>();
+        private final List<String> texts = new ArrayList<>();
 
         /**
-         * 设置文档
+         * 设置文本
          *
-         * @param documents 文档
+         * @param texts 文本
          * @return this
          */
-        public Builder documents(List<String> documents) {
-            this.documents.addAll(documents);
+        public Builder texts(List<String> texts) {
+            this.texts.addAll(texts);
             return this;
         }
 
         /**
-         * @see #documents(List)
+         * @see #texts(List)
          */
-        public Builder documents(String... documents) {
-            return documents(List.of(documents));
+        public Builder texts(String... texts) {
+            return texts(List.of(texts));
         }
 
         /**

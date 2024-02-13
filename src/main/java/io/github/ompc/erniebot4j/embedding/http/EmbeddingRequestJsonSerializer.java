@@ -18,7 +18,7 @@ class EmbeddingRequestJsonSerializer extends JsonSerializer<EmbeddingRequest> {
         generator.writeObject(new HashMap<>() {{
 
             // 文档
-            put("input", request.documents());
+            put("input", request.texts());
 
             // 用户
             if (isNotBlank(request.user())) {

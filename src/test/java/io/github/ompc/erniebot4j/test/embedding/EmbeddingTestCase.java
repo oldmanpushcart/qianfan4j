@@ -14,7 +14,7 @@ public class EmbeddingTestCase implements LoadingProperties {
 
         final var request = new EmbeddingRequest.Builder()
                 .model(EmbeddingModel.EMBEDDING_V1)
-                .documents(
+                .texts(
                         "推荐一些美食",
                         "给我讲个故事"
                 )
