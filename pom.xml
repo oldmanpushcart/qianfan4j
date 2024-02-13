@@ -32,8 +32,8 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/oldmanpushcart/erniebot4j</url>
+            <id>github-erniebot4j</id>
+            <url>https://maven.pkg.github.com/oldmanpushcart/erniebot4j/repo</url>
         </repository>
     </distributionManagement>
 

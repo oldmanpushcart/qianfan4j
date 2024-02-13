@@ -54,11 +54,15 @@
 
 首先在`pom.xml`中配置erniebot4j所在的GitHub仓库地址
 
+> 如何访问GITHUB仓库，可以参考这篇文档：[Working with the Apache Maven registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
+
 ```xml
-<repository>
-    <id>github</id>
-    <url>https://maven.pkg.github.com/oldmanpushcart/erniebot4j</url>
-</repository>
+<repositories>
+    <repository>
+        <id>github-erniebot4j</id>
+        <url>https://maven.pkg.github.com/oldmanpushcart/erniebot4j/repo</url>
+    </repository>
+</repositories>
 ```
 
 然后在`pom.xml`中引入erniebot4j
