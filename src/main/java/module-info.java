@@ -1,4 +1,4 @@
-module erniebot4j {
+module qianfan4j {
 
     requires org.slf4j;
     requires java.net.http;
@@ -8,18 +8,22 @@ module erniebot4j {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.module.jsonSchema;
 
-    opens io.github.ompc.erniebot4j.chat.message to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.internal.qianfan4j.chat to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.internal.qianfan4j.base.api to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.internal.qianfan4j.base.algo to com.fasterxml.jackson.databind;
 
-    exports io.github.ompc.erniebot4j;
-    exports io.github.ompc.erniebot4j.exception;
-    exports io.github.ompc.erniebot4j.executor;
-    exports io.github.ompc.erniebot4j.chat;
-    exports io.github.ompc.erniebot4j.chat.message;
-    exports io.github.ompc.erniebot4j.chat.function;
-    exports io.github.ompc.erniebot4j.completion;
-    exports io.github.ompc.erniebot4j.embedding;
-    exports io.github.ompc.erniebot4j.image.caption;
-    exports io.github.ompc.erniebot4j.image.generation;
-    exports io.github.ompc.erniebot4j.pluginapp;
+    opens io.github.oldmanpushcart.qianfan4j.base.api to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.qianfan4j.base.algo to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.qianfan4j.chat to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.qianfan4j.chat.message to com.fasterxml.jackson.databind;
+    opens io.github.oldmanpushcart.qianfan4j.chat.function to com.fasterxml.jackson.databind;
+
+    exports io.github.oldmanpushcart.qianfan4j;
+    exports io.github.oldmanpushcart.qianfan4j.chat.message;
+    exports io.github.oldmanpushcart.qianfan4j.chat.function;
+    exports io.github.oldmanpushcart.qianfan4j.chat;
+    exports io.github.oldmanpushcart.qianfan4j.base.algo;
+    exports io.github.oldmanpushcart.qianfan4j.base.api;
+
 
 }
