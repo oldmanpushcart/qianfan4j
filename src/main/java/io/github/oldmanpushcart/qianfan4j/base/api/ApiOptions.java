@@ -1,7 +1,8 @@
 package io.github.oldmanpushcart.qianfan4j.base.api;
 
-import static io.github.oldmanpushcart.internal.qianfan4j.util.CheckUtils.check;
-
+/**
+ * API选项
+ */
 public interface ApiOptions {
 
     /**

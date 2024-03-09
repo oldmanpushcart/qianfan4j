@@ -1,7 +1,7 @@
 package io.github.oldmanpushcart.internal.qianfan4j.base.api;
 
-import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 import io.github.oldmanpushcart.qianfan4j.base.api.ApiRequest;
+import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 
 import java.time.Duration;
 

@@ -6,6 +6,13 @@ import io.github.oldmanpushcart.qianfan4j.base.algo.Model;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * 算法请求构建器实现
+ *
+ * @param <M> 模型类型
+ * @param <T> 算法请求类型
+ * @param <B> 算法请求构建器类型
+ */
 public abstract class AlgoRequestBuilderImpl<M extends Model, T extends AlgoRequest<M, ?>, B extends AlgoRequest.Builder<M, T, B>>
         extends ApiRequestBuilderImpl<T, B>
         implements AlgoRequest.Builder<M, T, B> {

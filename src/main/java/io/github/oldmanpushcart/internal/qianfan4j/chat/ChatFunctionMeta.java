@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.oldmanpushcart.internal.qianfan4j.util.JacksonUtils;
-import io.github.oldmanpushcart.internal.qianfan4j.util.StringUtils;
 import io.github.oldmanpushcart.qianfan4j.chat.FunctionCall;
-import io.github.oldmanpushcart.qianfan4j.chat.function.*;
+import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFn;
+import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFunction;
 import io.github.oldmanpushcart.qianfan4j.chat.message.Message;
 
 import java.lang.reflect.ParameterizedType;
@@ -84,15 +84,7 @@ public record ChatFunctionMeta(
         final var name = isNotBlank(anChatFn.name()) ? anChatFn.name() : toSnake(functionClass.getSimpleName());
         final var parameterType = interfaceType.getActualTypeArguments()[0];
         final var returnType = interfaceType.getActualTypeArguments()[1];
-        final var examples = Stream.of(functionClass.getAnnotations())
-                .flatMap(annotation -> {
-                    if (annotation instanceof ChatFnExample anExample) {
-                        return Stream.of(anExample);
-                    } else if (annotation instanceof ChatFnExamples anExamples) {
-                        return Stream.of(anExamples.value());
-                    }
-                    return Stream.empty();
-                })
+        final var examples = Stream.of(anChatFn.examples())
                 .map(anExample -> anExample.negative()
                         ? new Example(anExample.question(), new FunctionCall("", "{}", "我无需调用任何工具"))
                         : new Example(anExample.question(), new FunctionCall(name, anExample.arguments(), anExample.thoughts()))

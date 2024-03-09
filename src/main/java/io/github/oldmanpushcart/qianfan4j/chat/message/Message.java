@@ -6,7 +6,6 @@ import io.github.oldmanpushcart.qianfan4j.chat.FunctionCall;
 /**
  * 对话消息
  */
-
 public interface Message {
 
     /**
@@ -31,7 +30,7 @@ public interface Message {
      * @param text 文本
      * @return 消息
      */
-     static Message ofAi(String text) {
+    static Message ofAi(String text) {
         return new AiMessage(text);
     }
 
@@ -41,15 +40,28 @@ public interface Message {
      * @param text 文本
      * @return 消息
      */
-     static Message ofUser(String text) {
+    static Message ofUser(String text) {
         return new UserMessage(text);
     }
 
-     static Message ofFunction(String name, String content) {
+    /**
+     * 函数消息
+     *
+     * @param name    函数名称
+     * @param content 函数内容
+     * @return 消息
+     */
+    static Message ofFunction(String name, String content) {
         return new FunctionMessage(name, content);
     }
 
-     static Message ofFunctionCall(FunctionCall call) {
+    /**
+     * 函数调用消息
+     *
+     * @param call 函数调用
+     * @return 消息
+     */
+    static Message ofFunctionCall(FunctionCall call) {
         return new FunctionCallMessage(call);
     }
 

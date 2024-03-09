@@ -12,6 +12,11 @@ import java.util.List;
  */
 public record Search(List<Item> items) {
 
+    /**
+     * 搜索结果是否为空
+     *
+     * @return TRUE | FALSE
+     */
     public boolean isEmpty() {
         return null == items || items.isEmpty();
     }

@@ -14,10 +14,18 @@ import java.util.concurrent.Executor;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
+/**
+ * 千帆客户端实现
+ */
 public class QianFanClientImpl implements QianFanClient {
 
     private final ApiExecutor apiExecutor;
 
+    /**
+     * 构造千帆客户端实现
+     *
+     * @param builder 构造器
+     */
     public QianFanClientImpl(Builder builder) {
         this.apiExecutor = new ApiExecutor(
                 new TokenRefresher(builder.ak, builder.sk),
@@ -36,11 +44,13 @@ public class QianFanClientImpl implements QianFanClient {
 
     @Override
     public Op<ChatResponse> chat(ChatRequest request) {
-        return consumer -> apiExecutor.execute(request, Aggregatable::aggregate, consumer)
-                .thenCompose(new ChatResponseHandler(apiExecutor, request, consumer));
+        return consumer -> apiExecutor.execute(request, Aggregatable::accumulate, consumer)
+                .thenCompose(new ChatResponseHandler(this, request, consumer));
     }
 
-
+    /**
+     * 千帆客户端构造器实现
+     */
     public static class Builder implements QianFanClient.Builder {
 
         private String ak;

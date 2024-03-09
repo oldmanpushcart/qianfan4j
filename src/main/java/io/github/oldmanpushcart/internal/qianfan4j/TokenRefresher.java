@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * 百度的令牌刷新器
+ * 令牌刷新器
  */
 public class TokenRefresher {
 

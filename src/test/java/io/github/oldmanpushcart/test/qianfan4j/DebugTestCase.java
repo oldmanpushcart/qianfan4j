@@ -11,7 +11,7 @@ public class DebugTestCase implements LoadingEnv {
     public void test$debug() {
 
         final var request = ChatRequest.newBuilder()
-                .model(ChatModel.ERNIEBOT_V4)
+                .model(ChatModel.ERNIE_V4)
                 .messages(Message.ofUser("hello!"))
                 .build();
 

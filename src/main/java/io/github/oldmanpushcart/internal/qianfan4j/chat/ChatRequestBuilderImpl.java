@@ -15,7 +15,7 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
         implements ChatRequest.Builder {
 
     private List<Message> messages = new ArrayList<>();
-    private List<ChatFunction<?,?>> functions = new ArrayList<>();
+    private List<ChatFunction<?, ?>> functions = new ArrayList<>();
 
     public ChatRequestBuilderImpl() {
 
@@ -40,7 +40,10 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
     }
 
     @Override
-    public ChatRequest.Builder functions(ChatFunction<?, ?>... functions) {
+    public ChatRequest.Builder functions(boolean isReplace, ChatFunction<?, ?>... functions) {
+        if (isReplace) {
+            this.functions = new ArrayList<>(List.of(functions));
+        }
         this.functions.addAll(List.of(functions));
         return this;
     }

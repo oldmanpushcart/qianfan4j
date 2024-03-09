@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.oldmanpushcart.internal.qianfan4j.base.api.ApiRequestImpl;
 import io.github.oldmanpushcart.internal.qianfan4j.util.JacksonUtils;
-import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 import io.github.oldmanpushcart.qianfan4j.base.algo.AlgoRequest;
 import io.github.oldmanpushcart.qianfan4j.base.algo.AlgoResponse;
 import io.github.oldmanpushcart.qianfan4j.base.algo.Model;
+import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,6 @@ public abstract class AlgoRequestImpl<M extends Model, R extends AlgoResponse> e
             return JacksonUtils.toObject(mapper, body, responseType);
         };
     }
-
 
 
 }

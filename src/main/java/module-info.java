@@ -6,7 +6,7 @@ module qianfan4j {
 
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.module.jsonSchema;
+    requires transitive com.fasterxml.jackson.module.jsonSchema;
 
     opens io.github.oldmanpushcart.internal.qianfan4j.chat to com.fasterxml.jackson.databind;
     opens io.github.oldmanpushcart.internal.qianfan4j.base.api to com.fasterxml.jackson.databind;

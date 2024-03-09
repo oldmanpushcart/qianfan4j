@@ -7,16 +7,14 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.github.oldmanpushcart.internal.qianfan4j.base.algo.AlgoResponseImpl;
-import io.github.oldmanpushcart.qianfan4j.base.api.Ret;
 import io.github.oldmanpushcart.qianfan4j.base.algo.Usage;
+import io.github.oldmanpushcart.qianfan4j.base.api.Ret;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.chat.FunctionCall;
 import io.github.oldmanpushcart.qianfan4j.chat.Search;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
 
@@ -41,7 +39,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
     }
 
     @Override
-    public String result() {
+    public String content() {
         return result;
     }
 
@@ -110,7 +108,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
                         other.usage(),
                         other.isLast(),
                         other.isSafe(),
-                        this.result() + other.result(),
+                        this.content() + other.content(),
                         other.search(),
                         other.call()
                 ))
@@ -122,8 +120,13 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
         @Override
         public Search deserialize(JsonParser parser, DeserializationContext context) throws IOException {
             final var node = context.readTree(parser);
-            final var items = context.readTreeAsValue(node.get("search_results"), Search.Item[].class);
-            return new Search(List.of(items));
+            final var items = new ArrayList<Search.Item>();
+            final var searchResultsNode = node.get("search_results");
+            if (Objects.nonNull(searchResultsNode) && !searchResultsNode.isNull()) {
+                items.addAll(List.of(context.readTreeAsValue(searchResultsNode, Search.Item[].class)));
+
+            }
+            return new Search(Collections.unmodifiableList(items));
         }
 
     }

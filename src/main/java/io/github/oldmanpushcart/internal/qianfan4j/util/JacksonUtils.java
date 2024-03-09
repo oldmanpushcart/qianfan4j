@@ -14,6 +14,9 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
 import java.util.TimeZone;
 
+/**
+ * Jackson工具类
+ */
 public class JacksonUtils {
 
     private static final ObjectMapper mapper = new ObjectMapper()
@@ -63,6 +66,15 @@ public class JacksonUtils {
         }
     }
 
+    /**
+     * {@code json -> T}
+     *
+     * @param mapper mapper
+     * @param type   类型
+     * @param json   json
+     * @param <T>    T
+     * @return T
+     */
     public static <T> T toObject(ObjectMapper mapper, Type type, String json) {
         try {
             final var jType = mapper.constructType(type);
@@ -75,6 +87,13 @@ public class JacksonUtils {
         }
     }
 
+    /**
+     * {@code json -> node}
+     *
+     * @param mapper mapper
+     * @param json   json
+     * @return node
+     */
     public static JsonNode toNode(ObjectMapper mapper, String json) {
         try {
             return mapper.readTree(json);
@@ -86,10 +105,24 @@ public class JacksonUtils {
         }
     }
 
+    /**
+     * 压缩Json字符串
+     *
+     * @param mapper mapper
+     * @param json   json
+     * @return json
+     */
     public static String compact(ObjectMapper mapper, String json) {
         return toJson(mapper, toNode(mapper, json));
     }
 
+    /**
+     * 生成json-schema描述对象
+     *
+     * @param mapper mapper
+     * @param type   类型
+     * @return json-schema
+     */
     public static JsonNode schema(ObjectMapper mapper, Type type) {
         final var target = mapper.constructType(type);
         final var schemaGen = new JsonSchemaGenerator(mapper);

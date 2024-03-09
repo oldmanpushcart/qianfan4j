@@ -1,7 +1,7 @@
 package io.github.oldmanpushcart.internal.qianfan4j.base.api;
 
-import io.github.oldmanpushcart.qianfan4j.base.api.Ret;
 import io.github.oldmanpushcart.qianfan4j.base.api.ApiResponse;
+import io.github.oldmanpushcart.qianfan4j.base.api.Ret;
 
 public class ApiResponseImpl implements ApiResponse {
 

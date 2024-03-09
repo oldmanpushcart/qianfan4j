@@ -3,7 +3,7 @@ package io.github.oldmanpushcart.qianfan4j.chat.function;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * 函数
+ * 对话函数
  *
  * @param <T> 参数类型
  * @param <R> 返回值类型

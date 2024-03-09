@@ -2,9 +2,9 @@ package io.github.oldmanpushcart.internal.qianfan4j.base.api;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 import io.github.oldmanpushcart.qianfan4j.base.api.ApiRequest;
 import io.github.oldmanpushcart.qianfan4j.base.api.ApiResponse;
+import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 
 import java.time.Duration;
 import java.util.Map;
@@ -33,7 +33,7 @@ public abstract class ApiRequestImpl<R extends ApiResponse> implements ApiReques
     }
 
     @JsonAnyGetter
-    Map<String,Object> export() {
+    Map<String, Object> export() {
         return option.export();
     }
 

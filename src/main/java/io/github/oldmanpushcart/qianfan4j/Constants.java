@@ -3,6 +3,9 @@ package io.github.oldmanpushcart.qianfan4j;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * 常量
+ */
 public class Constants {
 
     private final static Properties properties = new Properties();

@@ -1,23 +1,20 @@
 package io.github.oldmanpushcart.internal.qianfan4j.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.oldmanpushcart.internal.qianfan4j.base.api.ApiExecutor;
 import io.github.oldmanpushcart.internal.qianfan4j.util.JacksonUtils;
 import io.github.oldmanpushcart.internal.qianfan4j.util.StringUtils;
+import io.github.oldmanpushcart.qianfan4j.QianFanClient;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
-import io.github.oldmanpushcart.qianfan4j.chat.ChatResponseNotSafeException;
 import io.github.oldmanpushcart.qianfan4j.chat.FunctionCall;
+import io.github.oldmanpushcart.qianfan4j.chat.NotSafeChatResponseException;
 import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFn;
+import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFunction;
 import io.github.oldmanpushcart.qianfan4j.chat.message.Message;
-import io.github.oldmanpushcart.qianfan4j.util.Aggregatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -37,13 +34,14 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
 
     // 任务拆解匹配
     private static final Pattern taskSplitPattern = Pattern.compile("任务拆解:\\[(.*?)]\\.");
+    private static final Pattern subTaskSplitPattern = Pattern.compile("\\[(.*?)]");
 
-    private final ApiExecutor executor;
+    private final QianFanClient client;
     private final ChatRequest request;
     private final Consumer<ChatResponse> consumer;
 
-    public ChatResponseHandler(ApiExecutor executor, ChatRequest request, Consumer<ChatResponse> consumer) {
-        this.executor = executor;
+    public ChatResponseHandler(QianFanClient client, ChatRequest request, Consumer<ChatResponse> consumer) {
+        this.client = client;
         this.request = request;
         this.consumer = consumer;
     }
@@ -53,49 +51,56 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
 
         // 检查对话返回是否安全
         if (!response.isSafe()) {
-            throw new ChatResponseNotSafeException(response);
+            throw new NotSafeChatResponseException(response);
         }
 
-        return response.isFunctionCall()
-                ? handingFunctionCall(response)
-                : completedFuture(response);
+        // 处理函数调用
+        if (response.isFunctionCall()) {
+            return handingFunctionCall(response);
+        }
+
+        return completedFuture(response)
+                .thenApply(v -> {
+                    request.messages().add(Message.ofAi(v.content()));
+                    return v;
+                });
     }
 
     // 处理函数调用
     private CompletableFuture<ChatResponse> handingFunctionCall(ChatResponse response) {
         final var call = response.call();
-
-        // 上下文
-        final var ctx = new Ctx(request.messages(), parseTaskQueue(call.thoughts()));
+        final var queue = parseTaskQueue(call.thoughts());
 
         // 第一个任务一定是当前正在执行的FunctionCall，所以这里可以直接弹栈
-        ctx.queue.poll();
+        queue.poll();
         if (logger.isDebugEnabled()) {
             logger.debug("{}/function <= {}", request, compact(mapper, call.arguments()));
         }
 
+        // 定位到函数
+        final var function = request.functions().stream()
+                .filter(fn -> call.name().equals(fn.getClass().getAnnotation(ChatFn.class).name()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("function: %s not found!".formatted(call.name())));
+
         // 执行函数调用
-        return calling(call)
+        return calling(function, call)
                 .thenCompose(resultJson -> {
                     if (logger.isDebugEnabled()) {
                         logger.debug("{}/function => {}", request, compact(mapper, resultJson));
                     }
                     final var fnRequest = ChatRequest.newBuilder(request)
                             .messages(ofFunctionCall(call), ofFunction(call.name(), resultJson))
+                            .functions(true, function)
                             .build();
-                    return executor.execute(fnRequest, Aggregatable::aggregate, consumer)
-                            .thenCompose(v -> executeTask(v, ctx));
+                    return client.chat(fnRequest).stream(consumer)
+                            .thenCompose(v -> executeTask(v, queue));
                 });
     }
 
-    private CompletableFuture<String> calling(FunctionCall call) {
+    // 函数调用
+    private CompletableFuture<String> calling(ChatFunction<?, ?> function, FunctionCall call) {
         try {
-
-            // 定位到函数
-            final var function = request.functions().stream()
-                    .filter(fn -> call.name().equals(fn.getClass().getAnnotation(ChatFn.class).name()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("function: %s not found!".formatted(call.name())));
 
             // 解析元数据
             final var meta = ChatFunctionMeta.of(function.getClass());
@@ -107,10 +112,6 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
         } catch (Throwable cause) {
             throw new RuntimeException("function: %s call error!".formatted(call.name()), cause);
         }
-
-    }
-
-    private record Ctx(List<Message> history, Queue<String> queue) {
 
     }
 
@@ -142,23 +143,31 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
     }
 
     // 执行子任务
-    private CompletableFuture<ChatResponse> executeTask(ChatResponse response, Ctx ctx) {
-        if (ctx.queue.isEmpty()) {
+    private CompletableFuture<ChatResponse> executeTask(ChatResponse response, Queue<String> queue) {
+        if (queue.isEmpty()) {
             return completedFuture(response);
         }
-        final var task = ctx.queue.poll();
-        ctx.history.add(Message.ofUser(task));
-
+        final var task = queue.poll();
         final var taskRequest = ChatRequest.newBuilder(request)
-                .messages(ctx.history)
+                .messages(Message.ofUser(task))
+                .functions(true, parseSubTaskFunctionList(request.functions(), task))
                 .build();
+        return client.chat(taskRequest).stream(consumer)
+                .thenCompose(taskResponse -> executeTask(taskResponse, queue));
+    }
 
-        return executor.execute(taskRequest, Aggregatable::aggregate, consumer)
-                .thenCompose(taskResponse -> executeTask(taskResponse, ctx))
-                .thenApply(v -> {
-                    ctx.history.add(Message.ofAi(v.result()));
-                    return v;
-                });
+    // 解析子任务函数集合
+    private static ChatFunction<?, ?>[] parseSubTaskFunctionList(List<ChatFunction<?, ?>> functions, String task) {
+        final var names = new HashSet<String>();
+        final var matcher = subTaskSplitPattern.matcher(task);
+        while (matcher.find()) {
+            final var group = matcher.group();
+            final var name = group.substring(group.indexOf('[') + 1, group.lastIndexOf(']'));
+            names.add(name);
+        }
+        return functions.stream()
+                .filter(fn -> names.contains(fn.getClass().getAnnotation(ChatFn.class).name()))
+                .toArray(ChatFunction<?, ?>[]::new);
     }
 
 }

@@ -29,10 +29,13 @@ public record Ret(String code, String message) {
 
     @JsonCreator
     public static Ret of(
+
             @JsonProperty("code")
             String code,
+
             @JsonProperty("message")
             String message
+
     ) {
         return new Ret(
                 isNotBlank(code) ? code : Ret.CODE_SUCCESS,

@@ -2,10 +2,19 @@ package io.github.oldmanpushcart.internal.qianfan4j.util;
 
 import java.util.Objects;
 
+/**
+ * 字符串工具类
+ */
 public class StringUtils {
 
     private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
+    /**
+     * 字节数组转十六进制字符串
+     *
+     * @param data 字节数组
+     * @return 十六进制字符串
+     */
     public static String encodeHex(byte[] data) {
         final var length = data.length;
         final var out = new char[length << 1];
@@ -16,6 +25,12 @@ public class StringUtils {
         return new String(out).toLowerCase();
     }
 
+    /**
+     * 是否为空字符串
+     *
+     * @param string 字符串
+     * @return TRUE | FALSE
+     */
     public static boolean isBlank(String string) {
         return !isNotBlank(string);
     }

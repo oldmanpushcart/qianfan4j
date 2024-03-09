@@ -1,10 +1,13 @@
 package io.github.oldmanpushcart.qianfan4j.base.algo;
 
-import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 import io.github.oldmanpushcart.qianfan4j.base.api.ApiOptions;
+import io.github.oldmanpushcart.qianfan4j.base.api.Option;
 
 import static io.github.oldmanpushcart.internal.qianfan4j.util.CheckUtils.check;
 
+/**
+ * 算法选项
+ */
 public interface AlgoOptions extends ApiOptions {
 
     /**

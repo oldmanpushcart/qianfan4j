@@ -48,6 +48,7 @@ public record Usage(List<Item> items) {
 
     /**
      * 构建空用量
+     *
      * @return 空用量
      */
     public static Usage ofEmpty() {

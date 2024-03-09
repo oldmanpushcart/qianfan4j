@@ -11,11 +11,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
+/**
+ * 千帆客户端
+ */
 public interface QianFanClient {
 
+    /**
+     * 对话
+     *
+     * @param request 对话请求
+     * @return 对话操作
+     */
     Op<ChatResponse> chat(ChatRequest request);
 
-
+    /**
+     * 千帆客户端构造器
+     *
+     * @return 构造器
+     */
     static Builder newBuilder() {
         return new QianFanClientImpl.Builder();
     }

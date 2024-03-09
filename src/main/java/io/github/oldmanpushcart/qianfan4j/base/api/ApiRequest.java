@@ -27,8 +27,8 @@ public interface ApiRequest<R extends ApiResponse> {
 
     /**
      * 转换为HTTP请求
-     * @param token 请求令牌
      *
+     * @param token 请求令牌
      * @return HTTP请求
      */
     HttpRequest newHttpRequest(String token);
