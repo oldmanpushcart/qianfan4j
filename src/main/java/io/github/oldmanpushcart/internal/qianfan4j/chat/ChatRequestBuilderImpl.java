@@ -34,12 +34,6 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
     }
 
     @Override
-    public ChatRequest.Builder messages(List<Message> messages) {
-        this.messages.addAll(messages);
-        return this;
-    }
-
-    @Override
     public ChatRequest.Builder functions(boolean isReplace, ChatFunction<?, ?>... functions) {
         if (isReplace) {
             this.functions = new ArrayList<>(List.of(functions));

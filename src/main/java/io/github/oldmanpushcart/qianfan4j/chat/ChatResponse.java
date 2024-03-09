@@ -2,12 +2,12 @@ package io.github.oldmanpushcart.qianfan4j.chat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.oldmanpushcart.qianfan4j.base.algo.AlgoResponse;
-import io.github.oldmanpushcart.qianfan4j.util.Aggregatable;
+import io.github.oldmanpushcart.qianfan4j.util.Aggregator;
 
 /**
  * 对话响应
  */
-public interface ChatResponse extends AlgoResponse, Aggregatable<ChatResponse> {
+public interface ChatResponse extends AlgoResponse, Aggregator<ChatResponse> {
 
     /**
      * 是否最后一条对话

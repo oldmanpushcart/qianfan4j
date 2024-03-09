@@ -7,7 +7,7 @@ import static java.util.Optional.ofNullable;
  *
  * @param <T> 聚合后的类型
  */
-public interface Aggregatable<T> {
+public interface Aggregator<T> {
 
     /**
      * 聚合
@@ -25,7 +25,7 @@ public interface Aggregatable<T> {
      * @param <T>   累加后的类型
      * @return 累加结果
      */
-    static <T extends Aggregatable<T>> T accumulate(T left, T right) {
+    static <T extends Aggregator<T>> T accumulate(T left, T right) {
         return ofNullable(left).map(v -> v.aggregate(right)).orElse(right);
     }
 

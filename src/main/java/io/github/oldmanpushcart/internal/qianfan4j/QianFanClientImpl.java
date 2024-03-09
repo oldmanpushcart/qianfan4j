@@ -5,7 +5,7 @@ import io.github.oldmanpushcart.internal.qianfan4j.chat.ChatResponseHandler;
 import io.github.oldmanpushcart.qianfan4j.QianFanClient;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
-import io.github.oldmanpushcart.qianfan4j.util.Aggregatable;
+import io.github.oldmanpushcart.qianfan4j.util.Aggregator;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -44,7 +44,7 @@ public class QianFanClientImpl implements QianFanClient {
 
     @Override
     public Op<ChatResponse> chat(ChatRequest request) {
-        return consumer -> apiExecutor.execute(request, Aggregatable::accumulate, consumer)
+        return consumer -> apiExecutor.execute(request, Aggregator::accumulate, consumer)
                 .thenCompose(new ChatResponseHandler(this, request, consumer));
     }
 

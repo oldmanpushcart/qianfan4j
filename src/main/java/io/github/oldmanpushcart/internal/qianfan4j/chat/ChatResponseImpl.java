@@ -20,15 +20,15 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
 
     private final boolean isLast;
     private final boolean isSafe;
-    private final String result;
+    private final String content;
     private final Search search;
     private final FunctionCall functionCall;
 
-    public ChatResponseImpl(String uuid, Ret ret, Usage usage, boolean isLast, boolean isSafe, String result, Search search, FunctionCall functionCall) {
+    public ChatResponseImpl(String uuid, Ret ret, Usage usage, boolean isLast, boolean isSafe, String content, Search search, FunctionCall functionCall) {
         super(uuid, ret, usage);
         this.isLast = isLast;
         this.isSafe = isSafe;
-        this.result = result;
+        this.content = content;
         this.search = search;
         this.functionCall = functionCall;
     }
@@ -40,7 +40,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
 
     @Override
     public String content() {
-        return result;
+        return content;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
             boolean isNotSafe,
 
             @JsonProperty("result")
-            String result,
+            String content,
 
             @JsonProperty("usage")
             Usage usage,
@@ -96,7 +96,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
     ) {
         final var ret = Ret.of(code, msg);
         final var isSafe = !isNotSafe;
-        return new ChatResponseImpl(uuid, ret, usage, isLast, isSafe, result, search, functionCall);
+        return new ChatResponseImpl(uuid, ret, usage, isLast, isSafe, content, search, functionCall);
     }
 
     @Override

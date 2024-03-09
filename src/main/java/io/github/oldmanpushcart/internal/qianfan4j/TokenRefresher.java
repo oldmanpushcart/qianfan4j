@@ -38,7 +38,7 @@ public class TokenRefresher {
 
     @Override
     public String toString() {
-        return "erniebot://token";
+        return "qianfan://token";
     }
 
     /**
