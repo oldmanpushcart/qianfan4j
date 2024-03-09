@@ -9,7 +9,6 @@ import io.github.oldmanpushcart.test.qianfan4j.chat.function.ComputeAvgScoreFunc
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.EchoFunction;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.QueryScoreFunction;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 public class ChatTestCase implements LoadingEnv {

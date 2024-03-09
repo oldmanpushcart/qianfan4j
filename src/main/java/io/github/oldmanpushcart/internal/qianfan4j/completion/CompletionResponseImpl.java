@@ -3,10 +3,8 @@ package io.github.oldmanpushcart.internal.qianfan4j.completion;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.oldmanpushcart.internal.qianfan4j.base.algo.AlgoResponseImpl;
-import io.github.oldmanpushcart.internal.qianfan4j.chat.ChatResponseImpl;
 import io.github.oldmanpushcart.qianfan4j.base.algo.Usage;
 import io.github.oldmanpushcart.qianfan4j.base.api.Ret;
-import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
 
 import java.util.Optional;
