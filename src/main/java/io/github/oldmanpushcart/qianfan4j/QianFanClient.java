@@ -4,6 +4,8 @@ import io.github.oldmanpushcart.internal.qianfan4j.QianFanClientImpl;
 import io.github.oldmanpushcart.qianfan4j.base.api.ApiOptions;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
+import io.github.oldmanpushcart.qianfan4j.completion.CompletionRequest;
+import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
 import io.github.oldmanpushcart.qianfan4j.util.Buildable;
 
 import java.time.Duration;
@@ -23,6 +25,14 @@ public interface QianFanClient {
      * @return 对话操作
      */
     Op<ChatResponse> chat(ChatRequest request);
+
+    /**
+     * 续写
+     *
+     * @param request 续写请求
+     * @return 续写操作
+     */
+    Op<CompletionResponse> completion(CompletionRequest request);
 
     /**
      * 千帆客户端构造器

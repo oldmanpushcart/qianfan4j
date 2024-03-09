@@ -8,6 +8,8 @@ import io.github.oldmanpushcart.test.qianfan4j.LoadingEnv;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.ComputeAvgScoreFunction;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.EchoFunction;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.QueryScoreFunction;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 public class ChatTestCase implements LoadingEnv {
@@ -16,7 +18,7 @@ public class ChatTestCase implements LoadingEnv {
     public void test$chat$function$multi() {
 
         final var request = ChatRequest.newBuilder()
-                .model(ChatModel.ERNIE_V3$5_8K_0225)
+                .model(ChatModel.ERNIE_V4)
                 .functions(new QueryScoreFunction(), new ComputeAvgScoreFunction())
                 .option(ChatOptions.IS_STREAM, true)
                 .option(ChatOptions.IS_ENABLE_SEARCH, false)
@@ -25,7 +27,10 @@ public class ChatTestCase implements LoadingEnv {
                 .build();
 
         final var response = client.chat(request).async().join();
-        System.out.println(response);
+        Assertions.assertTrue(response.content().contains("75"));
+        Assertions.assertTrue(response.isSafe());
+        Assertions.assertTrue(response.isLast());
+        Assertions.assertTrue(response.ret().isSuccess());
 
     }
 
@@ -33,13 +38,13 @@ public class ChatTestCase implements LoadingEnv {
     public void test$chat$function() {
 
         final var request = ChatRequest.newBuilder()
-                .model(ChatModel.ERNIE_V3$5_8K)
+                .model(ChatModel.ERNIE_V4)
                 .functions(new EchoFunction())
                 .messages(Message.ofUser("echo: HELLO WORLD!"))
                 .build();
 
         final var response = client.chat(request).async().join();
-        System.out.println(response);
+        Assertions.assertTrue(response.content().contains("HELLO WORLD!"));
 
     }
 

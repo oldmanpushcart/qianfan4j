@@ -74,7 +74,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
             @JsonProperty("error_msg")
             String msg,
 
-            @JsonProperty(value = "is_end", defaultValue = "false")
+            @JsonProperty(value = "is_end", defaultValue = "true")
             boolean isLast,
 
             @JsonProperty(value = "need_clear_history", defaultValue = "false")
