@@ -7,13 +7,17 @@ import io.github.oldmanpushcart.internal.qianfan4j.util.StringUtils;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponseNotSafeException;
-import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFunctionKit;
+import io.github.oldmanpushcart.qianfan4j.chat.FunctionCall;
+import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFn;
 import io.github.oldmanpushcart.qianfan4j.chat.message.Message;
 import io.github.oldmanpushcart.qianfan4j.util.Aggregatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -33,9 +37,6 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
 
     // 任务拆解匹配
     private static final Pattern taskSplitPattern = Pattern.compile("任务拆解:\\[(.*?)]\\.");
-
-    // 子任务拆解匹配
-    private static final Pattern subTaskSplitPattern = Pattern.compile("\\[(.*?)]");
 
     private final ApiExecutor executor;
     private final ChatRequest request;
@@ -63,10 +64,9 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
     // 处理函数调用
     private CompletableFuture<ChatResponse> handingFunctionCall(ChatResponse response) {
         final var call = response.call();
-        final var stub = request.kit().require(call.name());
 
         // 上下文
-        final var ctx = new Ctx(parseTaskQueue(call.thoughts()));
+        final var ctx = new Ctx(request.messages(), parseTaskQueue(call.thoughts()));
 
         // 第一个任务一定是当前正在执行的FunctionCall，所以这里可以直接弹栈
         ctx.queue.poll();
@@ -75,13 +75,12 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
         }
 
         // 执行函数调用
-        return stub.call(call.arguments())
+        return calling(call)
                 .thenCompose(resultJson -> {
                     if (logger.isDebugEnabled()) {
                         logger.debug("{}/function => {}", request, compact(mapper, resultJson));
                     }
                     final var fnRequest = ChatRequest.newBuilder(request)
-                            .replaceKit(request.kit().sub(call.name()))
                             .messages(ofFunctionCall(call), ofFunction(call.name(), resultJson))
                             .build();
                     return executor.execute(fnRequest, Aggregatable::aggregate, consumer)
@@ -89,11 +88,29 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
                 });
     }
 
-    private record Ctx(List<Message> history, Queue<String> queue) {
+    private CompletableFuture<String> calling(FunctionCall call) {
+        try {
 
-        public Ctx(Queue<String> queue) {
-            this(new ArrayList<>(), queue);
+            // 定位到函数
+            final var function = request.functions().stream()
+                    .filter(fn -> call.name().equals(fn.getClass().getAnnotation(ChatFn.class).name()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("function: %s not found!".formatted(call.name())));
+
+            // 解析元数据
+            final var meta = ChatFunctionMeta.of(function.getClass());
+
+            // 执行函数
+            return function.call(JacksonUtils.toObject(mapper, meta.parameter().type(), call.arguments()))
+                    .thenApply(result -> JacksonUtils.toJson(mapper, result));
+
+        } catch (Throwable cause) {
+            throw new RuntimeException("function: %s call error!".formatted(call.name()), cause);
         }
+
+    }
+
+    private record Ctx(List<Message> history, Queue<String> queue) {
 
     }
 
@@ -133,29 +150,15 @@ public class ChatResponseHandler implements Function<ChatResponse, CompletionSta
         ctx.history.add(Message.ofUser(task));
 
         final var taskRequest = ChatRequest.newBuilder(request)
-                .replaceKit(parseSubTaskFunctionKit(request.kit(), task))
                 .messages(ctx.history)
                 .build();
 
         return executor.execute(taskRequest, Aggregatable::aggregate, consumer)
                 .thenCompose(taskResponse -> executeTask(taskResponse, ctx))
-                .thenApply(v-> {
+                .thenApply(v -> {
                     ctx.history.add(Message.ofAi(v.result()));
                     return v;
                 });
     }
-
-    // 解析子任务函数集合
-    private static ChatFunctionKit parseSubTaskFunctionKit(ChatFunctionKit kit, String task) {
-        final var names = new LinkedList<String>();
-        final var matcher = subTaskSplitPattern.matcher(task);
-        while (matcher.find()) {
-            final var group = matcher.group();
-            final var name = group.substring(group.indexOf('[') + 1, group.lastIndexOf(']'));
-            names.add(name);
-        }
-        return kit.sub(names.toArray(String[]::new));
-    }
-
 
 }

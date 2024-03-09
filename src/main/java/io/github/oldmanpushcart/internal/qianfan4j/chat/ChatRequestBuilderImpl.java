@@ -4,7 +4,6 @@ import io.github.oldmanpushcart.internal.qianfan4j.base.algo.AlgoRequestBuilderI
 import io.github.oldmanpushcart.qianfan4j.chat.ChatModel;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFunction;
-import io.github.oldmanpushcart.qianfan4j.chat.function.ChatFunctionKit;
 import io.github.oldmanpushcart.qianfan4j.chat.message.Message;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
         implements ChatRequest.Builder {
 
     private List<Message> messages = new ArrayList<>();
-    private ChatFunctionKit kit = new ChatFunctionKit();
+    private List<ChatFunction<?,?>> functions = new ArrayList<>();
 
     public ChatRequestBuilderImpl() {
 
@@ -25,7 +24,7 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
     public ChatRequestBuilderImpl(ChatRequest request) {
         super(request);
         this.messages = request.messages();
-        this.kit = request.kit();
+        this.functions = request.functions();
     }
 
     @Override
@@ -42,19 +41,7 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
 
     @Override
     public ChatRequest.Builder functions(ChatFunction<?, ?>... functions) {
-        this.kit.load(functions);
-        return this;
-    }
-
-    @Override
-    public ChatRequest.Builder kit(ChatFunctionKit kit) {
-        this.kit.load(kit);
-        return this;
-    }
-
-    @Override
-    public ChatRequest.Builder replaceKit(ChatFunctionKit kit) {
-        this.kit = requireNonNull(kit);
+        this.functions.addAll(List.of(functions));
         return this;
     }
 
@@ -66,7 +53,7 @@ public class ChatRequestBuilderImpl extends AlgoRequestBuilderImpl<ChatModel, Ch
                 option(),
                 user(),
                 messages,
-                kit
+                functions
         );
     }
 
