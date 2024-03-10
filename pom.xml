@@ -4,7 +4,7 @@
     <groupId>io.github.oldmanpushcart</groupId>
     <artifactId>qianfan4j</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>qianfan4j</name>
 
     <description>Java library for QianFan</description>
