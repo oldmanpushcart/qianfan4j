@@ -64,7 +64,7 @@ public class PluginAppRequestBuilderImpl extends AlgoRequestBuilderImpl<PluginAp
 
     @Override
     public PluginAppRequest.Builder llm(Option llm) {
-        llm.export().forEach(this::llm);
+        llm.export().forEach(llm::option);
         return this;
     }
 

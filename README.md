@@ -42,7 +42,7 @@
    export QIANFAN_AK=<YOUR APP-KEY>
    export QIANFAN_SK=<YOUR SECRET-KEY>
    ```
-   注意：[PluginTestCase](https://github.com/oldmanpushcart/erniebot4j/blob/main/src/test/java/io/github/ompc/erniebot4j/test/pluginapp/PluginAppTestCase.java)
+   注意：[PluginAppTestCase](https://github.com/oldmanpushcart/qianfan4j/blob/main/src/test/java/io/github/oldmanpushcart/test/qianfan4j/pluginapp/PluginAppTestCase.java)
    测试用例如果要跑通，需要在千帆大模型平台创建插件应用，开通`ocr-chat`插件。 并在配置文件中追加一行
    ```shell
    export QIANFAN_PLUGIN_APP_ID=<YOUR PLUGIN-APP ID>
@@ -166,7 +166,7 @@ final var response = client.chat(request)
 ### 多函数调用示例
 
 `qianfan4j`会根据LLM的推理能力，自动拆解多函数调用的任务，然后按照拆解的任务顺序依次调用函数。这样，你就可以专注于函数的实现，而不用再去关心函数的调用顺序了。
-我们假设有两个函数 [QueryScoreFunction](src/test/java/io/github/ompc/erniebot4j/test/chat/function/QueryScoreFunction.java)和 [ComputeAvgScoreFunction](src/test/java/io/github/ompc/erniebot4j/test/chat/function/ComputeAvgScoreFunction.java)，分别用于查询成绩和计算平均分。我们可以通过以下方式实现多函数调用：
+我们假设有两个函数 [QueryScoreFunction](https://github.com/oldmanpushcart/qianfan4j/blob/main/src/test/java/io/github/oldmanpushcart/test/qianfan4j/chat/function/QueryScoreFunction.java)和 [ComputeAvgScoreFunction](https://github.com/oldmanpushcart/qianfan4j/blob/main/src/test/java/io/github/oldmanpushcart/test/qianfan4j/chat/function/ComputeAvgScoreFunction.java)，分别用于查询成绩和计算平均分。我们可以通过以下方式实现多函数调用：
 
 ```java
 final var request = ChatRequest.newBuilder()
