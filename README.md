@@ -81,14 +81,14 @@ final var client = QianFanClient.newBuilder()
 ```java
 // 对话请求
 final var request = ChatRequest.newBuilder()
-        .model(ChatModel.ERNIE_V4)
-        .messages(Message.ofUser("hello!"))
-        .build();
+    .model(ChatModel.ERNIE_V4)
+    .messages(Message.ofUser("hello!"))
+    .build();
 
 // 对话响应
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 
 // System.out.println(response);
 ```
@@ -170,17 +170,17 @@ final var response = client.chat(request)
 
 ```java
 final var request = ChatRequest.newBuilder()
-        .model(ChatModel.ERNIE_V4)
-        .functions(new QueryScoreFunction(), new ComputeAvgScoreFunction())
-        .option(ChatOptions.IS_STREAM, true)
-        .option(ChatOptions.IS_ENABLE_SEARCH, false)
-        .option(ChatOptions.TEMPERATURE, 0.01f)
-        .messages(Message.ofUser("计算李四的语文和数学平均分"))
-        .build();
+    .model(ChatModel.ERNIE_V4)
+    .functions(new QueryScoreFunction(), new ComputeAvgScoreFunction())
+    .option(ChatOptions.IS_STREAM, true)
+    .option(ChatOptions.IS_ENABLE_SEARCH, false)
+    .option(ChatOptions.TEMPERATURE, 0.01f)
+    .messages(Message.ofUser("计算李四的语文和数学平均分"))
+    .build();
 
 final var response = client.chat(request)
-        .async()
-        .join();
+    .async()
+    .join();
 
 // System.out.println(response.content());
 ```
