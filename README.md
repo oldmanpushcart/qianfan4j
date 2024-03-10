@@ -68,7 +68,7 @@
 final var executor = Executors.newFixedThreadPool(10);
 
 // 文心一言客户端
-final var client = new ErnieBotClient.Builder()
+final var client = QianFanClient.newBuilder()
     .ak("***") // API Key
     .sk("***") // Secret Key
     .executor(executor)
