@@ -1,21 +1,21 @@
-package io.github.oldmanpushcart.internal.qianfan4j.completion;
+package io.github.oldmanpushcart.internal.qianfan4j.image.caption;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.oldmanpushcart.internal.qianfan4j.base.algo.AlgoResponseImpl;
 import io.github.oldmanpushcart.qianfan4j.base.algo.Usage;
 import io.github.oldmanpushcart.qianfan4j.base.api.Ret;
-import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
+import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
 
 import java.util.Optional;
 
-public class CompletionResponseImpl extends AlgoResponseImpl implements CompletionResponse {
+public class CaptionImageResponseImpl extends AlgoResponseImpl implements CaptionImageResponse {
 
     private final boolean isLast;
     private final boolean isSafe;
     private final String content;
 
-    private CompletionResponseImpl(String uuid, Ret ret, Usage usage, boolean isLast, boolean isSafe, String content) {
+    private CaptionImageResponseImpl(String uuid, Ret ret, Usage usage, boolean isLast, boolean isSafe, String content) {
         super(uuid, ret, usage);
         this.isLast = isLast;
         this.isSafe = isSafe;
@@ -23,9 +23,9 @@ public class CompletionResponseImpl extends AlgoResponseImpl implements Completi
     }
 
     @Override
-    public CompletionResponse aggregate(CompletionResponse response) {
+    public CaptionImageResponse aggregate(CaptionImageResponse response) {
         return Optional.ofNullable(response)
-                .<CompletionResponse>map(other -> new CompletionResponseImpl(
+                .<CaptionImageResponse>map(other -> new CaptionImageResponseImpl(
                         other.uuid(),
                         other.ret(),
                         other.usage(),
@@ -52,7 +52,7 @@ public class CompletionResponseImpl extends AlgoResponseImpl implements Completi
     }
 
     @JsonCreator
-    static CompletionResponseImpl of(
+    static CaptionImageResponseImpl of(
 
             @JsonProperty("id")
             String uuid,
@@ -76,7 +76,7 @@ public class CompletionResponseImpl extends AlgoResponseImpl implements Completi
             Usage usage
 
     ) {
-        return new CompletionResponseImpl(uuid, Ret.of(code, msg), usage, isLast, isSafe, content);
+        return new CaptionImageResponseImpl(uuid, Ret.of(code, msg), usage, isLast, isSafe, content);
     }
 
 }

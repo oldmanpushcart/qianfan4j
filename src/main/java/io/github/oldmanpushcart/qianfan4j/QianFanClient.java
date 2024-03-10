@@ -6,6 +6,10 @@ import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionRequest;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
+import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageRequest;
+import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
+import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
+import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageResponse;
 import io.github.oldmanpushcart.qianfan4j.util.Buildable;
 
 import java.time.Duration;
@@ -33,6 +37,22 @@ public interface QianFanClient {
      * @return 续写操作
      */
     Op<CompletionResponse> completion(CompletionRequest request);
+
+    /**
+     * 图生文
+     *
+     * @param request 图生文请求
+     * @return 图生文操作
+     */
+    Op<CaptionImageResponse> captionImage(CaptionImageRequest request);
+
+    /**
+     * 文生图
+     *
+     * @param request 文生图请求
+     * @return 文生图操作
+     */
+    Op<GenerationImageResponse> generationImage(GenerationImageRequest request);
 
     /**
      * 千帆客户端构造器

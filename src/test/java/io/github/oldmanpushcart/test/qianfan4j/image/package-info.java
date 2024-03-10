@@ -1,0 +1,1 @@
+package io.github.oldmanpushcart.test.qianfan4j.image;

@@ -49,10 +49,32 @@ public abstract class AlgoRequestImpl<M extends Model, R extends AlgoResponse> e
         return user;
     }
 
+    /**
+     * Wrap the request body for logging
+     *
+     * @param body request body
+     * @return wrapped request body
+     */
+    protected String wrapLoggingRequestBody(String body) {
+        return body;
+    }
+
+    /**
+     * Wrap the response body for logging
+     *
+     * @param body response body
+     * @return wrapped response body
+     */
+    protected String wrapLoggingResponseBody(String body) {
+        return body;
+    }
+
     @Override
     public HttpRequest newHttpRequest(String token) {
         final var body = JacksonUtils.toJson(mapper, this);
-        logger.debug("{} => {}", this, body);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} => {}", this, wrapLoggingRequestBody(body));
+        }
         return HttpRequest.newBuilder()
                 .uri(URI.create("%s?access_token=%s".formatted(model().remote(), token)))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
@@ -62,7 +84,9 @@ public abstract class AlgoRequestImpl<M extends Model, R extends AlgoResponse> e
     @Override
     public Function<String, R> responseDeserializer() {
         return body -> {
-            logger.debug("{} <= {}", this, body);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} <= {}", this, wrapLoggingResponseBody(body));
+            }
             return JacksonUtils.toObject(mapper, body, responseType);
         };
     }

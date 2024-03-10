@@ -24,7 +24,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
     private final Search search;
     private final FunctionCall functionCall;
 
-    public ChatResponseImpl(String uuid, Ret ret, Usage usage, boolean isLast, boolean isSafe, String content, Search search, FunctionCall functionCall) {
+    private ChatResponseImpl(String uuid, Ret ret, Usage usage, boolean isLast, boolean isSafe, String content, Search search, FunctionCall functionCall) {
         super(uuid, ret, usage);
         this.isLast = isLast;
         this.isSafe = isSafe;

@@ -7,6 +7,10 @@ import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionRequest;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
+import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageRequest;
+import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
+import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
+import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageResponse;
 import io.github.oldmanpushcart.qianfan4j.util.Aggregator;
 
 import java.net.http.HttpClient;
@@ -53,6 +57,16 @@ public class QianFanClientImpl implements QianFanClient {
     @Override
     public Op<CompletionResponse> completion(CompletionRequest request) {
         return consumer -> apiExecutor.execute(request, Aggregator::accumulate, consumer);
+    }
+
+    @Override
+    public Op<CaptionImageResponse> captionImage(CaptionImageRequest request) {
+        return consumer -> apiExecutor.execute(request, Aggregator::accumulate, consumer);
+    }
+
+    @Override
+    public Op<GenerationImageResponse> generationImage(GenerationImageRequest request) {
+        return consumer -> apiExecutor.execute(request, (r1, r2) -> r2, consumer);
     }
 
     /**
