@@ -7,6 +7,8 @@ import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionRequest;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
+import io.github.oldmanpushcart.qianfan4j.embedding.EmbeddingRequest;
+import io.github.oldmanpushcart.qianfan4j.embedding.EmbeddingResponse;
 import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageRequest;
 import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
@@ -66,6 +68,11 @@ public class QianFanClientImpl implements QianFanClient {
 
     @Override
     public Op<GenerationImageResponse> generationImage(GenerationImageRequest request) {
+        return consumer -> apiExecutor.execute(request, (r1, r2) -> r2, consumer);
+    }
+
+    @Override
+    public Op<EmbeddingResponse> embedding(EmbeddingRequest request) {
         return consumer -> apiExecutor.execute(request, (r1, r2) -> r2, consumer);
     }
 

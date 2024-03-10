@@ -6,6 +6,8 @@ import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatResponse;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionRequest;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionResponse;
+import io.github.oldmanpushcart.qianfan4j.embedding.EmbeddingRequest;
+import io.github.oldmanpushcart.qianfan4j.embedding.EmbeddingResponse;
 import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageRequest;
 import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
@@ -53,6 +55,14 @@ public interface QianFanClient {
      * @return 文生图操作
      */
     Op<GenerationImageResponse> generationImage(GenerationImageRequest request);
+
+    /**
+     * 向量计算
+     *
+     * @param request 向量计算请求
+     * @return 向量计算操作
+     */
+    Op<EmbeddingResponse> embedding(EmbeddingRequest request);
 
     /**
      * 千帆客户端构造器
