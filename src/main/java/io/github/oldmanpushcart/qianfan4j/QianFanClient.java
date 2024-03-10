@@ -12,6 +12,8 @@ import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageRequest;
 import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageResponse;
+import io.github.oldmanpushcart.qianfan4j.pluginapp.PluginAppRequest;
+import io.github.oldmanpushcart.qianfan4j.pluginapp.PluginAppResponse;
 import io.github.oldmanpushcart.qianfan4j.util.Buildable;
 
 import java.time.Duration;
@@ -63,6 +65,14 @@ public interface QianFanClient {
      * @return 向量计算操作
      */
     Op<EmbeddingResponse> embedding(EmbeddingRequest request);
+
+    /**
+     * 插件应用
+     *
+     * @param request 插件应用请求
+     * @return 插件应用操作
+     */
+    Op<PluginAppResponse> pluginApp(PluginAppRequest request);
 
     /**
      * 千帆客户端构造器

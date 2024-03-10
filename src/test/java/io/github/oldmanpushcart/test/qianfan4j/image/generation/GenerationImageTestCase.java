@@ -4,6 +4,7 @@ import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageModel;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageOptions;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
 import io.github.oldmanpushcart.test.qianfan4j.LoadingEnv;
+import io.github.oldmanpushcart.test.qianfan4j.QianFanAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,8 @@ public class GenerationImageTestCase implements LoadingEnv {
             Assertions.assertTrue(file.mkdirs());
             ImageIO.write(image, "png", file);
         }
+
+        QianFanAssertions.assertAlgoResponse(response);
 
     }
 

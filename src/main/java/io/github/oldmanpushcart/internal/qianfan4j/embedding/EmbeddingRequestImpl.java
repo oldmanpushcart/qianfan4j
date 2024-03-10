@@ -21,9 +21,17 @@ public class EmbeddingRequestImpl extends AlgoRequestImpl<EmbeddingModel, Embedd
     @JsonProperty("input")
     private final List<String> texts;
 
+    private final String _string;
+
     EmbeddingRequestImpl(Duration timeout, EmbeddingModel model, Option option, String user, List<String> texts) {
         super(timeout, model, option, user, EmbeddingResponseImpl.class);
         this.texts = texts;
+        this._string = "qianfan://embedding/%s".formatted(model.name());
+    }
+
+    @Override
+    public String toString() {
+        return _string;
     }
 
     @Override

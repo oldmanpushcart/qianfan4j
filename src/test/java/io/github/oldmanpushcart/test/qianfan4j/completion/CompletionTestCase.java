@@ -4,6 +4,7 @@ import io.github.oldmanpushcart.qianfan4j.completion.CompletionModel;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionOptions;
 import io.github.oldmanpushcart.qianfan4j.completion.CompletionRequest;
 import io.github.oldmanpushcart.test.qianfan4j.LoadingEnv;
+import io.github.oldmanpushcart.test.qianfan4j.QianFanAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -74,6 +75,7 @@ public class CompletionTestCase implements LoadingEnv {
         Assertions.assertTrue(response.isLast());
         Assertions.assertTrue(response.isSafe());
         Assertions.assertTrue(response.content().contains("SELECT"));
+        QianFanAssertions.assertAlgoResponse(response);
 
     }
 

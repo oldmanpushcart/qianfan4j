@@ -5,6 +5,7 @@ import io.github.oldmanpushcart.qianfan4j.chat.ChatOptions;
 import io.github.oldmanpushcart.qianfan4j.chat.ChatRequest;
 import io.github.oldmanpushcart.qianfan4j.chat.message.Message;
 import io.github.oldmanpushcart.test.qianfan4j.LoadingEnv;
+import io.github.oldmanpushcart.test.qianfan4j.QianFanAssertions;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.ComputeAvgScoreFunction;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.EchoFunction;
 import io.github.oldmanpushcart.test.qianfan4j.chat.function.QueryScoreFunction;
@@ -30,6 +31,7 @@ public class ChatTestCase implements LoadingEnv {
         Assertions.assertTrue(response.isSafe());
         Assertions.assertTrue(response.isLast());
         Assertions.assertTrue(response.ret().isSuccess());
+        QianFanAssertions.assertAlgoResponse(response);
 
     }
 
@@ -44,6 +46,7 @@ public class ChatTestCase implements LoadingEnv {
 
         final var response = client.chat(request).async().join();
         Assertions.assertTrue(response.content().contains("HELLO WORLD!"));
+        QianFanAssertions.assertAlgoResponse(response);
 
     }
 

@@ -16,6 +16,8 @@ import io.github.oldmanpushcart.qianfan4j.chat.Search;
 import java.io.IOException;
 import java.util.*;
 
+import static io.github.oldmanpushcart.internal.qianfan4j.util.StringUtils.contact;
+
 public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
 
     private final boolean isLast;
@@ -108,7 +110,7 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
                         other.usage(),
                         other.isLast(),
                         other.isSafe(),
-                        this.content() + other.content(),
+                        contact(this.content(), other.content()),
                         other.search(),
                         other.call()
                 ))
@@ -124,7 +126,6 @@ public class ChatResponseImpl extends AlgoResponseImpl implements ChatResponse {
             final var searchResultsNode = node.get("search_results");
             if (Objects.nonNull(searchResultsNode) && !searchResultsNode.isNull()) {
                 items.addAll(List.of(context.readTreeAsValue(searchResultsNode, Search.Item[].class)));
-
             }
             return new Search(Collections.unmodifiableList(items));
         }

@@ -3,6 +3,7 @@ package io.github.oldmanpushcart.test.qianfan4j.embedding;
 import io.github.oldmanpushcart.qianfan4j.embedding.EmbeddingModel;
 import io.github.oldmanpushcart.qianfan4j.embedding.EmbeddingRequest;
 import io.github.oldmanpushcart.test.qianfan4j.LoadingEnv;
+import io.github.oldmanpushcart.test.qianfan4j.QianFanAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,8 @@ public class EmbeddingTestCase implements LoadingEnv {
             Assertions.assertNotNull(embedding);
             Assertions.assertTrue(embedding.vector().length > 0);
         }
+
+        QianFanAssertions.assertAlgoResponse(response);
 
     }
 

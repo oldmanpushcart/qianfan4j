@@ -80,10 +80,24 @@ public class JacksonUtils {
             final var jType = mapper.constructType(type);
             return mapper.readValue(json, jType);
         } catch (JsonProcessingException cause) {
-            throw new IllegalArgumentException(
-                    "parse json to object failed!",
-                    cause
-            );
+            throw new IllegalArgumentException("parse json to object failed!", cause);
+        }
+    }
+
+    /**
+     * {@code node -> T}
+     *
+     * @param mapper mapper
+     * @param type   type
+     * @param node   node
+     * @param <T>    T
+     * @return T
+     */
+    public static <T> T toObject(ObjectMapper mapper, Class<T> type, JsonNode node) {
+        try {
+            return mapper.treeToValue(node, type);
+        } catch (JsonProcessingException cause) {
+            throw new IllegalArgumentException("parse json to object failed!", cause);
         }
     }
 

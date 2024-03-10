@@ -13,10 +13,13 @@ import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageRequest;
 import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageRequest;
 import io.github.oldmanpushcart.qianfan4j.image.generation.GenerationImageResponse;
+import io.github.oldmanpushcart.qianfan4j.pluginapp.PluginAppRequest;
+import io.github.oldmanpushcart.qianfan4j.pluginapp.PluginAppResponse;
 import io.github.oldmanpushcart.qianfan4j.util.Aggregator;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import static java.util.Objects.requireNonNull;
@@ -74,6 +77,15 @@ public class QianFanClientImpl implements QianFanClient {
     @Override
     public Op<EmbeddingResponse> embedding(EmbeddingRequest request) {
         return consumer -> apiExecutor.execute(request, (r1, r2) -> r2, consumer);
+    }
+
+    @Override
+    public Op<PluginAppResponse> pluginApp(PluginAppRequest request) {
+        return consumer -> apiExecutor.execute(request, Aggregator::accumulate, response -> {
+            if(!Objects.isNull(response.ret())) {
+                consumer.accept(response);
+            }
+        });
     }
 
     /**

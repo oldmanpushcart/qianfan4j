@@ -1,6 +1,8 @@
 package io.github.oldmanpushcart.internal.qianfan4j.util;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 字符串工具类
@@ -104,6 +106,12 @@ public class StringUtils {
             }
         }
         return result.toString();
+    }
+
+    public static String contact(String... strings) {
+        return null == strings
+                ? null
+                : Arrays.stream(strings).filter(Objects::nonNull).collect(Collectors.joining());
     }
 
 }

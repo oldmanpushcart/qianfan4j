@@ -18,5 +18,6 @@ open module qianfan4j {
     exports io.github.oldmanpushcart.qianfan4j.image.caption;
     exports io.github.oldmanpushcart.qianfan4j.image.generation;
     exports io.github.oldmanpushcart.qianfan4j.embedding;
+    exports io.github.oldmanpushcart.qianfan4j.pluginapp;
 
 }

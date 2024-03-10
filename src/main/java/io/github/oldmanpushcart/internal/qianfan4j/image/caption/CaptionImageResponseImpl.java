@@ -9,6 +9,8 @@ import io.github.oldmanpushcart.qianfan4j.image.caption.CaptionImageResponse;
 
 import java.util.Optional;
 
+import static io.github.oldmanpushcart.internal.qianfan4j.util.StringUtils.contact;
+
 public class CaptionImageResponseImpl extends AlgoResponseImpl implements CaptionImageResponse {
 
     private final boolean isLast;
@@ -31,7 +33,7 @@ public class CaptionImageResponseImpl extends AlgoResponseImpl implements Captio
                         other.usage(),
                         other.isLast(),
                         other.isSafe(),
-                        this.content() + other.content()
+                        contact(this.content(), other.content())
                 ))
                 .orElse(this);
     }
