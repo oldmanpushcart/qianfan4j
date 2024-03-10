@@ -67,7 +67,7 @@
 // 线程池
 final var executor = Executors.newFixedThreadPool(10);
 
-// 文心一言客户端
+// 千帆客户端
 final var client = QianFanClient.newBuilder()
     .ak("***") // API Key
     .sk("***") // Secret Key
