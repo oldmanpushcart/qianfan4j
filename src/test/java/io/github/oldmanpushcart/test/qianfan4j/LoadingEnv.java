@@ -9,6 +9,7 @@ public interface LoadingEnv {
 
     String AK = System.getenv("QIANFAN_AK");
     String SK = System.getenv("QIANFAN_SK");
+    String PLUGIN_APP_ID = System.getenv("QIANFAN_PLUGIN_APP_ID");
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 

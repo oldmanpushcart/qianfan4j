@@ -76,7 +76,7 @@ public interface GenerationImageRequest extends AlgoRequest<GenerationImageModel
         S_1024_576,
 
         @JsonProperty("1024x1024")
-        S_1024_1024;
+        S_1024_1024
 
     }
 
