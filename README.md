@@ -1,4 +1,7 @@
 # qianfan4j：千帆 Java SDK
+![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)
+![JDK17+](https://img.shields.io/badge/JDK-17+-blue.svg)
+![LLM-文心一言](https://img.shields.io/badge/LLM-%E6%96%87%E5%BF%83%E4%B8%80%E8%A8%80-blue.svg)
 
 `qianfan4j`是一个开源的千帆大模型平台的非官方Java客户端，基于`JDK17`构建。它旨在提供一个功能丰富、易于集成和使用的Java库，以便开发者能够通过千帆API轻松实现对话、续写、向量嵌入和图像处理等功能。
 
