@@ -55,7 +55,7 @@
 ## 四、依赖使用
 
 项目仓库托管在Maven中央仓库，你可以在`pom.xml`中添加以下依赖：
-
+> 当前Jar包还在向中央仓库同步中，已经8个小时了，我正在email中央仓库的管理员，希望能尽快同步到中央仓库。
 ```xml
 <dependency>
     <groupId>io.github.oldmanpushcart</groupId>

@@ -5,7 +5,7 @@
     <artifactId>qianfan4j</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0</version>
-    <name>qianfan4j</name>
+    <name>qianfan4j ${project.version}</name>
 
     <description>Java library for QianFan</description>
     <url>https://github.com/oldmanpushcart/qianfan4j</url>
